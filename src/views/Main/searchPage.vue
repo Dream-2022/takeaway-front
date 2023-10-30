@@ -1,0 +1,256 @@
+<template>
+    <div class="container-search">
+          <div class="content-search">
+              <input class="content-input" placeholder="搜索美食">
+              <button class="content-button">搜索</button>
+          </div>
+
+      </div>
+      <!-- <div class="search-lei">
+          <span class="search-article active">搜索文章</span>
+          <span class="search-user">搜索用户</span>
+          <span class="search-label">搜索标签</span>
+      </div> -->
+      <div class="container-content">
+
+
+      </div>
+
+</template>
+
+<script setup>
+import { ref,onMounted } from 'vue';
+let shops=ref([])
+onMounted(() => {
+    const http=axios.create({
+        baseURL:'http://localhost:8080'
+    })
+    http({
+        url:'/api/pre/shop/selectShop',
+        method:'GET'
+    }).then((res)=>{
+        console.log('成功发送')
+        console.log(res.data)
+        if(res.data.code==0){
+            console.log("获取商家信息成功")
+            shops.value=res.data.data
+        }
+        else{
+            ElMessage.error(res.data.message)
+        }
+
+        
+    })
+	})
+</script>
+
+<style scoped>
+.container-search{
+    background-color: white;
+    margin:  auto;
+}
+.container-content{
+    width: 60%;
+    margin: auto;
+}
+.container-content{
+    margin-bottom: 600px;
+}
+.container-search {
+    border: 1px solid #ccc;
+    display: flex;
+    margin-top: 50px; /* 根据需要调整距离导航栏的间距 */
+}
+.search-lei{
+    width: 864px;
+    display: flex;
+    margin:0 auto;
+    justify-content: center;
+    justify-items: center;
+    font-size: 17px;
+}
+.search-lei span{
+    margin-top: 10px;
+    margin-bottom: 5px;
+    padding: 8px 109px;
+    display: inline-block;
+    color: #595555;
+    cursor: pointer;
+    background-color: #ccd9e5;
+    border:1px solid white;
+    font-family: 隶书;
+}
+/*用户盒子*/
+.content-fan tr td .fan-id,
+.content-blogger tr td .blogger-id{
+    display: none;
+}
+.content-fan ,
+.content-blogger {
+    margin-bottom: 10px; /* 可选：为了增加表格之间的间距 */
+}
+
+.content-fan table ,
+.content-blogger table {
+    width: 100%; /* 表格占满容器宽度 */
+}
+
+.content-fan .fan-follow ,
+.content-blogger .blogger-follow {
+    float: left;
+    margin-top: 30px;
+    border: 1px solid #ccc;
+    border-radius: 13px;
+    display: inline-block;
+    height: 26px;
+    width: 58px;
+    line-height: 26px;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.content-blogger .blogger-follow i.icon{
+    margin-left: 3px;
+}
+.content-blogger{
+    box-shadow: 5px 5px 5px -1px rgb(0,0,0,.05);
+}
+.content-blogger td {
+    text-align: left; /* 其余内容向左对齐靠拢 */
+}
+
+.content-blogger td {
+    vertical-align: top; /* 图片和内容向上对齐 */
+}
+
+.content-blogger img, .blogger-name,.blogger-original,.blogger-wen{
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 14px;
+    font-size: 16px;
+    color: #4d4c4c;
+}
+.blogger-original,.blogger-wen{
+    margin-left: 10px;
+    font-size: 13px;
+    color: #7e7e7e;
+}
+.blogger-wen{
+    margin-left: 41px;
+}
+.content-fan tr .center,
+.content-blogger tr .center{
+    width: 400px;
+}
+.blogger-avatar{
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+}
+.content-fan  td:first-child ,
+.content-blogger  td:first-child {
+    width: 79px; /* 设置图片单元格的固定宽度 */
+}
+/*设置关注样式*/
+.cccBackground{
+    background-color: #ccc;
+    color: white;
+    padding-left: 9px;
+}
+.search-lei .active{
+    /*border-right: 2px solid #ccc;*/
+    /*border-left: 2px solid #ccc;*/
+    box-shadow: 5px 5px 5px -1px rgb(0,0,0,.05);
+    background-color: #dce6ef;
+}
+ .search-article,
+ .search-label,
+ .search-user{
+     border: none;
+
+}
+.content-search{
+    margin-top: 7px;
+    margin-bottom: 7px;
+    margin-left: 290px;
+    width: 60%;
+}
+.content-input {
+    position: sticky;
+    top: 0;
+    width: 77%;
+    height: 48px;
+    border: none;
+    padding: 8px;
+    background-color: #f3f3f3;
+    margin-right: 0;
+    outline: none;
+}
+.content-button{
+    width: 22%;
+    color: white;
+    background-color: #0292FE;
+    position: sticky;
+    top: 0;
+    height: 48px;
+    border: none;
+    margin-left: 0; /* 去除左边距 */
+}
+.container-content .container-content2 .content-box{
+    margin-bottom: 10px;
+    height: 158px;
+    box-shadow: 10px 10px 10px -4px rgb(0,0,0,.1);
+}
+.content-id{
+    display: none;
+}
+td .content-image{
+    display: inline-block;
+    height: 158px;
+    width: 300px;
+    object-fit: cover;
+}
+.content-edit{
+    float: right;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    width: 70px;
+    height: 21px;
+    border: none;
+    background-color: #8bb1c5;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    border-radius: 24px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+tr td h3{
+    margin: 0 0 0 20px;
+    padding: 0;
+
+}
+tr td span{
+    margin-left: 10px;
+}
+tr td .content-view{
+    margin-left: 20px;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+tr td .content-span{
+    display: inline-block;
+    padding: 20px;
+}
+.black{
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    font-size: 20px;
+}
+footer{
+    margin-top: 138px;
+}
+
+</style>
