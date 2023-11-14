@@ -1,5 +1,5 @@
 <template>
-     <div class="contentBox">
+     <div class="contentBox" @click="redirectToShop(shop.id)">
             <table>
               <tr>
                 <!-- src="../../../assets/image/shop/shop.jpg" -->
@@ -21,23 +21,24 @@
 </template>
 <script setup>
 import {useRouter} from "vue-router"
-import {ref} from 'vue';
-const Router=useRouter()
+import { ref, defineProps } from 'vue'
 
+const Router=useRouter()
 defineProps({
     shop:{
         type:Object
-    }
+    },
+    id: String
 })
 
-// const to=(id)=>{
-//     Router.push(`/menu/${id}`);
-// }
+const redirectToShop=(id)=>{
+    Router.push(`/mainPage/shopDetailPage/${id}`);
+}
 </script>
 <style scoped>
 .contentBox{
   cursor: pointer;
-  box-shadow: 0px 0px 5px 0px rgb(0,0,0,.3);
+  box-shadow: 0px 0px 5px 0px rgba(2, 52, 255, 0.3);
   border-radius: 8px;
 }
 .content-image{

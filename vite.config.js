@@ -19,6 +19,8 @@ export default defineConfig({
     }
   },
   server:{
+    host:'0.0.0.0',
+    port:12345,
     '/api':{
       target: 'http://localhost:8080',
       changeOrigin: true,

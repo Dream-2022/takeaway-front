@@ -19,47 +19,10 @@
       <div class="shops-box">
         <div class="shops">
           <span v-for="item in shops" :key="item.id">
-             <ShopBox :shop="item">
+             <ShopBox :shop="item" :id="item.id">
              </ShopBox>
           </span>
-         
-          <!-- <div class="content-box">
-            <table>
-              <tr>
-                <td rowspan="2"><img src="../../assets/image/shop.jpg" class="content-image" alt=""></td>
-                <td>
-                  <h4 class="shop-name">肯德基</h4>     
-                </td>
-              </tr>
-              <tr>
-                <td class="section">
-                  <span class="shop-score">4.9分</span>
-                  <span class="shop-zi-price">月售:</span><span class="shop-price">2000+</span><br>
-                  <span class="shop-type">西餐</span><span class="shop-zi-deliver">起送￥</span><span class="shop-deliver">20</span><br>
-                  <span class="shop-content">好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃</span>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div class="content-box">
-            <table>
-              <tr>
-                <td rowspan="2"><img src="../../assets/image/shop.jpg" class="content-image" alt=""></td>
-                <td>
-                  <h4 class="shop-name">肯德基</h4>     
-                </td>
-              </tr>
-              <tr>
-                <td class="section">
-                  <span class="shop-score">4.9分</span>
-                  <span class="shop-zi-price">月售：</span><span class="shop-price">2000+</span><br>
-                  <span class="shop-type">西餐</span><span class="shop-zi-deliver">起送￥</span><span class="shop-deliver">20</span><br>
-                  <span class="shop-content">好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃好吃</span>
-                </td>
-              </tr>
-            </table>
-          </div> -->
-      </div>
+        </div>
       </div>
       <div class="pagination"></div>
     </div>
@@ -105,22 +68,18 @@
 </template>
 <script setup>
    import {ref,onMounted } from 'vue'
-   import axios from 'axios';
+   import { useRoute, useRouter } from 'vue-router';
    import ShopBox from '@/views/Main/Components/shopBox.vue'
+   import http from '@/utils/http.js'
+   import '../../../node_modules/Semantic-UI-CSS/semantic.min.css'
+   import '../../../node_modules/element-plus/es/locale'
+   const router = useRouter();
    var shops=ref([])
-   let shop =ref({
-    id:'12',
-    picture:'./src/image/404.png',
-    name:'肯德基',
-    sale:100
-   })
    onMounted(() => {
-    const http=axios.create({
-        baseURL:'http://localhost:8080'
-    })
-    http({
-        url:'/api/pre/shop/detailAll',
-        method:'GET'
+
+    const res=http({
+      url:'/api/pre/shop/detailAll',
+      method:'GET'
     }).then((res)=>{
         console.log('成功发送')
         console.log(res.data)
@@ -132,6 +91,24 @@
             ElMessage.error(res.data.message)
         }
     })
+
+    // const http=axios.create({
+    //     baseURL:'http://localhost:8080'
+    // })
+    // http({
+    //     url:'/api/pre/shop/detailAll',
+    //     method:'GET'
+    // }).then((res)=>{
+    //     console.log('成功发送')
+    //     console.log(res.data)
+    //     if(res.data.code==0){
+    //         console.log("获取商家信息成功")
+    //         shops.value=res.data.data
+    //     }
+    //     else{
+    //         ElMessage.error(res.data.message)
+    //     }
+    // })
 	})
    
 </script>

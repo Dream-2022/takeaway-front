@@ -8,7 +8,8 @@
         <div class="person-detail">
             <div class="person-detail-container">
                 <div class="float-container">
-                    <img src="../../assets/image/headSculpture.jpeg" class="detail-image" alt="">
+                    <img ref="imgRef" :src="detailImage" class="detail-image" alt="" @click="avatarImageClick">
+                    <input id="upload" type="file" class="upload" ref="uploadInput" style="display: none" @change="uploadClick">
                 </div>
                 <div class="float-username">{{ nickname }}</div>
             </div>
@@ -79,12 +80,13 @@
                             <span class="birth">{{ formattedDate }}</span>
                             <span class="edit-icon" v-if="isBirth" @click="birthButton"><i class="edit icon"></i>编辑</span>
                         </span>
-                    </span>
-                    <span class="inline" v-if="!isBirthEdit" @blur="birthCancel">
-                        <input type="date" v-model="formattedDate" class="dateInput" v-on:change = "onDateChange()">
-                        <button class="birthConfirm" @click="birthConfirm">确认</button>
+                        <span class="inline" v-else @blur="birthCancel">
+                            <input type="date" v-model="formattedDate" class="dateInput" v-on:change = "onDateChange()">
+                            <button class="birthConfirm" @click="birthConfirm">确认</button>
                         <button class="birthCancel" @click="birthCancel">取消</button>
                     </span>
+                    </span>
+                    
                 </div>
             </div>
         </div>
@@ -92,9 +94,9 @@
 </template>
 
 <script setup>
-import axios from 'axios';
 import {ref} from 'vue'
 import { ElMessage } from 'element-plus';
+import {editNickname,editGender,editProfile,editBirth,uploadImage} from '@/apis/editInformation.js'
 // import func from '../../../vue-temp/vue-editor-bridge';
 
 var isNickname=ref(false)
@@ -156,14 +158,14 @@ let gender=ref("")
 let profile=ref("")
 let selectedGender1=ref(false)
 let selectedGender2=ref(false)
-nickname=localStorage.getItem("nickname")
-gender=localStorage.getItem("gender")
-profile=localStorage.getItem("profile")
-if(gender=="null"){
-    gender="未知"}
+nickname.value=localStorage.getItem("nickname")
+gender.value=localStorage.getItem("gender")
+profile.value=localStorage.getItem("profile")
+if(gender.value=="null"){
+    gender.value="未知"}
 var nicknameInput=ref(nickname)
 //点击确认编辑昵称
-function nicknameConfirm(){
+async function nicknameConfirm(){
     if(nicknameInput.value===""){
         ElMessage.warning("昵称不能为空")
         return ;
@@ -172,33 +174,27 @@ function nicknameConfirm(){
         ElMessage.warning("请修改昵称")
         return
     }
+    let username=localStorage.getItem("username")
+    const apiData={
+        nickname:nicknameInput.value,
+        username
+    }
+    const res=await editNickname(apiData)
     //传到后端
-    const http=axios.create({
-            baseURL:'http://localhost:8080'
-        })
-        http({
-            url:'/api/pre/editInformation/nickname',
-            method:'POST',
-            data:{
-                nickname:nicknameInput.value,
-                oldValue:nickname
-            }
-            
-        }).then((res)=>{
-            console.log('成功发送')
-            console.log(res.data)
-            if(res.data.code==0){
-                ElMessage.success("修改成功")
-                nickname=nicknameInput.value
-                //修改localStock中的值
-                localStorage.setItem("nickname",nickname)
-                //去掉输入框
-                isNicknameEdit=!isNicknameEdit
-            }
-            else{
-                ElMessage.error(res.data.message)
-            }
-        })
+        console.log('成功发送')
+        console.log(res.data)
+        if(res.data.code==0){
+            ElMessage.success("修改成功")
+            console.log(nickname+","+nicknameInput.value)
+            nickname.value=nicknameInput.value
+            //修改localStock中的值
+            localStorage.setItem("nickname",nickname.value)
+            //去掉输入框
+            isNicknameEdit=!isNicknameEdit
+        }
+        else{
+            ElMessage.error(res.data.message)
+        }
 }
 //点击取消编辑昵称,或者失焦的情况
 function nicknameCancel(){
@@ -216,7 +212,7 @@ function SelectedGender2(){
     selectedGender2.value=true
 }
 //点击确认编辑性别按钮
-function genderConfirm(){
+async function genderConfirm(){
     if(selectedGender1.value===false&&selectedGender2.value===false){
       ElMessage.warning("请选择性别")
       return
@@ -229,21 +225,14 @@ function genderConfirm(){
     }
     let username=localStorage.getItem("username")
     //传到后端
-    const http=axios.create({
-            baseURL:'http://localhost:8080'
-        })
-    http({
-        url:'/api/pre/editInformation/gender',
-        method:'POST',
-        data:{
-            gender: Gender,
-            username
-        }
-        
-    }).then((res)=>{
+    const apiData1={
+        gender: Gender,
+        username
+    }
+    const res1=await editGender(apiData1)
         console.log('成功发送')
-        console.log(res.data)
-        if(res.data.code==0){
+        console.log(res1.data)
+        if(res1.data.code==0){
             ElMessage.success("修改成功")
             gender=Gender
             //修改localStock中的值
@@ -252,9 +241,8 @@ function genderConfirm(){
             isGenderEdit=!isGenderEdit
         }
         else{
-            ElMessage.error(res.data.message)
+            ElMessage.error(res1.data.message)
         }
-    })
 }
 //点击取消编辑性别,或者失焦的情况
 function genderCancel(){
@@ -262,28 +250,21 @@ function genderCancel(){
 
 }
 //点击确认编辑个人简介按钮
-
-function profileConfirm(){
+async function profileConfirm(){
     if(profile.value===""){
         console.log("空")
         ElMessage.warning("请输入简介")
         return
     }
     let username=localStorage.getItem("username")
-    const http=axios.create({
-        baseURL:'http://localhost:8080'
-    })
-    http({
-        url:'/api/pre/editInformation/profile',
-        method:'POST',
-        data:{
-            profile,
-            username
-        }
-    }).then((res)=>{
+    const apiData1={
+        profile,
+        username
+    }
+    const res1=await editProfile(apiData1)
         console.log('成功发送')
-        console.log(res.data)
-        if(res.data.code==0){
+        console.log(res1.data)
+        if(res1.data.code==0){
             ElMessage.success("修改成功")
             //修改localStock中的值
             localStorage.setItem("profile",profile)
@@ -291,9 +272,8 @@ function profileConfirm(){
             isProfileEdit=!isProfileEdit
         }
         else{
-            ElMessage.error(res.data.message)
+            ElMessage.error(res1.data.message)
         }
-    })
 }
 //点击取消编辑个人简介，或者失焦的情况
 function profileCancel(){
@@ -308,26 +288,19 @@ function onDateChange() {
     }
 }
 //点击确认编辑生日按钮
-function birthConfirm(){
-    
+async function birthConfirm(){
     console.log("formattedDate"+formattedDate)
     const date=new Date(formattedDate)
     
     let username=localStorage.getItem("username")
-    const http=axios.create({
-        baseURL:'http://localhost:8080'
-    })
-    http({
-        url:'/api/pre/editInformation/birth',
-        method:'POST',
-        data:{
-            birth:date,
-            username
-        }
-    }).then((res)=>{
+    const apiData1={
+        birth:date,
+        username
+    }
+    const res1=await editBirth(apiData1)
         console.log('成功发送')
-        console.log(res.data)
-        if(res.data.code==0){
+        console.log(res1.data)
+        if(res1.data.code==0){
             ElMessage.success("修改成功")
             //修改localStock中的值
             localStorage.setItem("birthday",formattedDate)
@@ -335,14 +308,66 @@ function birthConfirm(){
             isProfileEdit=!isProfileEdit
         }
         else{
-            ElMessage.error(res.data.message)
+            ElMessage.error(res1.data.message)
         }
-    })
 }
 //点击取消编辑生日，或者失焦的情况
 function birthCancel(){
     isBirthEdit=true
 }
+
+//点击个人头像
+var uploadInput = ref(null);
+var imgRef=ref(null)
+console.log(localStorage.getItem("picture"))
+var detailImage=ref(localStorage.getItem("picture"))
+
+function avatarImageClick(){
+    uploadInput.value.click();
+}
+ function uploadClick(){
+    console.log("点击选择框")
+    const file = uploadInput.value.files[0];
+        if (file) {
+            const creator=localStorage.getItem("username")
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend =async function() {
+                console.log(file)
+                imgRef.value.src=file.path
+                console.log(reader.result)
+
+                // 创建一个 FormData 对象
+                let formData = new FormData();
+                formData.append('username', creator);
+                formData.append('avatar', file);
+                console.log(creator)
+                console.log(file)
+
+                console.log(formData)
+                console.log("上传")
+                //上传到数据库
+                const res=await uploadImage(formData)
+            //     axios({
+            //         url:'/Blog/user/ModificationAvatarTest',
+            //         method:'POST',
+            //         data: formData
+            //     }).then(res=> {
+                    console.log(res)
+                    const userObj = res.data.data
+                    console.log(userObj)
+                    localStorage.setItem("picture",userObj.url);
+                    console.log("洒水："+userObj.url)
+                    // document.querySelector('.ui.avatar.image').src="/upload/"+userObj.picture;
+                    // document.querySelector('.ui.medium.circular.image.headSculpture').src="/upload/"+userObj.picture;
+                    localStorage.setItem("picture",userObj.url)
+                    detailImage.value=userObj.url
+                    console.log(detailImage.value)
+                    console.log(detailImage)
+            //     })
+            };
+        }
+    };
 </script>
 
 <style scoped>

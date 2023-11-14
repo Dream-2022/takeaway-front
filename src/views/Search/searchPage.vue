@@ -12,22 +12,36 @@
           <span class="search-label">搜索标签</span>
       </div> -->
       <div class="container-content">
-
-
+        <div class="shops">
+          <span v-for="item in shops" :key="item.id">
+             <ShopBox :shop="item" :id="item.id">
+             </ShopBox>
+          </span>
+        </div>
       </div>
 
 </template>
 
 <script setup>
 import { ref,onMounted } from 'vue';
-let shops=ref([])
+import axios from 'axios';
+import { useRoute, useRouter } from 'vue-router';
+
+
+import ShopBox from '@/views/Main/Components/shopBox.vue'
+const route = useRoute();
+var shops=ref([])
 onMounted(() => {
+    console.log(route.params.shopName)
     const http=axios.create({
         baseURL:'http://localhost:8080'
     })
     http({
         url:'/api/pre/shop/selectShop',
-        method:'GET'
+        method:'POST',
+        data:{
+            name: route.params.shopName
+        }
     }).then((res)=>{
         console.log('成功发送')
         console.log(res.data)
@@ -38,10 +52,18 @@ onMounted(() => {
         else{
             ElMessage.error(res.data.message)
         }
-
-        
     })
-	})
+})
+
+// import {defineComponent} from "vue"
+// defineComponent({
+//   name: "SearchPage",
+//   props: {
+//     isSearchButton: {
+//       type: String
+//     }
+//   }
+// })
 </script>
 
 <style scoped>
@@ -170,9 +192,11 @@ onMounted(() => {
 
 }
 .content-search{
+    margin: 0 auto;
+}
+.content-search{
     margin-top: 7px;
     margin-bottom: 7px;
-    margin-left: 290px;
     width: 60%;
 }
 .content-input {

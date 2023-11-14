@@ -29,7 +29,7 @@
                     <img src="../../assets/image/时间.png" class="pas" alt="">
                 </label>
                 <input type="text" id="password" class="code" placeholder="获取的验证码" v-model="registerData.code">
-                <button type="button" class="obtainCode" @click="obtainCode">{{ ObtainCode }}</button>
+                <button type="button" class="obtainCode" @click="obtainCodeButton">{{ ObtainCode }}</button>
                 </div>
 
                 <div class="box boxPas">
@@ -105,7 +105,7 @@
                         <input type="email" placeholder="请输入邮箱" class="input-email" id="abc" @blur="CheckLoginForgetEmail" v-model="registerData.email"><br>
                         <span>&nbsp;&nbsp;&nbsp;验证码:</span>
                         <input type="text" class="input-code" placeholder="获取的验证码" v-model="registerData.code">
-                        <button class="obtainCode" @click="obtainCode">{{ ObtainCode }}</button><br>
+                        <button class="obtainCode" @click="obtainCodeButton">{{ ObtainCode }}</button><br>
                         <span>重置密码:</span>
                         <input type="password" placeholder="请输入密码" class="input-password" id="bcd" v-model="registerData.password" @blur="CheckPwdLogin2"><br>
                         <span>确认密码:</span>
@@ -130,6 +130,9 @@
     import { ElMessage } from 'element-plus';
     import { useRoute, useRouter } from 'vue-router';
     import 'element-plus/theme-chalk/index.css'
+    import http from "@/utils/http.js"
+    import {changeUserInfo,obtainCodeInfo,modifyPassword,registerUser} from '@/apis/login.js'
+    // D:\javaj\TakeawayPlatform\TakeawayFront\src\utils\http.js
     const router = useRouter();
     let promptLogin=ref(" ")//登录页面的格式提示
     let promptLoginForget=ref(" ")//登录忘记密码页面的格式提示
@@ -298,7 +301,7 @@
         
     }
     //点击登录按钮
-    function loginButton(){
+    async function loginButton(){
         if(promptLogin.value!==" "){
             console.log("'"+promptLogin.value+"'")
             return;
@@ -310,18 +313,21 @@
         }        
         console.log('账号密码符合条件')
         let md5=CryptoJS.MD5(loginData.value.password).toString();
-        const http=axios.create({
-            baseURL:'http://localhost:8080'
-        })
-        http({
-            url:'/api/pre/login',
-            method:'POST',
-            data:{
-                username:loginData.value.username,
-                password:md5
-            }
-            
-        }).then((res)=>{
+
+        const user={
+            username:loginData.value.username,
+            password:md5
+        }
+        const res=await changeUserInfo(user)
+        // const res=await http({
+        //     url:'/api/login',
+        //     method:'POST',
+        //     data:{
+        //         username:loginData.value.username,
+        //         password:md5
+        //     }
+        // })
+            console.log(res)
             console.log('成功发送')
             console.log(res.data)
             if(res.data.code==0){
@@ -351,7 +357,6 @@
             else{
                 ElMessage.error("登录失败")
             }
-        })
     }
 
     //点击忘记密码（在找回密码和登录页面切换）
@@ -365,7 +370,7 @@
     }
 
     //点击获取验证码
-    function obtainCode(){
+    async function obtainCodeButton(){
         if(!emailCode.value.canClick){
             console.log("不能点击")
             return
@@ -387,16 +392,10 @@
                 emailCode.value.canClick=!emailCode.value.canClick
             }
         },1000)
-        const http=axios.create({
-            baseURL:'http://localhost:8080'
-        })
-        http({
-            url:'/api/pre/obtainCode',
-            method:'POST',
-            data:{
-                email:registerData.value.email
-            }
-        }).then((res)=>{
+        const user1={
+            email:registerData.value.email
+        }
+        const res=await obtainCodeInfo(user1)
             console.log('成功发送')
             console.log(res.data)
             if(res.data.code==0){
@@ -405,7 +404,6 @@
             else{
                 ElMessage.error("验证码发送失败")
             }
-        })
         // axios({
         //     url: '/Blog/user/EmailTest',
         //     method: 'post',
@@ -418,26 +416,19 @@
     }
 
     //点击找回密码的确认
-    function forgetSaveButton(){
+    async function forgetSaveButton(){
         if(promptLoginForget.value!=" "&&registerData.value.email!=""&&registerData.value.code!=""&&registerData.value.password!=""){
             ElMessage.error("请填写信息")
             return
         }
         //发送请求修改密码
         let md5=CryptoJS.MD5(registerData.value.password).toString();
-        const http=axios.create({
-            baseURL:'http://localhost:8080'
-        })
-        http({
-            url:'/api/pre/modifyPassword',
-            method:'PUT',//用put
-            data:{
-                email:registerData.value.email,
-                code:registerData.value.code,
-                password:md5
-            }
-            
-        }).then((res)=>{
+        const user1={
+            email:registerData.value.email,
+            code:registerData.value.code,
+            password:md5
+        }
+        const res=await modifyPassword(user1)
             console.log('成功修改')
             console.log(res.data)
             if(res.data.code==0){
@@ -447,11 +438,10 @@
             else{
                 ElMessage.error(res.data.message)
             }
-        })
     }
 
     //点击注册
-    function registerButton(){
+    async function registerButton(){
         if(registerData.value.email===""||registerData.value.code===""||registerData.value.password===""||registerData.value.ensurePwd===""){
             promptRegister.value="请输入数据"
             return
@@ -464,16 +454,13 @@
             baseURL:'http://localhost:8080'
         })
         //发送注册请求
-        http({
-            url:'/api/pre/register',
-            method:'POST',
-            data:{
-                email:registerData.value.email,
-                code:registerData.value.code,
-                password:md5
-            }
-            
-        }).then((res)=>{
+        const user1={
+            email:registerData.value.email,
+            code:registerData.value.code,
+            password:md5
+        }
+        const res=await registerUser(user1)
+        
             console.log('成功修改')
             console.log(res.data)
             if(res.data.code==0){
@@ -488,7 +475,6 @@
             else{
                 ElMessage.error(res.data.message)
             }
-        })
     }
   </script>
   
@@ -672,6 +658,9 @@ input{
     /*鼠标显示小手*/
     cursor:pointer;
     box-shadow: 10px 10px 10px -4px rgb(0,0,0,.3);
+}
+.modal-footer button{
+    margin-right: 42px;
 }
 .forgetSaveButton{
     margin-top:0px;
