@@ -3,17 +3,17 @@
             <table>
               <tr>
                 <!-- src="../../../assets/image/shop/shop.jpg" -->
-                <td rowspan="2"><img :src="shop.picture" class="content-image" alt=""></td>
+                <td rowspan="2"><img :src="shop.logoPhoto" class="content-image" alt=""></td>
                 <td>
                   <h4 class="shop-name">{{ shop.name }}</h4>     
                 </td>
               </tr>
               <tr>
                 <td class="section">
-                  <span class="shop-score">{{ shop.score }}分</span>
-                  <span class="shop-zi-price">月售:</span><span class="shop-price">{{ shop.saleStr }}</span><br>
+                  <span class="shop-score">4.9分</span>
+                  <span class="shop-zi-price">月售:</span><span class="shop-price">100</span><br>
                   <span class="shop-type">{{ shop.type }}</span><span class="shop-zi-deliver">起送￥</span><span class="shop-deliver">{{ shop.begin }}</span><br>
-                  <span class="shop-content">{{ shop.detail }}</span>
+                  <span class="shop-content">{{ shop.profile }}</span>
                 </td>
               </tr>
             </table>
@@ -32,7 +32,7 @@ defineProps({
 })
 
 const redirectToShop=(id)=>{
-    Router.push(`/mainPage/shopDetailPage/${id}`);
+    Router.push(`/shopDetailPage/${id}/shopDishPage`);
 }
 </script>
 <style scoped>
@@ -44,6 +44,8 @@ const redirectToShop=(id)=>{
 .content-image{
   width:200px;
   height:150px;
+  margin-right: 20px;
+  border-radius: 10px;
 }
 .shop-name{
   margin-top:12px;

@@ -1,0 +1,8 @@
+
+.messagePageBox,
+.orderPageBox{
+    display: none !important;
+}
+.searchNavigation{
+    margin-left: 140px;
+}

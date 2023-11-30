@@ -20,16 +20,25 @@
                 </div>
                 <div class="businessBox-right">
                     <div>
-                        <input placeholder="请输入店铺名称" class="businessInput">
+                        <input placeholder="请输入店铺名称" class="businessInput" ref="myName">
                     </div>
-                    <div class="dropdown">
-                        <button>选择分类</button>
-                        <div class="dropdown-content dropdown-column" onclick="addContentColumnDropdown()">
-                            <!-- 这里可以根据需要添加更多的分类选项 -->
-                        </div>
+                    <div class="selectBox">
+                        <select class="addressProvince" name="省" @change="handleProvinceChange" ref="myProvinceSelect">
+                        <option v-for="item in reDistrictProvinceList" :key="item" :value="item.districtId">{{item.district}}</option>
+                        </select>
+                    </div>
+                    <div class="selectBox">
+                        <select class="addressCity" name="市" @change="handleCityChange" ref="myCitySelect">
+                            <option v-for="item in reDistrictCityList" :key="item" :value="item.districtId">{{item.district}}</option>
+                        </select>
+                    </div>
+                    <div class="selectBox">
+                        <select class="addressCounty" name="县" @change="handleCountyChange" ref="myCountySelect">
+                            <option v-for="item in reDistrictCountyList" :key="item" :value="item.districtId">{{item.district}}</option>
+                        </select>
                     </div>
                     <div>
-                        <input placeholder="请输入门店地址" class="businessInput">
+                        <input placeholder="请输入门店地址" class="businessInput" ref="myAddressDetail">
                     </div>
                     
                 </div>
@@ -38,71 +47,442 @@
                 <div class="businessBox-left">经营信息</div>
                 <div class="businessBox-might">
                     <div>营业类目</div>
-                    <div>门店照</div>
+                    <div class="mightZi3">门店照</div>
                     <div class="mightZi1">店内照</div>
                     <div class="mightZi1">门店logo</div>
                     <div class="mightZi1">门店背景</div>
-                    <div class="mightZi1">外卖电话</div>
-                    <div class="mightZi2">联系姓名</div>
-                    <div class="mightZi2">联系电话</div>
+                    <div class="mightZi1">商家简介</div>
+                    <div class="mightZi4">外卖电话</div>
+                    <div class="mightZi4">联系姓名</div>
+                    <div class="mightZi5">联系电话</div>
+                    <div class="mightZi5">起送价</div>
+                    <div class="mightZi5">包装费</div>
+                    <div class="mightZi5">配送费</div>
                 </div>
                 <div class="businessBox-right">
-                    <div class="dropdown">
-                        <select name="" id="">
-                            <option v-for="item in 4" :key="item" value="0">123</option>
+                    <div class="selectBox">
+                        <select class="businessCategory" name="营业类目" @change="handleCategoryChange" ref="myBusinessCategorySelect">
+                        <option v-for="item in businessCategoryList" :key="item" :value="item.id">{{item.descriptionName}}</option>
                         </select>
-                        <div  v-if="isDropdownOpen" class="dropdown-content dropdown-column" onclick="addContentColumnDropdown()">
-                            <!-- 这里可以根据需要添加更多的分类选项 -->
-                            <div v-for="option in options" :key="option" @click="selectOption(option)">  
-                                {{ option }}  
-                            </div>  
-                        </div>
                     </div>
                     <div>
                         <div class="rightZi">需拍全，包含完整的牌匾，门框(建议正对门店2米处拍摄)</div>
-                        <img src="../../assets/image/upload.png" class="storeImage">
+                        <img ref="imgStoreImageRef" :src="myStorePhoto" class="storeImage" @click="storeImageClick">
+                        <input id="uploadStoreImage" type="file" class="upload" ref="uploadStoreImageInput" style="display: none" @change="uploadStoreImageClick">
                     </div>
                     <div>
                         <div class="rightZi">需真实反映堂食区域</div>
-                        <img src="../../assets/image/upload.png" class="storeImage">
+                        <img  ref="imgInStoreImageRef" :src="myInPhoto" class="storeImage"  @click="InStoreImageClick">
+                        <input id="uploadInStoreImage" type="file" class="upload" ref="uploadInStoreImageInput" style="display: none" @change="uploadInStoreImageClick">
                     </div>
                     <div>
                         <div class="rightZi">自行上传，可随时更改</div>
-                        <img src="../../assets/image/upload.png" class="storeImage">
+                        <img ref="imgLogoStoreImageRef" :src="myLogoPhoto" class="storeImage"  @click="logoStoreImageClick">
+                        <input id="uploadLogoStoreImage" type="file" class="upload" ref="uploadLogoStoreImageInput" style="display: none" @change="uploadLogoStoreImageClick">
                     </div>
                     <div>
                         <div class="rightZi">自行上传，可随时更改</div>
-                        <img src="../../assets/image/upload.png" class="storeImage2">
+                        <img ref="imgBackgroundRef" :src="myBackground" class="storeImage2"  @click="BackgroundClick">
+                        <input id="uploadBackgroundImage" type="file" class="upload" ref="uploadBackgroundInput" style="display: none" @change="uploadBackgroundClick">
                     </div>
                     <div>
-                        <input placeholder="请输入外卖电话" class="businessInput">
+                        <input placeholder="请输入商家简介" class="businessInput" ref="myProfile">
                     </div>
                     <div>
-                        <input placeholder="请输入联系人姓名" class="businessInput">
+                        <input placeholder="请输入外卖电话" class="businessInput" ref="myTakeawayCall">
                     </div>
                     <div>
-                        <input placeholder="请输入联系电话" class="businessInput">
+                        <input placeholder="请输入联系人姓名" class="businessInput" ref="myRealName">
+                    </div>
+                    <div>
+                        <input placeholder="请输入联系电话" class="businessInput" ref="myContactCall">
+                    </div>
+                    <div>
+                        <input type="number" min="0" placeholder="起送价" class="businessInput" ref="myBegin">
+                    </div>
+                    <div>
+                        <input type="number" min="0" placeholder="包装费" class="businessInput" ref="myPacking">
+                    </div>
+                    <div>
+                        <input type="number" min="0" placeholder="配送费" class="businessInput" ref="myDelivery">
                     </div>
                 </div>
             </div>
-
             
         </div>
         <div class="footer">
             
-            <span class="businessConfirm">确认</span>
-            <span class="businessSave">保存</span>
+            <span class="businessConfirm" @click="businessConfirmClick">确认</span>
+            <span class="businessSave" @click="businessSaveClick">保存</span>
         </div>
     </div>
 </template>
 <script setup>
+    import {onMounted, ref} from 'vue' 
+    import { ElMessage } from 'element-plus';
     import { useRoute, useRouter } from 'vue-router';
+    import {reDistrictProvinceAll,reDistrictCity} from '@/apis/address.js'
+    import {descriptionDetailAll} from '@/apis/dish.js'
+    import {insertShop, uploadShopImage} from '@/apis/shop.js'
     const router = useRouter();
     //返回主页
     function returnMain(){
         console.log("点击")
         router.push('/MainPage') 
     }
+    
+    
+    let reDistrictProvinceList=ref([])
+    let reDistrictCityList=ref([])
+    let reDistrictCountyList=ref([])
+    //营业类目
+    let businessCategoryList=ref([])
+    onMounted(async()=>{
+        //初始化省市县下拉框
+        dropdownChu()
+        //初始化营业类目下拉框
+        const res=await descriptionDetailAll()
+            console.log(res.data.data)
+            if(res.data.code==0){
+                businessCategoryList.value=res.data.data
+            }
+    })
+
+
+    //点击保存注册商家信息
+    let myName=ref()
+    let myProvinceSelect=ref()
+    let myCitySelect=ref()
+    let myCountySelect=ref()
+    let myAddressDetail=ref()
+    let myBusinessCategorySelect=ref()
+    let myStorePhoto=ref("http://localhost:8080/upload/upload.png")
+    let myInPhoto=ref("http://localhost:8080/upload/upload.png")
+    let myLogoPhoto=ref("http://localhost:8080/upload/upload.png")
+    let myBackground=ref("http://localhost:8080/upload/upload.png")
+    let myProfile=ref()
+    let myTakeawayCall=ref()
+    let myRealName=ref()
+    let myContactCall=ref()
+    let myBegin=ref()
+    let myPacking=ref()
+    let myDelivery=ref()
+    //点击确认按钮
+    async function businessConfirmClick(){
+        if(myName.value.value==""||myAddressDetail.value.value==""||myProfile.value.value==""||myBegin.value.value==""||myTakeawayCall.value.value==""||myContactCall.value.value==""||myRealName.value.value==""||myPacking.value.value==""||myDelivery.value.value==""){
+            ElMessage.warning("输入的信息不能为空")
+            return
+        }
+        const apiData={
+            userId:localStorage.getItem("id"),
+            name:myName.value.value,
+            addressProvince:myProvinceSelect.value.value,
+            addressCity:myCitySelect.value.value,
+            addressCounty:myCountySelect.value.value,
+            addressDetail:myAddressDetail.value.value,
+            profile:myProfile.value.value,
+            logoPhoto:myLogoPhoto.value,
+            storePhoto:myStorePhoto.value,
+            inPhoto:myInPhoto.value,
+            background:myBackground.value,
+            begin:myBegin.value.value,
+            takeawayCall:myTakeawayCall.value.value,
+            contactCall:myContactCall.value.value,
+            realName:myRealName.value.value,
+            type:myBusinessCategorySelect.value.value,
+            packing:myPacking.value.value,
+            delivery:myDelivery.value.value,
+            state:"0"
+        }
+        const res=await insertShop(apiData)
+        console.log(res.data)
+        console.log(res.data.data)
+        if(res.data.code==0){
+            ElMessage.success("确认成功")
+        }
+    }
+    async function businessSaveClick(){
+        console.log(myName.value.value+','+myProvinceSelect.value.value+','+myLogoPhoto.value+',')
+        const apiData={
+            userId:localStorage.getItem("id"),
+            name:myName.value.value,
+            addressProvince:myProvinceSelect.value.value,
+            addressCity:myCitySelect.value.value,
+            addressCounty:myCountySelect.value.value,
+            addressDetail:myAddressDetail.value.value,
+            profile:myProfile.value.value,
+            logoPhoto:myLogoPhoto.value,
+            storePhoto:myStorePhoto.value,
+            inPhoto:myInPhoto.value,
+            background:myBackground.value,
+            begin:myBegin.value.value,
+            takeawayCall:myTakeawayCall.value.value,
+            contactCall:myContactCall.value.value,
+            realName:myRealName.value.value,
+            type:myBusinessCategorySelect.value.value,
+            packing:myPacking.value.value,
+            delivery:myDelivery.value.value,
+            state:"2"
+        }
+    const res=await insertShop(apiData)
+        console.log(res.data)
+        console.log(res.data.data)
+        if(res.data.code==0){
+            ElMessage.success("保存成功")
+        }
+    }
+
+    //省下拉框的内容改变
+    async function handleProvinceChange(event){
+    const newProvince = event.target.value;
+    myProvinceSelect.value.value = newProvince;
+    //新的省
+    console.log("新的省"+newProvince)
+    dropdownChange(newProvince,"","")
+    }
+    //处理市下拉框的内容改变
+    async function handleCityChange(event){
+    const newCity = event.target.value;
+    //新的市
+    console.log("新的市"+newCity)
+    const apiData={
+        pid: newCity
+    }
+    const res=await reDistrictCity(apiData)
+        console.log(res.data.data)
+        if(res.data.code==0){
+            reDistrictCountyList.value=res.data.data
+        }
+    }
+    //处理县下拉框的改变
+    function handleCountyChange(event){
+    const newCounty = event.target.value;
+    //新的市
+    console.log("新的县"+newCounty)
+    }
+
+    //初始化市县下拉框为北京
+    async function dropdownChu(){
+        //获取省市县下拉框
+        const apiData1={
+            id:localStorage.getItem("id")
+        }
+        const res2=await reDistrictProvinceAll(apiData1)
+            console.log('成功发送')
+            console.log(res2.data)
+            console.log(res2.data.data)
+            if(res2.data.code==0){
+                reDistrictProvinceList.value=res2.data.data
+            }
+        const apiData3={
+            pid: 2
+        }
+        const res3=await reDistrictCity(apiData3)
+            console.log(res3.data.data)
+            if(res3.data.code==0){
+                reDistrictCityList.value=res3.data.data
+            }
+        const apiData4={
+            pid: 52
+        }
+        const res4=await reDistrictCity(apiData4)
+            console.log(res4.data.data)
+            if(res4.data.code==0){
+                reDistrictCountyList.value=res4.data.data
+            }
+    }
+    //省，市下拉框的改变
+    async function dropdownChange(newProvince,City,County){
+        const apiData={
+            pid: newProvince
+        }
+        const res=await reDistrictCity(apiData)
+            console.log(res.data.data)
+            if(res.data.code==0){
+                reDistrictCityList.value=res.data.data
+            }
+        if(City!=""||County!=""){
+            console.log("执行了市"+myCitySelect.value.value)
+            myCitySelect.value.value=toRaw(City)
+            console.log(myCitySelect.value.value+','+City)
+        }
+        const apiData1={
+            pid: myProvinceSelect.value.value
+        }
+        const res1=await reDistrictCity(apiData1)
+            console.log(res1.data.data)
+            if(res1.data.code==0){
+                reDistrictCountyList.value=res1.data.data
+            }
+        if(City!=""||County!=""){
+            console.log("执行了县"+myCountySelect.value.value)
+            myCountySelect.value.value=toRaw(County)
+            console.log(myCountySelect.value.value+','+County)
+        }
+    }
+
+    //点击上传门店照
+    var imgStoreImageRef=ref(null) 
+    var uploadStoreImageInput=ref(null)
+    var imgInStoreImageRef=ref(null) 
+    var uploadInStoreImageInput=ref(null)
+    var imgLogoStoreImageRef=ref(null) 
+    var uploadLogoStoreImageInput=ref(null)
+    var imgBackgroundRef=ref(null) 
+    var uploadBackgroundInput=ref(null)
+    function storeImageClick(){
+        uploadStoreImageInput.value.click();
+    }
+    function InStoreImageClick(){
+        uploadInStoreImageInput.value.click();
+    }
+    function logoStoreImageClick(){
+        uploadLogoStoreImageInput.value.click();
+    }
+    function BackgroundClick(){
+        uploadBackgroundInput.value.click();
+    }
+    function uploadStoreImageClick(){
+        console.log("点击选择框")
+        const file = uploadStoreImageInput.value.files[0];
+        if (file) {
+            const creator=localStorage.getItem("username")
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend =async function() {
+                console.log(file)
+                imgStoreImageRef.value.src=file.path
+                console.log(reader.result)
+
+                // 创建一个 FormData 对象
+                let formData = new FormData();
+                formData.append('username', creator);
+                formData.append('avatar', file);
+                console.log(creator)
+                console.log(file)
+
+                console.log(formData)
+                console.log("上传")
+                //保存本地
+                const res=await uploadShopImage(formData)
+                    console.log(res)
+                    const userObj = res.data.data
+                    console.log(userObj)
+                    localStorage.setItem("picture",userObj.url);
+                    console.log("洒水："+userObj.url)
+                    localStorage.setItem("picture",userObj.url)
+                    myStorePhoto.value=userObj.url
+                    console.log(myStorePhoto.value)
+                    console.log(myStorePhoto)
+            };
+        }
+    };
+    function uploadInStoreImageClick(){
+        console.log("点击选择框")
+        const file = uploadInStoreImageInput.value.files[0];
+        if (file) {
+            const creator=localStorage.getItem("username")
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend =async function() {
+                console.log(file)
+                imgInStoreImageRef.value.src=file.path
+                console.log(reader.result)
+
+                // 创建一个 FormData 对象
+                let formData = new FormData();
+                formData.append('username', creator);
+                formData.append('avatar', file);
+                console.log(creator)
+                console.log(file)
+
+                console.log(formData)
+                console.log("上传")
+                //保存本地
+                const res=await uploadShopImage(formData)
+                    console.log(res)
+                    const userObj = res.data.data
+                    console.log(userObj)
+                    localStorage.setItem("picture",userObj.url);
+                    console.log("洒水："+userObj.url)
+                    localStorage.setItem("picture",userObj.url)
+                    myInPhoto.value=userObj.url
+                    console.log(myInPhoto.value)
+                    console.log(myInPhoto)
+            };
+        }
+    };
+
+    function uploadLogoStoreImageClick(){
+        console.log("点击选择框")
+        const file = uploadLogoStoreImageInput.value.files[0];
+        if (file) {
+            const creator=localStorage.getItem("username")
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend =async function() {
+                console.log(file)
+                imgLogoStoreImageRef.value.src=file.path
+                console.log(reader.result)
+
+                // 创建一个 FormData 对象
+                let formData = new FormData();
+                formData.append('username', creator);
+                formData.append('avatar', file);
+                console.log(creator)
+                console.log(file)
+
+                console.log(formData)
+                console.log("上传")
+                //保存本地
+                const res=await uploadShopImage(formData)
+                    console.log(res)
+                    const userObj = res.data.data
+                    console.log(userObj)
+                    localStorage.setItem("picture",userObj.url);
+                    console.log("洒水："+userObj.url)
+                    localStorage.setItem("picture",userObj.url)
+                    myLogoPhoto.value=userObj.url
+                    console.log(myLogoPhoto.value)
+                    console.log(myLogoPhoto)
+            };
+        }
+    };
+    function uploadBackgroundClick(){
+        console.log("点击选择框")
+        const file = uploadBackgroundInput.value.files[0];
+        if (file) {
+            const creator=localStorage.getItem("username")
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend =async function() {
+                console.log(file)
+                imgBackgroundRef.value.src=file.path
+                console.log(reader.result)
+
+                // 创建一个 FormData 对象
+                let formData = new FormData();
+                formData.append('username', creator);
+                formData.append('avatar', file);
+                console.log(creator)
+                console.log(file)
+
+                console.log(formData)
+                console.log("上传")
+                //保存本地
+                const res=await uploadShopImage(formData)
+                    console.log(res)
+                    const userObj = res.data.data
+                    console.log(userObj)
+                    localStorage.setItem("picture",userObj.url);
+                    console.log("洒水："+userObj.url)
+                    localStorage.setItem("picture",userObj.url)
+                    myBackground.value=userObj.url
+                    console.log(myBackground.value)
+                    console.log(myBackground)
+            };
+        }
+    };
 </script>
 <style scoped>
     .navigation{
@@ -168,10 +548,19 @@
         margin: 20px;
     }
     .mightZi1{
-        padding-top: 101px;
+        padding-top: 100px;
     }
     .mightZi2{
-        padding-top: 8px;
+        padding-top: 28px;
+    }
+    .mightZi3{
+        padding-top:24px;
+    }
+    .mightZi4{
+        padding-top:12px;
+    }
+    .mightZi5{
+        padding-top:9px;
     }
     .businessBox-bottom{
         display: flex;
@@ -246,5 +635,20 @@
     }
     .businessConfirm{
         margin-right: 350px;
+    }
+    /* 下拉框 */
+    .businessBox-right .selectBox{
+        display: inline-block;
+        margin-top: 15px;
+    }
+    .addressProvince,
+    .addressCity,
+    .addressCounty{
+        width: 165px;
+        height: 30px;
+    }
+    .businessCategory{
+        width: 350px;
+        height: 30px;
     }
 </style>

@@ -1,0 +1,79 @@
+.minScreen{
+    display: none;
+}
+
+.header-box{
+    position: relative;
+}
+.content-container{
+    position: absolute;
+    right: 80px;
+    top: 11px;
+}
+.header-box .personPage{
+    position: absolute;
+    right: 214px;
+    top: 17px;
+}
+.searchNavigation{
+    margin-top: 3px;
+    margin-left: 100px;
+    width: 320px;
+}
+.search{
+    width: 100%;
+}
+.header-box nav .messagePage,
+.header-box nav .orderPage{
+
+    margin-left: 0;
+    color: #0292FE;
+}
+.header-box nav .messagePage:hover,
+.header-box nav .orderPage:hover{
+    color: #0060aa;
+}
+.content-dropdown{
+    height: 313px;
+}
+  /* 导航栏 */
+  /*导航栏样式*/
+  .header-box {
+    color: #fff;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+}
+/*新增的导航栏样式*/
+.content-view,
+.content-like{
+    margin-left: 10px;
+}
+i.icon{
+    margin: 0 0.25rem 0 18px;
+}
+.content-box{
+    margin-bottom: 10px;
+    height: 170px;
+    box-shadow: 10px 10px 10px -4px rgb(0,0,0,.1);
+}
+.content-image{
+    display: inline-block;
+    height: 167px;
+    width: 250px;
+    object-fit: cover;
+}
+tr .section span{
+    margin-left: 10px;
+}
+tr td h4{
+    margin: 0 0 0 20px;
+    padding: 0;
+}
+tr td .content-span{
+    display: inline-block;
+    padding: 20px;
+}

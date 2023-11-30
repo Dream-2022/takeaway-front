@@ -1,6 +1,6 @@
 <template>
     <div class="shopBackground">
-        <div>
+        <!-- <div>
             <div class="shopImageDetail">
                 <div class="shopNavigation">
                     <span class="searchInputBox">
@@ -9,7 +9,8 @@
                     <span @click="isClickSearchClick"><i class="search icon"></i></span>
 
                     <span>聊天</span>
-                    <span>收藏店铺</span>
+                    <span v-show="!isCollect" @click="collectClick">收藏店铺&nbsp;<i class="star outline icon"></i></span>
+                    <span v-show="isCollect" @click="collectClick">取消收藏&nbsp;<i class="star icon"></i></span>
                     <span>反馈举报</span>
                 </div>
                 <img :src="shopDetail.background" class="picture">
@@ -21,12 +22,12 @@
                     
                     <div class="flexBox1">   
                         <h2 class="shopName">{{ shopDetail.name }}</h2>
-                        <span class="shopScore">{{ shopDetail.score }}分</span>
-                        <span class="shopZi">月售：</span><span class="shopSaleNum">{{ shopDetail.saleNum }}</span>
-                        <div class="shopDetail">{{ shopDetail.detail }}</div>
+                        <span class="shopScore">4.9分</span>
+                        <span class="shopZi">月售：</span><span class="shopSaleNum">96</span>
+                        <div class="shopDetail">{{ shopDetail.profile }}</div>
                     </div>         
                     <div class="flexBox2">
-                        <img :src="shopDetail.picture" class="shopDetailImg">
+                        <img :src="shopDetail.logoPhoto" class="shopDetailImg">
                     </div>        
                     
                     
@@ -59,8 +60,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- <div class="tall"></div> -->
+        <!-- <ProductDetailPage></ProductDetailPage> -->
+        <router-view></router-view>
+        <!-- <ShopDishPage></ShopDishPage> -->
         <div class="footerBox">
             <span><i class="shopping cart icon"></i></span>
             <span class="shoppingNumber">1</span>
@@ -72,102 +76,107 @@
         <div class="nullBox"></div>
 
     </div>
+    
+<div class="zhezhao1" id='zhezhao1'></div>
+<div class="tankuang1" style="display:none;">
+    <div id="header">
+        <div class="headTitle">地址管理</div>
+        <div id="header-right" @click="hidder1">x</div>
+
+        <div class="modalContent">
+          <div class="inputAddressBox">
+              <div class="selectBox">
+                <select class="addressProvince" name="省" @change="handleProvinceChange" ref="myProvinceSelect">
+                  <option v-for="item in reDistrictProvinceList" :key="item" :value="item.districtId">{{item.district}}</option>
+                </select>
+              </div>
+              <div class="selectBox">
+               <select class="addressCity" name="市" @change="handleCityChange" ref="myCitySelect">
+                 <option v-for="item in reDistrictCityList" :key="item" :value="item.districtId">{{item.district}}</option>
+               </select>
+              </div>
+              <div class="selectBox">
+               <select class="addressCounty" name="县" @change="handleCountyChange" ref="myCountySelect">
+                 <option v-for="item in reDistrictCountyList" :key="item" :value="item.districtId">{{item.district}}</option>
+               </select>
+              </div>
+            
+              <div class="modalZi">详细地址</div>
+              <input class="detailedAddress" placeholder="请输入详细地址" ref="myAddressDetail">
+              <div class="modalZi">联系人</div>
+              <input class="detailedAddress" placeholder="请输入姓名" ref="myName">
+              <div class="modalZi">联系电话</div>
+              <input class="detailedAddress detailedAddressPhone" placeholder="请输入电话" ref="myPhone">
+              <!-- <button class="confirmAdd">添加</button>
+              <button class="cancelAdd">取消</button> -->
+            </div>
+        </div>
+        
+        <div class="buttonBox">
+          <button class="TanConfirmButton" @click="addAddressButton">{{ dianWoButtonZi }}</button>
+          <button class="TanCancelButton" @click="hidder1">取消</button>
+        </div>
+    </div>
+</div>
 </template>
 <script setup>
     import {ref,onMounted} from 'vue'
+    import { ElMessage } from 'element-plus';
     import { useRoute, useRouter } from 'vue-router';
-    import axios from 'axios';
-    import DishBox from '@/views/Shop/Components/dishBox.vue'
+    import {selectById} from '@/apis/shop.js'
+    import {selectCollectByUserIdShopId, insertCollect, deleteCollect} from '@/apis/collect.js'
+    import {useDishStore} from'@/stores/dish.js'
+    const dishStore=useDishStore()
+
     let dishes=ref([])
     let shopDetail=ref([])
     const route = useRoute();
-    onMounted(() => {
+    onMounted(async() => {
         console.log(route.params.id)
-        const http=axios.create({
-            baseURL:'http://localhost:8080'
-        })
-        http({
-            url:'/api/pre/dish/dishDetailAll',
-            method:'POST',
-            data:{
-                shopId: route.params.id
-            }
-        }).then((res)=>{
-            console.log('成功发送')
-            console.log(res.data)
-            if(res.data.code==0){
-                console.log("获取商品信息成功")
-                dishes.value=res.data.data
-            }
-            else{
-                ElMessage.error(res.data.message)
-            }
-        })
+        //获取dish列表
+        dishStore.obtainDishList(route.params.id)
+        dishes.value=dishStore.getDishList()
 
-        http({
-            url:'/api/pre/shop/selectById',
-            method:'POST',
-            data:{
-                shopId: route.params.id
-            }
-        }).then((res)=>{
+        const apiData={
+            shopId: route.params.id
+        }
+        const res1=await selectById(apiData)
+        console.log(res1.data.data)
+        if(res1.data.code==0){
             console.log('成功发送')
-            console.log(res.data)
-            if(res.data.code==0){
+            console.log(res1.data)
+            if(res1.data.code==0){
                 console.log("获取商家信息成功")
-                shopDetail.value=res.data.data
+                shopDetail.value=res1.data.data
             }
             else{
-                ElMessage.error(res.data.message)
+                ElMessage.error(res1.data.message)
             }
-        })
+        }
+
+        //获取是否收藏该店铺了
+        const apiData2={
+            shopId:shopDetail.value.id,
+            userId:localStorage.getItem("id")
+        }
+        let isCollect=ref()
+        const res2=await selectCollectByUserIdShopId(apiData2)
+            console.log(res2.data)
+            if(res2.data.code==0){
+                console.log("获取成功："+selectCollectByUserIdShopId)
+                if(res2.data.data=="未收藏"){
+                    isCollect.value=false
+                }else if(res2.data.data=="收藏"){
+                    isCollect.value=true
+                }
+            }
+            else{
+                ElMessage.error(res2.data.message)
+            }
 	})
+    
 </script>
 <style scoped>
-    .tall{
-        background-color: #e9a3a3;
-        height: 100px;
-    }
-    .dishContentBox{
-        display: flex;
-        height: 120px;
-        box-shadow: 0px 0px 3px #8cb5db ;
-        border-radius: 10px;
-        padding-top: 9px;
-        padding-left: 10px;
-    }
-    .dishImg{
-        width: 100px;
-        height: 100px;
-        border-radius: 20px;
-    }
-    .dishContentBoxLeft{
-        flex: 1;
-    }
-    .dishContentBoxRight{
-        position: relative;
-        flex: 5;
-    }
-    .dishContentBoxBottom{
-        display: float;
-        float: right;
-        right: 10px;
-        position: absolute;
-        right: 10px;
-        bottom: 10px;
-        cursor: pointer;
-        background-color: #0084ff;
-        padding: 3px 8px 3px 8px;
-        border-radius: 10px;
-        color: white;
-    }
-    .dishName,
-    .dishDetail,
-    .dishZi,
-    .dishPrice{
-        display: inline-block;
-        margin-top: 3px;
-    }
     .shopBackground{
         background-color: #efefef;
     }

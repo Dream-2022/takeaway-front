@@ -1,0 +1,259 @@
+a{
+    text-decoration: none;
+    color: white;
+}
+.Manage{
+    background-color: #f1f1f1;
+    height: 100%;
+}
+.manageTitleBox{
+    width: 100%;
+    height: 100px;
+    background-color: #01B6FD;
+}
+.manageTitle{
+    font-size: 30px;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: white;
+    display: inline-block;
+    padding-top: 27px;
+    padding-left: 30px;
+}
+.tradeTitle{
+    color: #009cd9;
+    background-color: #fff;
+    display: inline-block;
+    padding:3px 10px 3px 10px;
+    border-radius: 10px;
+    margin-left: 20px;
+}
+.manageShopImgBox{
+    float: right;
+    margin-top: 13px;
+}
+.manageShopImg{
+    width: 70px;
+    height: 70px;
+    vertical-align: middle;
+    border-radius: 100px;
+}
+.manageShopName{
+    margin: 0 100px 0 20px;
+    color: white;
+    font-size: 16px
+}
+.manageBottom{
+    display: flex;
+    min-height: calc(87vh);
+}
+.manageLeft{
+    flex: 1;
+    background-color:#01B6FD;
+    color: white;
+    margin:10px;
+    min-height: calc(87vh);
+}
+.zIndex{
+    display: block;
+    left: 0;
+    position: sticky;
+    z-index: 0; 
+    top: 0;
+}
+.manageLeftActive{
+    background-color: #24a4d2bd;
+}
+.manageLeft div{
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 17px;
+    cursor: pointer;
+    text-align: center;
+}
+.manageLeft .manageButton:hover{
+    background-color: #48c8fb94;
+}
+.manageRight{
+    flex:8;
+    background-color: white;
+    margin:10px 10px 10px 0;
+    padding-bottom: 15px;
+    box-shadow: 0px 0px 5px 0px rgb(0,0,0,.3);
+}
+/* 弹窗 */
+.zhezhao,
+.zhezhao1{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    background: #000;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+}
+.tankuang,
+.tankuang1{
+    position: fixed;
+    top:40px;
+    left:50%;
+    transform:translateX(-50%);
+    background: #fff;
+    border-radius: 5px;
+    color: black;
+}
+.tankuang{
+    width: 550px;
+}
+#header{
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+}
+.headTitle{
+    padding: 20px;
+    font-size: 17px;
+    border-bottom: 1px solid #ccc;
+}
+#header span{
+    line-height:40px;
+    margin-left:30px;
+    font-size:16px;
+    color:#000;
+}
+#header-right{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border-radius: 5px;
+    background: rgb(167, 166, 166);
+    color: #fff;
+    right: 23px;
+    top: 16px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 17px;
+}
+.modalContent{
+    background-color: #fff;
+    margin-top: 40px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-right: 10px;
+    margin-left: 10px;
+    overflow-y:scroll;
+    height: 520px;
+}
+.addDishName,
+.addDishPrice,
+.addDishNumber,
+.addDishPacking,
+.addDishWeight,
+.addDishMaterial,
+.selectCategory{
+    width: 290px;
+    height: 26px;
+    padding-left: 3px;
+}
+.addDishDetail{
+    width: 290px;
+    padding: 3px;
+}
+.addDishImgZi{
+    vertical-align: top; 
+}
+.addDishFlavorBigBox{
+    display: flex;
+    text-align: center;
+}
+.addDishFlavorBox{
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 400px;
+}
+.addDishFlavorButton{
+    background-color: #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.addDishFlavorInputBox{
+    background-color: #ccc;
+    border-radius: 20px;
+    padding-bottom: 8px;
+}
+.addDishFlavorInputZi{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 15px;
+}
+.addDishFlavorInput{
+    width: 200px;
+    outline: none;
+    border-radius: 5px;
+    padding: 2px;
+    border: none;
+}
+#addDishFlavorCheckbox0{
+    margin-left: 8px;
+}
+.addDishFlavorInputAddButton,
+.addDishFlavorInputCancelButton{
+    width: 72px;
+    border: none;
+    background-color: rgb(131, 179, 206);
+    color: white;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-top: 10px;
+    border-radius: 15px;
+}
+.addDishFlavorInputCancelButton{
+    background-color: white;
+    color:  rgb(131, 179, 206);
+    margin-left: 20px;
+}
+.FlavorBoxes{
+    background-color: rgb(240, 246, 250);
+    border-radius: 10px;
+    padding-left: 2%;
+    padding-bottom: 10px;
+}
+.addDishPackingZi{
+    margin-right: 15px;
+}
+.addDishImgBox,
+.addDishDetailBox {
+    display: flex;  
+    text-align: center;  
+}
+.addDishImg{
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+}
+
+.buttonBox{
+    float: right;
+    margin-right: 50px;
+    margin-bottom: 18px;
+}
+.TanConfirmButton{
+    width:80px;
+    height:35px;
+    margin-top:15px;
+    outline:none;
+    border:0px;
+    border-radius:10px;
+    background:rgb(0, 148, 254);
+    color:#fff;
+    margin-left:30px;
+}
+.TanCancelButton{
+    width:80px;
+    height:35px;
+    background:#dedede;
+    color:#000;
+    border:1px solid #ccc;
+    border-radius:10px;
+    margin-left: 40px;
+}

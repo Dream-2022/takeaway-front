@@ -1,71 +1,72 @@
 <template>
-    <div>
-        <div class="shopImageDetail">
-            <div class="shopNavigation">
-                <span class="searchInputBox">
-                    <input class="searchInput" placeholder="想吃什么搜一搜">
-                </span>
-                <span @click="isClickSearchClick"><i class="search icon"></i></span>
+     <div>
+            <div class="shopImageDetail">
+                <div class="shopNavigation">
+                    <span class="searchInputBox">
+                        <input class="searchInput" placeholder="想吃什么搜一搜">
+                    </span>
+                    <span @click="isClickSearchClick"><i class="search icon"></i></span>
 
-                <span>聊天</span>
-                <span>收藏店铺</span>
-                <span>反馈举报</span>
-            </div>
-            <img :src="shopDetail.background" class="picture">
-            
-        </div>
-    
-        <div class="shopContent">
-            <div class="shopContentDetail1">
-                
-                <div class="flexBox1">   
-                    <h2 class="shopName">{{ shopDetail.name }}</h2>
-                    <span class="shopScore">{{ shopDetail.score }}分</span>
-                    <span class="shopZi">月售：</span><span class="shopSaleNum">{{ shopDetail.saleNum }}</span>
-                    <div class="shopDetail">{{ shopDetail.detail }}</div>
-                </div>         
-                <div class="flexBox2">
-                    <img :src="shopDetail.picture" class="shopDetailImg">
-                </div>        
-                
-                
-            
-            </div>
-            <div class="shopContentDetail2">
-                <div class="topBox">
-                    <span class="topBoxActive">点餐</span>
-                    <span>评价</span>
-                    <span>品牌故事</span>
+                    <span>聊天</span>
+                    <span v-show="!isCollect" @click="collectClick">收藏店铺&nbsp;<i class="star outline icon"></i></span>
+                    <span v-show="isCollect" @click="collectClick">取消收藏&nbsp;<i class="star icon"></i></span>
+                    <span>反馈举报</span>
                 </div>
-                <div class="bottomBox">
-                    <div class="leftBox">
-                        <div>推荐尝鲜</div>
-                        <div>老板推荐</div>
-                        <div>凑单零食</div>
-                        <div>鲜果茶</div>
-                        <div>轻负担好茶</div>
-                    </div>
-                    <div class="rightBox">
-
-
-                        <span v-for="item in dishes" :key="item.id">
-                            <DishBox :dish="item" @open="abc">
-                            </DishBox>
-                        </span>
-
-
-                    </div>
-                </div>
+                <img :src="shopDetail.background" class="picture">
+                
             </div>
-        </div>
-
         
-    </div>
+            <div class="shopContent">
+                <div class="shopContentDetail1">
+                    
+                    <div class="flexBox1">   
+                        <h2 class="shopName">{{ shopDetail.name }}</h2>
+                        <span class="shopScore">4.9分</span>
+                        <span class="shopZi">月售：</span><span class="shopSaleNum">96</span>
+                        <div class="shopDetail">{{ shopDetail.profile }}</div>
+                    </div>         
+                    <div class="flexBox2">
+                        <img :src="shopDetail.logoPhoto" class="shopDetailImg">
+                    </div>        
+                    
+                    
+                
+                </div>
+                <div class="shopContentDetail2">
+                    <div class="topBox">
+                        <span class="topBoxActive">点餐</span>
+                        <span>评价</span>
+                        <span>品牌故事</span>
+                    </div>
+                    <div class="bottomBox">
+                        <div class="leftBox">
+                            <div>推荐尝鲜</div>
+                            <div>老板推荐</div>
+                            <div>凑单零食</div>
+                            <div>鲜果茶</div>
+                            <div>轻负担好茶</div>
+                        </div>
+                        <div class="rightBox">
+
+
+                            <span v-for="item in dishes" :key="item.id">
+                                <DishBox :dish="item">
+                                </DishBox>
+                            </span>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 </template>
 <script setup>
     import {ref,onMounted}  from 'vue'
+    import { ElMessage } from 'element-plus';
     import { useRoute, useRouter } from 'vue-router';
     import DishBox from '@/views/Shop/Components/dishBox.vue';
+    import {insertCollect, deleteCollect} from '@/apis/collect.js'
     import {dishDetailAll} from '@/apis/dish.js'
     import {selectById} from '@/apis/shop.js'
     const route = useRoute();
@@ -101,36 +102,37 @@
                 ElMessage.error(res.data.message)
             }
 	})
-    //监听子组件点击选规格事件
-    const abc = () => {
-        //获取参数
-        console.log("看看我执行了吗");
+    
+    //点击收藏或取消收藏店铺
+    var isCollect=ref(false)
+    async function collectClick(){
+        if(isCollect.value==true){
+            const apiData={
+                //取消收藏
+                shopId:shopDetail.value.id,
+                userId:localStorage.getItem("id")
+            }
+            const res=await deleteCollect(apiData)
+            if(res.data.code==0){
+                //更改样式
+                isCollect.value=false
+                ElMessage.success("取消收藏成功")
+            }
+        }
+        else{
+            const apiData={
+                shopId:shopDetail.value.id,
+                userId:localStorage.getItem("id")
+            }
+            const res=await insertCollect(apiData)
+            if(res.data.code==0){
+                //更改样式
+                isCollect.value=true
+                ElMessage.success("收藏成功")
+            }
+        }
     }
-    //获取详细商品信息
-    // let dishX=ref([])
-    // onMounted(() => {
-    //     console.log(route.params.id)
-    //     const http=axios.create({
-    //         baseURL:'http://localhost:8080'
-    //     })
-    //     http({
-    //         url:'/api/pre/dish/selectDishById',
-    //         method:'POST',
-    //         data:{
-    //             shopId: route.params.dishId
-    //         }
-    //     }).then((res)=>{
-    //         console.log('成功发送')
-    //         console.log(res.data)
-    //         if(res.data.code==0){
-    //             console.log("获取商品信息成功")
-    //             dishX.value=res.data.data
-    //         }
-    //         else{
-    //             ElMessage.error(res.data.message)
-    //         }
-    //     })
-	// })
+   
 </script>
 <style scoped>
  .shopImageDetail{

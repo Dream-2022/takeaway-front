@@ -10,6 +10,7 @@
     <span class="title-dessert">甜品</span>
     <span class="title-tea">奶茶</span>
     <span class="title-western">西餐</span>
+    <span class="title-collect">收藏</span>
    
     <div>
       <div class="nextTo">
@@ -34,7 +35,13 @@
     <div class="box newBox">
       <h3>活动</h3>
       <div id="slider-body">
-        <div class="slider">
+        <el-carousel height="500px">
+            <el-carousel-item v-for="item in bannerList" :key="item.id">
+                <img src="../../assets/image/image2.jpg" alt="">
+                <img src="../../assets/image/image4.jpg" alt="">
+            </el-carousel-item>
+        </el-carousel>
+        <!-- <div class="slider">
           <div class="slider-content">
           <div class="slider-item" id="slider-item1">
             <img src="../../assets/image/image2.jpg" alt="Image 1">
@@ -50,7 +57,7 @@
           
           </div>
           </div>
-        </div>
+        </div> -->
     </div>
     <!-- <div class="box">
       <h3><i class="tags icon"></i>标签</h3>
@@ -73,14 +80,11 @@
    import http from '@/utils/http.js'
    import '../../../node_modules/Semantic-UI-CSS/semantic.min.css'
    import '../../../node_modules/element-plus/es/locale'
+   import {detailAll} from '@/apis/shop.js'
    const router = useRouter();
    var shops=ref([])
-   onMounted(() => {
-
-    const res=http({
-      url:'/api/pre/shop/detailAll',
-      method:'GET'
-    }).then((res)=>{
+   onMounted(async() => {
+   const res=await detailAll()
         console.log('成功发送')
         console.log(res.data)
         if(res.data.code==0){
@@ -90,33 +94,13 @@
         else{
             ElMessage.error(res.data.message)
         }
-    })
-
-    // const http=axios.create({
-    //     baseURL:'http://localhost:8080'
-    // })
-    // http({
-    //     url:'/api/pre/shop/detailAll',
-    //     method:'GET'
-    // }).then((res)=>{
-    //     console.log('成功发送')
-    //     console.log(res.data)
-    //     if(res.data.code==0){
-    //         console.log("获取商家信息成功")
-    //         shops.value=res.data.data
-    //     }
-    //     else{
-    //         ElMessage.error(res.data.message)
-    //     }
-    // })
-	})
-   
+   })
 </script>
 
 <style scoped>
 .banner {
     padding-top: 69px;
-    background-image: url('../../assets/image/main.webp');
+    background-image: url('../../assets/image/main5.png');
     background-size: cover;
     background-position: center;
     height: 377px;
@@ -282,14 +266,13 @@ p{
 }
 
 .box {
-    background-color: #f5f5f5;
     border-radius: 5px;
     padding: 20px;
     margin-bottom: 20px;
 
 }
 .newBox{
-    box-shadow: 10px 10px 10px -4px rgb(0,0,0,.1);
+    box-shadow: 0px 0px 5px 0px rgba(2, 52, 255, 0.3);
     margin-top: 7px;
 }
 .box li{
@@ -334,9 +317,11 @@ p{
 .container .left-section .title-medicine,
 .container .left-section .title-dessert,
 .container .left-section .title-tea,
-.container .left-section .title-western{
+.container .left-section .title-western,
+.container .left-section .title-collect
+{
     display: inline-block;
-    font-size: 16px;
+    font-size: 20px;
     border-bottom: 2px solid #ccc;
     cursor: pointer;
     margin: 5px 10px;
@@ -346,13 +331,15 @@ p{
 .container .left-section .title-medicine,
 .container .left-section .title-dessert,
 .container .left-section .title-tea,
-.container .left-section .title-western{
+.container .left-section .title-western,
+.container .left-section .title-collect
+{
     margin-bottom: 20px;
     margin-top: 30px;
     font-weight: bold;
 }
 .container .left-section .title-fruit{
-    margin-left: 200px;
+    margin-left: 165px;
  }
 .container .left-section .active{
     border-bottom: 2px solid #007bff;
@@ -362,6 +349,7 @@ p{
     justify-content: center;
     margin-bottom: 50px;
     width: 100%;
+    z-index: 98;
 }
 .slider {
     width: 330px;

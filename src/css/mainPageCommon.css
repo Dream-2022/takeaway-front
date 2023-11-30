@@ -1,0 +1,511 @@
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #51677e;
+}
+body::before {
+  content: "";
+  /* background-image: url("image/leaves.webp"); */
+  opacity: 0.3; /* 设置透明度 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.header-box {
+  background-color: #0292FE;
+  color: #fff;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+}
+table {
+border-collapse: collapse;
+}
+.left{
+  margin-right: 13px;
+  font-size: 17px;
+}
+.header-box nav ul li .sculpture{
+  width: 36px;
+  position: absolute;
+  top:8px;
+  right:27px;
+}
+.header-box nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.header-box nav ul li {
+  display: inline-block;
+  margin-left: 24px;
+}
+
+.header-box nav ul .left {
+  float: left;
+  font-size: 25px;
+}
+
+.header-box nav ul li a {
+  text-decoration: none;
+}
+
+.header-box nav ul li a:hover {
+  color: #91AFD0;
+}
+h2{
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) ;
+}
+p{
+  font-size: 16px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) ;
+}
+.right{
+  float: right;
+  margin-right: 88px;
+}
+footer{
+  color: white;
+  background-color: #0292FE;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 头像下拉框 */
+.content-container{
+  margin-left: 185px;
+}
+.header-box .personPage{
+margin-left: 50px;
+cursor: pointer;
+}
+.messagePage{
+cursor: pointer;
+}
+#headSculpture{
+width: 35px;
+height: 35px;
+margin-right: 10px;
+}
+.header-box nav ul li .sculpture{
+  width: 36px;
+  position: absolute;
+  top:8px;
+  right:27px;
+}
+.header-box nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.header-box nav ul li {
+  display: inline-block;
+  margin-left: 24px;
+}
+
+.header-box nav ul .left {
+  float: left;
+  font-size: 22px;
+}
+
+.header-box nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 10px;
+}
+
+.header-box nav ul li a:hover {
+  color: #e1e5ef;
+}
+
+/* 下拉框 */
+#headSculpture{
+  width: 34px;
+  height: 34px;
+}
+.content-container {
+  position: relative;
+  display: inline-block;
+}
+.content-dropdown {
+  border-radius: 10px;
+  position: absolute;
+  left: 25%;
+  top: calc(100%);
+  transform: translateX(-50%);
+  display: none;
+  background-color: #f9f9f9;
+  min-width: 200px;
+  padding: 10px;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  z-index: 1;
+  color:#0292FE;
+  height: 260px;
+}
+.contentDropdownActive{
+display: block;
+}
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-container img{
+  transition: transform 0.3s ease;
+}
+
+.image-container:hover img{
+  transform: scale(1.4);
+}
+.content-dropdown div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.content-dropdown div span{
+  color: #ccc;
+  display: block;
+  margin-top: 5px;
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+}
+.content-dropdown .Nickname{
+  color: #3e4c64;
+  cursor: pointer;
+  border: none;
+  font-size: 17px;
+  margin-bottom: 20px;
+}
+.content-dropdown .nickname{
+  margin-bottom: 10px;
+  border: none;
+  font-size: 15px;
+}
+.content-dropdown div span .Detail,
+.content-dropdown div span .Message,
+.content-dropdown div span .Message{
+  color: #1b8bc0;
+}
+.header-box .content-dropdown div .Content{
+  color: #60a9d0;
+}
+.content-dropdown .dropdown{
+  color: #0292FE;
+}
+.content-dropdown .dropdown:hover{
+  color: #0060aa;
+}
+.dropdown{
+   cursor: pointer;
+}
+
+
+/* 弹窗 */
+.zhezhao,
+.zhezhao1{
+ position: fixed;
+ left: 0px;
+ top: 0px;
+ background: #000;
+ width: 100%;
+ height: 100%;
+ opacity: 0.5;
+}
+.tankuang,
+.tankuang1{
+ position: fixed;
+ top:40px;
+ left:50%;
+ transform:translateX(-50%);
+ background: #fff;
+ border-radius: 5px;
+ color: black;
+}
+.tankuang{
+width: 550px;
+}
+.tankuang1{
+width: 500px;
+}
+#header{
+ height: 40px;
+ border-bottom: 1px solid #ccc;
+}
+#header span
+{
+  line-height:40px;
+  margin-left:30px;
+  font-size:16px;
+  color:#000;
+}
+#header-right{
+ position: absolute;
+ width: 25px;
+ height: 25px;
+ border-radius: 5px;
+ background: rgb(167, 166, 166);
+ color: #fff;
+ right: 23px;
+ top: 16px;
+ text-align: center;
+ cursor: pointer;
+ font-size: 17px;
+}
+.modalContent{
+margin-top: 40px;
+padding-bottom: 10px;
+border-bottom: 1px solid #ccc;
+margin-right: 10px;
+margin-left: 10px;
+}
+.modalBody{
+background-color: rgb(243, 243, 243);
+margin-right: 10px;
+margin-left: 10px; 
+margin-bottom: 30px;
+padding-top: 4px;
+padding-bottom: 4px;
+color: black;
+border-radius: 12px;
+}
+.addAddress{
+cursor: pointer;
+
+}
+.contentAddress{
+display: flex;
+margin: 10px 15px 10px 15px;
+}
+.contentAddressTable1{
+flex: 8;
+height: 30px;
+border-radius: 5px;
+position: relative;
+}
+.contentAddressTable1 a{
+color: black; 
+text-decoration:none;
+}
+.blackBox{
+/* 先设置隐藏元素 */
+display: none;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 39px;
+background: rgba(169, 167, 167, 0.3);
+border-radius: 8px;
+}
+.blackBoxFloat{
+float: right;
+color: white;
+margin-top: 8px;
+margin-right: 10px;
+background-color: #ac9e9e;
+padding: 2px 5px 2px 5px;
+border-radius: 5px;
+}
+.blackBoxFloatMo{
+float: right;
+color: rgb(84, 115, 125);
+margin-top: 8px;
+margin-right: 10px;
+padding: 2px 5px 2px 5px;
+border-radius: 5px;
+}
+.contentAddressTable1 a:hover .blackBox {
+/* 设置显示元素 none 为隐藏 block 为显示 */
+display: block;
+}
+.contentAddressNickname,
+.contentAddressPhone{
+display: inline-block;
+margin-right: 10px;
+color: #888888;
+font-size: 13px;
+}
+.contentAddressTable2{
+flex: 2;
+text-align: center;
+line-height: 30px;
+margin-top: 7px;
+border-radius: 10px;
+display: inline-block;
+}
+.contentAddressTable2 div{
+display: inline-block;
+padding:0 8px 0 8px;
+border-radius: 5px;
+color: white;
+cursor: pointer;
+}
+.addressModify{
+background-color: rgb(148, 189, 200);
+margin-right: 5px;
+}
+.addressDelete{
+background-color: rgb(216, 129, 129);
+}
+.inputAddressBox{
+display: inline-block;
+}
+.selectBox{
+display: inline-block;
+}
+.addressProvince,
+.addressCity,
+.addressCounty{
+width: 205px;
+height: 36px;
+font-size: 15px;
+border-radius: 6px;
+border: 1px solid #808080;
+}
+.addressProvince,
+.addressCity{
+margin: 12px 0px 25px 10px;
+
+}
+.addressProvince{
+margin-left: 28px;
+}
+.addressCounty{
+width: 420px;
+margin-left: 27px;
+margin-bottom: 42px;
+}
+.modalZi{
+margin-left: 27px;
+}
+.detailedAddress{
+height:34px;
+width: 420px;
+border-radius: 6px;
+margin-left: 27px;
+margin-top: 4px;
+margin-bottom: 10px;
+padding: 5px;
+border: 1px solid #808080;
+}
+.detailedAddressPhone{
+margin-bottom: 35px;
+}
+.confirmAdd,
+.cancelAdd{
+text-align: center;
+margin-top: 20px;
+margin-bottom: 15px;
+width: 100px;
+color: white;
+border: none;
+padding: 6px;
+border-radius: 10px;
+margin-left: 95px;
+}
+.confirmAdd{
+background-color: rgb(0, 148, 254);
+}
+.cancelAdd{
+background-color: #909090;
+}
+.buttonBox{
+float: right;
+margin-right: 50px;
+margin-bottom: 18px;
+}
+.TanConfirmButton{
+  width:80px;
+  height:35px;
+  margin-top:15px;
+  outline:none;
+  border:0px;
+  border-radius:10px;
+  background:rgb(0, 148, 254);
+  color:#fff;
+  margin-left:30px;
+}
+.TanCancelButton{
+  width:80px;
+  height:35px;
+  background:#dedede;
+  color:#000;
+  border:1px solid #ccc;
+  border-radius:10px;
+  margin-left: 40px;
+}
+.close:hover
+{
+  background:#eee;
+}
+.headTitle{
+color: rgb(73, 73, 73);
+margin-top: 16px;
+margin-left: 20px;
+font-size: 17px;
+}
+.commonScreen{
+  display: inline-block;
+}
+.minScreen{
+  display: inline-block;
+}
+/* 搜索框 */
+
+.left{
+  margin-right: 13px;
+  font-size: 17px;
+}
+.right{
+  float: right;
+  margin-right: 88px;
+}
+.search {
+  width: 362px;
+  height: 26px;
+  border-radius: 10px 0 0 10px;
+  padding: 8px;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  margin-top: 1px;
+}
+.searchNavigation{
+  border-radius: 10px;
+  padding-right: 5px;
+  line-height:28px;
+  display: flex;
+  background-color: #004cff87;
+  margin-left: 152px;
+  height: 28px;
+}
+.searchNavigationNull{
+width: 596px;
+display: inline-block;
+}
+li .searchNavigation #search-button { 
+  color: white;
+  width:50px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: transparent;
+}
+li .searchNavigation i.icon{
+  width: 16px;
+  margin: -7px 0.25rem 0 2px;
+}

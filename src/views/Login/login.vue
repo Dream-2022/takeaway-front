@@ -347,7 +347,6 @@
                 localStorage.setItem("phone",user.phone)
                 localStorage.setItem("picture",user.picture)
                 localStorage.setItem("profile",user.profile)
-                localStorage.setItem("userType",user.userType)
                 localStorage.setItem("birthday",user.birthday)
                 console.log("页面跳转")
                 setTimeout(()=>{

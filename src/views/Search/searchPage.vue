@@ -1,8 +1,8 @@
 <template>
     <div class="container-search">
           <div class="content-search">
-              <input class="content-input" placeholder="搜索美食">
-              <button class="content-button">搜索</button>
+              <input class="content-input" placeholder="搜索美食" v-model="searchContentInput">
+              <button class="content-button"  @click="redirectToSearch(searchContentInput)">搜索</button>
           </div>
 
       </div>
@@ -14,8 +14,8 @@
       <div class="container-content">
         <div class="shops">
           <span v-for="item in shops" :key="item.id">
-             <ShopBox :shop="item" :id="item.id">
-             </ShopBox>
+             <SearchBox :shop="item" :id="item.id">
+             </SearchBox>
           </span>
         </div>
       </div>
@@ -24,25 +24,34 @@
 
 <script setup>
 import { ref,onMounted } from 'vue';
-import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
+import {selectShopKeywords} from '@/apis/shop.js'
 
-
-import ShopBox from '@/views/Main/Components/shopBox.vue'
+import SearchBox from '@/views/Search/Components/searchBox.vue'
 const route = useRoute();
+const Router=useRouter()
 var shops=ref([])
-onMounted(() => {
+var searchContentInput=ref("")
+onMounted(async() => {
+    //初始化搜索框的内容
+    searchContentInput.value=route.params.shopName
+
     console.log(route.params.shopName)
-    const http=axios.create({
-        baseURL:'http://localhost:8080'
-    })
-    http({
-        url:'/api/pre/shop/selectShop',
-        method:'POST',
-        data:{
-            name: route.params.shopName
-        }
-    }).then((res)=>{
+    searchFunction(route.params.shopName)
+})
+
+//点击搜索
+async function redirectToSearch(shopName){
+    Router.push(`/mainPage/searchPage/${shopName}`);
+    searchFunction(shopName)
+}
+
+//搜索函数
+async function searchFunction(shopName){
+    const apiData={
+        name: shopName
+    }
+    const res=await selectShopKeywords(apiData)
         console.log('成功发送')
         console.log(res.data)
         if(res.data.code==0){
@@ -52,18 +61,7 @@ onMounted(() => {
         else{
             ElMessage.error(res.data.message)
         }
-    })
-})
-
-// import {defineComponent} from "vue"
-// defineComponent({
-//   name: "SearchPage",
-//   props: {
-//     isSearchButton: {
-//       type: String
-//     }
-//   }
-// })
+}
 </script>
 
 <style scoped>
@@ -72,7 +70,7 @@ onMounted(() => {
     margin:  auto;
 }
 .container-content{
-    width: 60%;
+    width: 50%;
     margin: auto;
 }
 .container-content{
@@ -197,7 +195,8 @@ onMounted(() => {
 .content-search{
     margin-top: 7px;
     margin-bottom: 7px;
-    width: 60%;
+    width: 50%;
+    padding-right:0;
 }
 .content-input {
     position: sticky;
@@ -209,6 +208,7 @@ onMounted(() => {
     background-color: #f3f3f3;
     margin-right: 0;
     outline: none;
+    font-size: 17px;
 }
 .content-button{
     width: 22%;
@@ -230,8 +230,8 @@ onMounted(() => {
 }
 td .content-image{
     display: inline-block;
-    height: 158px;
-    width: 300px;
+    height: 126px;
+    width: 146px;
     object-fit: cover;
 }
 .content-edit{

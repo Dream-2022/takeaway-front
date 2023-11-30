@@ -4,40 +4,46 @@
 <header class="header-box">
   <nav>
     <ul>
-      <li class="left"><i class="edge icon"></i>饿了么</li>
-      <li><a><RouterLink active-class="" :to="'/mainPage/MainView'"><i class="home icon"></i>首页</RouterLink></a></li>
-      <li><a class="messagePage"><RouterLink to="/mainPage/personPage"></RouterLink><i class="bell icon"></i>消息</a></li>
-      <li><a href="#"><i class="clipboard icon"></i>订单</a></li>
-
-
-      <li>
-        <span class="searchNavigation"  v-if="isSearchButton">
-            <input type="text" id="acc" class="search" :placeholder="searchPlaceholder" name="search" v-model="searchContent">
-            <label for="search-button"><i class="search icon" style="color: white"></i></label>
-            <input type="button" id="search-button" value="搜索" @click="redirectToSearch(searchContent)">
-        </span>
-        <span class="searchNavigationNull" v-if="!isSearchButton"></span>
-      </li>
-      <li>
-        <div class="content-container">
-          <div class="text image-container" @mouseenter="dropdownContainerMouseover" @mouseleave="dropdownContainerMouseout">
-            <router-link active-class="" :to="'/mainPage/PersonPage'">
-              <img class="ui avatar image" id="headSculpture" :src="headSculptureImage" alt="">
-              <span class="nickname" >{{ username }}</span>
-            </router-link>
-          </div>
-          <!--下拉框-->
-          <div class="content-dropdown"  @mouseenter="dropdownContentMouseover" @mouseleave="dropdownContentMouseout" :class="{contentDropdownActive:isDropdownHovered}">
-            <div>
-              <span class="Nickname">{{ username }}</span>
-              <span><RouterLink to="/mainPage/personPage" class="dropdown">个人中心</RouterLink></span>
-              <span><RouterLink to="/mainPage/personPage" class="dropdown">消息记录</RouterLink></span>
-              <span><RouterLink to="/businessPage" class="dropdown">{{ userMessage }}</RouterLink></span>
-              <span @click="exitBottom"><a class="dropdown exit">退出登录</a></span>
+      <li class="left"><RouterLink active-class="" :to="'/mainPage/MainView'"><i class="edge icon"></i>饿了么</RouterLink></li>
+      <div class="minScreen">
+        <li><a><RouterLink active-class="" :to="'/mainPage/MainView'"><i class="home icon"></i>首页</RouterLink></a></li>
+        <li><a class="messagePage"><RouterLink to="/mainPage/personPage"></RouterLink><i class="bell icon"></i>消息</a></li>
+        <li><a href="#"><i class="clipboard icon"></i>订单</a></li>
+        
+      </div>
+      <div class="commonScreen">
+        <li>
+          <span class="searchNavigation"  v-if="isSearchButton">
+              <input type="text" id="acc" class="search" :placeholder="searchPlaceholder" name="search" v-model="searchContent">
+              <label for="search-button"><i class="search icon" style="color: white"></i></label>
+              <input type="button" id="search-button" value="搜索" @click="redirectToSearch(searchContent)">
+          </span>
+          <span class="searchNavigationNull" v-if="!isSearchButton"></span>
+        </li>
+        <li>
+          <div class="content-container">
+            <div class="text image-container" @mouseenter="dropdownContainerMouseover" @mouseleave="dropdownContainerMouseout">
+              <router-link active-class="" :to="'/mainPage/PersonPage'">
+                <img class="ui avatar image" id="headSculpture" :src="headSculptureImage" alt="">
+                <span class="nickname" >{{ username }}</span>
+              </router-link>
+            </div>
+            <!--下拉框-->
+            <div class="content-dropdown"  @mouseenter="dropdownContentMouseover" @mouseleave="dropdownContentMouseout" :class="{contentDropdownActive:isDropdownHovered}">
+              <div>
+                <span class="Nickname">{{ username }}</span>
+                <span><RouterLink to="/mainPage/personPage" class="dropdown">个人中心</RouterLink></span>
+                <span><RouterLink to="/mainPage/personPage" class="dropdown">消息记录</RouterLink></span>
+                <span v-show="userMessage"><RouterLink to="/businessPage" class="dropdown">成为商家</RouterLink></span>
+                <span v-show="!userMessage"><RouterLink to="/managePage" class="dropdown">进入商家端</RouterLink></span>
+                <span class="messagePageBox"><a class="messagePage"><RouterLink to="/mainPage/personPage"></RouterLink>我的消息</a></span>
+                <span class="orderPageBox"><a class="orderPage"><RouterLink to="/mainPage/personPage"></RouterLink>我的订单</a></span>
+                <span @click="exitBottom"><a class="dropdown exit">退出登录</a></span>
+              </div>
             </div>
           </div>
-        </div>
-      </li>
+        </li>
+      </div>
       <li><a class="personPage"  @click="dianwo"><i class="map marker alternate icon"></i>地址</a></li>
     </ul>
   </nav>
@@ -112,6 +118,7 @@
                  <option v-for="item in reDistrictCountyList" :key="item" :value="item.districtId">{{item.district}}</option>
                </select>
               </div>
+            
               <div class="modalZi">详细地址</div>
               <input class="detailedAddress" placeholder="请输入详细地址" ref="myAddressDetail">
               <div class="modalZi">联系人</div>
@@ -142,14 +149,14 @@
 </footer> -->
 <footer class="orange">
   <p>
-    &copy; 2023 My Blog. All rights reserved.
+    &copy; 2023 Are You Hungry. All rights reserved.
   </p>
 </footer>
 
 
 </template>
 <script setup>
-  import {onMounted, ref} from 'vue' 
+  import {onMounted, ref, nextTick } from 'vue' 
   import { ElMessage } from 'element-plus';
   import '../../../node_modules/Semantic-UI-CSS/semantic.min.css'
   import '../../../node_modules/element-plus/es/locale'
@@ -157,9 +164,9 @@
   // 弹窗
   import '@/utils/bootstrap.css'
   import 'bootstrap/js/dist/modal.js'
-  import '@/css/mainPage.css'
+  
   import {addressById,reDistrictProvinceAll,reDistrictCity,addressInsert,addressUpdate,addressDelete,addressDefault} from '@/apis/address.js'
-
+  import {selectShopMerchant} from'@/apis/shop.js'
 
 
   // import '../../utils/modal.js'
@@ -251,6 +258,7 @@ async function dropdownChu(){
           reDistrictCountyList.value=res4.data.data
       }
 }
+var userMessage=ref(0)
 onMounted(async()=>{
   document.getElementById('zhezhao').style.display="none";
   document.getElementById('zhezhao1').style.display="none";
@@ -260,29 +268,72 @@ onMounted(async()=>{
 
   //初始化市县下拉框为北京
   dropdownChu()
+
+  //判断是否为商家
+  console.log(localStorage.getItem("userType"))
+  const apiData={
+    userId:localStorage.getItem("id")
+  }
+  const res=await selectShopMerchant(apiData)
+      console.log(res.data)
+      console.log(res.data.data)
+      if(res.data.code==0){
+        console.log(res.data.data)
+        localStorage.setItem("userType",res.data.data)
+        if(res.data.data=="成为商家"){
+            userMessage.value=1
+            localStorage.setItem("userType","customer")
+        }else if(res.data.data=="进入商家端"){
+            userMessage.value=0
+            localStorage.setItem("userType","shopper")
+        }
+      }
 })
+
+//下拉框的变化
 async function dropdownChange(newProvince,City,County){
   const apiData={
     pid: newProvince
   }
+  //1
   const res=await reDistrictCity(apiData)
       console.log(res.data.data)
       if(res.data.code==0){
           reDistrictCityList.value=res.data.data
+         
+            myCitySelect.value.value=City
+      
       }
+    await nextTick();
+  //2
+
+  if(City!=""){
+    console.log("City为空")
+      const apiData1={
+        pid: City
+      }
+      const res1=await reDistrictCity(apiData1)
+          console.log(res1.data.data)
+          if(res1.data.code==0){
+              reDistrictCountyList.value=res1.data.data
+          }
+  }
+  else{
+      const apiData1={
+        pid: myCitySelect.value.value
+      }
+      const res1=await reDistrictCity(apiData1)
+          console.log(res1.data.data)
+          if(res1.data.code==0){
+              reDistrictCountyList.value=res1.data.data
+              if(City!=""||County!=""){
+                myCountySelect.value.value=County
+              }
+              
+          }
+      }
+
   
-  const apiData1={
-    pid: myProvinceSelect.value.value
-  }
-  const res1=await reDistrictCity(apiData1)
-      console.log(res1.data.data)
-      if(res1.data.code==0){
-          reDistrictCountyList.value=res1.data.data
-      }
-  if(City!=""||County!=""){
-    myCitySelect.value.value=City
-    myCountySelect.value.value=County
-  }
 }
 //省下拉框的内容改变
 async function handleProvinceChange(event){
@@ -325,7 +376,7 @@ defineProps({
    }
 })
 
-let isSearchButton=ref(true)
+
 const redirectToSearch=(shopName)=>{
     Router.push(`/mainPage/searchPage/${shopName}`);
 }
@@ -359,50 +410,27 @@ const redirectToSearch=(shopName)=>{
   var username=ref("")
   username.value=localStorage.getItem("nickname")
 
-  //判断是否为商家
-  var userMessage=ref("")
-  console.log(localStorage.getItem("userType"))
-  if(localStorage.getItem("userType")=="customer"){
-    userMessage.value="成为商家"
-  }else if(localStorage.getItem("userType")=="shopper"){
-    userMessage.value="进入商家端"
-  }
-
   //点击搜索按钮
   let searchContent=ref("")
   let searchPlaceholder=ref("查找商家或美食")
 
-//   function checkRoutePattern() {
-//       // 获取当前路由
-//       var currentRoute = window.location.href;
+const currentRoute = ref(Router.currentRoute.value)
 
-//       // 定义正则表达式模式
-//       //http://localhost:5173/mainPage/searchPage/12
-//       var pattern = /^http:\/\/localhost:5173\/mainPage\/searchPage\/\w+/;
-
-//       // 使用正则表达式测试当前路由
-//       if (pattern.test(currentRoute)) {
-//           console.log("当前路由匹配指定形式");
-//           isSearchButton.value=false;
-//       } else {
-//           console.log("当前路由不匹配指定形式");
-//           isSearchButton.value=true;
-//       }
-//   }
-
-
-// watch(window.location.href,(newValue,oldValue)=>{
-//     if(newValue){
-//       checkRoutePattern()
-//       console.log('我侦听到了状态的变化,当前值为'+newValue+'从而处理相关逻辑');
-//     }
-// })
-// // 初始化时检查一次
-// checkRoutePattern();
-
-// // 持续监听路由变化
-// window.addEventListener("popstate", checkRoutePattern);
-
+// 当路由发生变化时更新当前路由信息(用来处理搜索框是否存在的)
+var isSearchButton=ref(true)
+Router.afterEach((to, from) => {
+  var regex = /^\/mainPage\/searchPage\/.+/;
+  currentRoute.value = to
+  console.log("路由变化"+from.path+","+to.path)
+  if (regex.test(to.path)){
+    console.log("是搜索页面")
+    isSearchButton.value=false;
+  }
+  else{
+    console.log("不是搜索页面")
+    isSearchButton.value=true;
+  }
+})
 //添加地址
 async function addAddressButton(){
   if(myAddressDetail.value.value===""||myName.value.value===""||myPhone.value.value===""){
@@ -484,7 +512,7 @@ async function deleteAddressButton(event){
   }
 }
 //修改地址
-function updateAddressButton(item){
+async function updateAddressButton(item){
   dianWoButtonZi.value="修改"
   myAddressDetail.value.value=item.addressDetail
   myName.value.value=item.myName
@@ -492,9 +520,14 @@ function updateAddressButton(item){
   hidder()
   
   dianwo1()
+  console.log("执行了省myProvinceSelect:"+myProvinceSelect.value.value+','+item.addressProvince)
   myProvinceSelect.value.value=item.addressProvince
-  dropdownChange(item.addressProvince,item.addressCity,item.addressCounty)
-  
+  console.log("执行了省myProvinceSelect:"+myProvinceSelect.value.value+','+item.addressProvince)
+
+  await dropdownChange(item.addressProvince,item.addressCity,item.addressCounty)
+  myCitySelect.value.value=item.addressCity
+  myCountySelect.value.value=item.addressCounty
+
 }
 //默认地址
 async function defaultAddressButton(event){
@@ -541,6 +574,7 @@ function exitBottom(){
 
 </script>
 
+<style src='@/css/mainPage.css' scoped></style>
 <style scoped>
 
 </style>
