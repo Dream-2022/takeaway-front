@@ -76,7 +76,7 @@
 <script setup>
     import {ref,onMounted,onBeforeUnmount} from 'vue'
     import { useRoute, useRouter } from 'vue-router';
-    import {useDishStore} from'@/stores/dish.js'
+    import {useDishStore} from'@/stores/dishStore.js'
     const dishStore=useDishStore()
     const router = useRouter();
     const route = useRoute();
@@ -90,7 +90,7 @@
     onBeforeUnmount(() => {
       window.removeEventListener('scroll', handleScroll);
     });
-
+    
     var navBox=ref()
 
     
@@ -147,7 +147,7 @@
     function returnButton(){
         console.log("点击")
         let id=route.params.id
-        router.push(`/shopDetailPage/${id}/shopDishPage`);
+        router.push(`/shopDetailPage/${id}/shopDishPage/ShopDishBox`);
     }
 </script>
 <style scoped>

@@ -16,7 +16,7 @@
                     <RouterLink :to="'/managePage/setMealPage'"><div  class="manageButton link3" @click="clearActiveClassAndAdd">数据统计</div></RouterLink>
                     <RouterLink :to="'/managePage/dealPage'"><div class="manageButton link4" @click="clearActiveClassAndAdd">菜品管理</div></RouterLink>
                     <RouterLink :to="'/managePage/setMealPage'"><div  class="manageButton link5" @click="clearActiveClassAndAdd">套餐管理</div></RouterLink>
-                    <RouterLink :to="'/managePage/setMealPage'"><div  class="manageButton link6" @click="clearActiveClassAndAdd">分类管理</div></RouterLink>
+                    <RouterLink :to="'/managePage/categoryManagePage'"><div  class="manageButton link6" @click="clearActiveClassAndAdd">分类管理</div></RouterLink>
                     <RouterLink :to="'/managePage/setMealPage'"><div  class="manageButton link7" @click="clearActiveClassAndAdd">修改信息</div></RouterLink>
                     <RouterLink :to="'/mainPage'"><div>返回<i class="reply icon"></i></div></RouterLink>
                 </div>
@@ -109,7 +109,7 @@
   import {useRouter} from "vue-router"
   import {selectShopByUserId,uploadShopImage} from'@/apis/shop.js'
   import {selectCategoryAll} from'@/apis/category.js'
-  import {useAttributeStore} from'@/stores/attribute.js'
+  import {useAttributeStore} from'@/stores/attributeStore.js'
   import {insertDish} from '@/apis/dish.js'
   import { ElMessage } from 'element-plus';
   import AttributeBox from'@/views/Manage/Components/attributeBox.vue'

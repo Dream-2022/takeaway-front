@@ -20,13 +20,20 @@ export const useDishStore = defineStore('dish',()=>{
             material:""
         }
       ]);
+
     let openSelectDishDown=ref(false)
     //修改openSelectDishDown值
     const modifySelectDishDown=(value)=>{
         openSelectDishDown.value=value
+        console.log("openSelectDishDown"+openSelectDishDown.value)
+    }
+    //获取单独的那个dish
+    const getSelectDishOne=()=>{
+        return dishList.value
     }
     //获取openSelectDishDown值
     const getSelectDishDown=()=>{
+        console.log("获取"+openSelectDishDown.value)
         return openSelectDishDown.value
     }
     //获取属性数组
@@ -66,6 +73,7 @@ export const useDishStore = defineStore('dish',()=>{
     return {
         dishList,
         openSelectDishDown,
+        getSelectDishOne,
         modifySelectDishDown,
         getSelectDishDown,
         getDishList,

@@ -10,7 +10,7 @@
 </template>
 <script setup>
     import {onMounted, ref, defineEmits} from 'vue' 
-    import {useAttributeStore} from'@/stores/attribute.js'
+    import {useAttributeStore} from'@/stores/attributeStore.js'
     import { ElMessage } from 'element-plus';
     const {flavor,attribute}= defineProps(['flavor','attribute'])
     const emits=defineEmits(["clickFather"])

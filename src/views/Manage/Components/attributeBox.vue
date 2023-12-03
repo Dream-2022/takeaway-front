@@ -42,7 +42,7 @@
     import {onMounted, ref, defineEmits} from 'vue' 
     import { ElMessage } from 'element-plus';
     import FlavorBox from'@/views/Manage/Components/flavorBox.vue'
-    import {useAttributeStore} from'@/stores/attribute.js'
+    import {useAttributeStore} from'@/stores/attributeStore.js'
     const attributeStore=useAttributeStore()
     const emit = defineEmits()
     const {attribute}= defineProps(['attribute'])

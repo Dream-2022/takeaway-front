@@ -48,7 +48,7 @@
     </ul>
   </nav>
 
-
+<!-- 查看地址弹窗 -->
 <div class="zhezhao" id='zhezhao'></div>
 <div class="tankuang" style="display:none;">
     <div id="header">
@@ -94,12 +94,12 @@
         </div>
     </div>
 </div>
-
+<!-- 修改地址弹窗 -->
 <div class="zhezhao1" id='zhezhao1'></div>
 <div class="tankuang1" style="display:none;">
     <div id="header">
         <div class="headTitle">地址管理</div>
-        <div id="header-right" @click="hidder1">x</div>
+        <div id="header-right1" @click="hidder1">x</div>
 
         <div class="modalContent">
           <div class="inputAddressBox">
@@ -136,6 +136,8 @@
         </div>
     </div>
 </div>
+<!-- 选择规格弹窗 -->
+<SelectAttributePop></SelectAttributePop>
 </header>
 
 
@@ -161,13 +163,15 @@
   import '../../../node_modules/Semantic-UI-CSS/semantic.min.css'
   import '../../../node_modules/element-plus/es/locale'
   import {useRouter} from "vue-router"
+
+
   // 弹窗
   import '@/utils/bootstrap.css'
   import 'bootstrap/js/dist/modal.js'
   
   import {addressById,reDistrictProvinceAll,reDistrictCity,addressInsert,addressUpdate,addressDelete,addressDefault} from '@/apis/address.js'
   import {selectShopMerchant} from'@/apis/shop.js'
-
+  import SelectAttributePop from '@/views/Main/Components/selectAttributePop.vue'
 
   // import '../../utils/modal.js'
   const router = useRouter();

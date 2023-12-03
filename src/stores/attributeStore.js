@@ -1,6 +1,7 @@
 import {ref} from 'vue'
 import {ElMessage} from "element-plus";
 import {defineStore} from "pinia";
+import {selectDishAttributeByDishId} from '@/apis/attributeApi.js'
 
 export const useAttributeStore = defineStore('attribute',()=>{
     const attributeList=ref([
@@ -67,17 +68,25 @@ export const useAttributeStore = defineStore('attribute',()=>{
             return flavor !== fla;  
         });
       }
-    //   //修改一个口味
-    //   const editFlavorOne=(att,fla,flavorName,price)=>{
-        
-    //     att.flavorList.push({
-    //         flavorName: flavorName,
-    //         price: price
-    //     });
-    //     att.flavorList = att.flavorList.filter(flavor => {  
-    //         return flavor != fla;  
-    //     });
-    //   }
+      //根据dishId从数据库找到对应的口味
+      const obtainAttributeList=async(dishId)=>{
+        const apiData={
+            dishId: dishId
+        }
+        const res=await selectDishAttributeByDishId(apiData)
+        console.log(res.data.data)
+        if(res.data.code==0){
+            console.log(res.data)
+            if(res.data.code==0){
+                attributeList.value=res.data.data
+                console.log(attributeList)
+                console.log(attributeList.value)
+            }                                                                         
+            else{
+                ElMessage.error(res.data.message)
+            }
+        }
+      }
       //获取属性数组
       const getAttributeList=()=>{
         return attributeList.value
@@ -95,6 +104,7 @@ export const useAttributeStore = defineStore('attribute',()=>{
         addFlavorOne,
         deleteFlavorOne,
         getAttributeList,
+        obtainAttributeList,
         clearAttribute
     }
 },{

@@ -1,75 +1,58 @@
 <template>
      <div>
-            <div class="shopImageDetail">
-                <div class="shopNavigation">
-                    <span class="searchInputBox">
-                        <input class="searchInput" placeholder="想吃什么搜一搜">
-                    </span>
-                    <span @click="isClickSearchClick"><i class="search icon"></i></span>
+        <div class="shopImageDetail">
+            <div class="shopNavigation">
+                <span class="searchInputBox">
+                    <input class="searchInput"  placeholder="想吃什么搜一搜">
+                </span>
+                <span @click="isClickSearchClick"><i class="search icon"></i></span>
 
-                    <span>聊天</span>
-                    <span v-show="!isCollect" @click="collectClick">收藏店铺&nbsp;<i class="star outline icon"></i></span>
-                    <span v-show="isCollect" @click="collectClick">取消收藏&nbsp;<i class="star icon"></i></span>
-                    <span>反馈举报</span>
-                </div>
-                <img :src="shopDetail.background" class="picture">
-                
+                <span>聊天</span>
+                <span v-show="!isCollect" @click="collectClick">收藏店铺&nbsp;<i class="star outline icon"></i></span>
+                <span v-show="isCollect" @click="collectClick">取消收藏&nbsp;<i class="star icon"></i></span>
+                <span>反馈举报</span>
             </div>
-        
-            <div class="shopContent">
-                <div class="shopContentDetail1">
-                    
-                    <div class="flexBox1">   
-                        <h2 class="shopName">{{ shopDetail.name }}</h2>
-                        <span class="shopScore">4.9分</span>
-                        <span class="shopZi">月售：</span><span class="shopSaleNum">96</span>
-                        <div class="shopDetail">{{ shopDetail.profile }}</div>
-                    </div>         
-                    <div class="flexBox2">
-                        <img :src="shopDetail.logoPhoto" class="shopDetailImg">
-                    </div>        
-                    
-                    
-                
+            <img :src="shopDetail.background" class="picture">
+            
+        </div>
+    
+        <div class="shopContent">
+            <div class="shopContentDetail1">
+                <div class="flexBox1">   
+                    <h2 class="shopName">{{ shopDetail.name }}</h2>
+                    <span class="shopScore">4.9分</span>
+                    <span class="shopZi">月售：</span><span class="shopSaleNum">96</span>
+                    <div class="shopDetail">{{ shopDetail.profile }}</div>
+                </div>         
+                <div class="flexBox2">
+                    <img :src="shopDetail.logoPhoto" class="shopDetailImg">
+                </div>      
+            </div>
+            <div class="shopContentDetail2">
+                <div class="topBox">
+                    <router-link :to="'/shopDetailPage/'+$route.params.id+'/shopDishPage/shopDishBox'"><span class="topBoxDiv topBoxActive" @click="topBoxClick">点餐</span></router-link>
+                    <router-link :to="'/shopDetailPage/'+$route.params.id+'/shopDishPage/shopRemarkBox'"><span class="topBoxDiv" @click="topBoxClick">评价</span></router-link>
+                    <router-link :to="'/shopDetailPage/'+$route.params.id+'/shopDishPage/shopInformationBox'"><span class="topBoxDiv" @click="topBoxClick">品牌故事</span></router-link>
                 </div>
-                <div class="shopContentDetail2">
-                    <div class="topBox">
-                        <span class="topBoxActive">点餐</span>
-                        <span>评价</span>
-                        <span>品牌故事</span>
-                    </div>
-                    <div class="bottomBox">
-                        <div class="leftBox">
-                            <div>推荐尝鲜</div>
-                            <div>老板推荐</div>
-                            <div>凑单零食</div>
-                            <div>鲜果茶</div>
-                            <div>轻负担好茶</div>
-                        </div>
-                        <div class="rightBox">
 
+                <router-view></router-view>
 
-                            <span v-for="item in dishes" :key="item.id">
-                                <DishBox :dish="item">
-                                </DishBox>
-                            </span>
-
-
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
+    </div>
 </template>
 <script setup>
-    import {ref,onMounted}  from 'vue'
+    import {ref,onMounted,onUpdated}  from 'vue'
     import { ElMessage } from 'element-plus';
     import { useRoute, useRouter } from 'vue-router';
-    import DishBox from '@/views/Shop/Components/dishBox.vue';
+    import {useCategoryStore} from'@/stores/categoryStore.js'
+    import ShopDishBox from '@/views/Shop/Components/shopDishBox.vue';
     import {insertCollect, deleteCollect} from '@/apis/collect.js'
     import {dishDetailAll} from '@/apis/dish.js'
     import {selectById} from '@/apis/shop.js'
     const route = useRoute();
+    const categoryStore=useCategoryStore()
+
     let dishes=ref([])
     let shopDetail=ref([])
     onMounted(async() => {
@@ -101,8 +84,10 @@
             else{
                 ElMessage.error(res.data.message)
             }
+        console.log(shopDetail.value.id)
+        categoryStore.obtainCategoryList(shopDetail.value.id)
 	})
-    
+
     //点击收藏或取消收藏店铺
     var isCollect=ref(false)
     async function collectClick(){
@@ -132,7 +117,20 @@
             }
         }
     }
-   
+    //点餐，评价，商家故事
+    function topBoxClick(event){
+        //将所有active去除，然后将点击的设置为active
+        const topBoxes = document.querySelector('.topBox').childNodes
+        console.log(topBoxes)
+        for (var i = 0; i < topBoxes.length; i++) {   
+            console.log(topBoxes[i]) 
+            console.log(topBoxes[i].childNodes) 
+            topBoxes[i].childNodes[0].classList.remove('topBoxActive');    
+        }
+        console.log(event.target)
+        event.target.classList.add('topBoxActive')
+        
+    }
 </script>
 <style scoped>
  .shopImageDetail{
@@ -227,6 +225,9 @@
     .topBox{
         padding: 5px 5px 20px 5px;
     }
+    .topBox a{
+        color: black;
+    }
     .topBox span{
         display: inline-block;
         padding: 10px 123px 10px 123px;
@@ -239,29 +240,5 @@
     .topBoxActive{
         border-bottom: 3px solid #0084ff;
     }
-    .bottomBox{
-        display: flex;
-    }
-    .leftBox{
-        margin: 0 5px 20px 20px ;
-        background-color: #e8eeff;
-        border-radius: 20px;
-        flex: 1;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-    }
-    .leftBox div{
-        padding: 10px;
-        cursor: pointer;
-    }
-    .leftBox div:hover{
-        border-radius: 20px;
-        background-color: #eaecf3;
-    } 
-    .rightBox{
-        margin: 0 20px 20px 5px;
-        border-radius: 20px;
-        flex: 5;
-    }
+   
 </style>

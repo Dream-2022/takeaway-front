@@ -77,47 +77,7 @@
 
     </div>
     
-<div class="zhezhao1" id='zhezhao1'></div>
-<div class="tankuang1" style="display:none;">
-    <div id="header">
-        <div class="headTitle">地址管理</div>
-        <div id="header-right" @click="hidder1">x</div>
 
-        <div class="modalContent">
-          <div class="inputAddressBox">
-              <div class="selectBox">
-                <select class="addressProvince" name="省" @change="handleProvinceChange" ref="myProvinceSelect">
-                  <option v-for="item in reDistrictProvinceList" :key="item" :value="item.districtId">{{item.district}}</option>
-                </select>
-              </div>
-              <div class="selectBox">
-               <select class="addressCity" name="市" @change="handleCityChange" ref="myCitySelect">
-                 <option v-for="item in reDistrictCityList" :key="item" :value="item.districtId">{{item.district}}</option>
-               </select>
-              </div>
-              <div class="selectBox">
-               <select class="addressCounty" name="县" @change="handleCountyChange" ref="myCountySelect">
-                 <option v-for="item in reDistrictCountyList" :key="item" :value="item.districtId">{{item.district}}</option>
-               </select>
-              </div>
-            
-              <div class="modalZi">详细地址</div>
-              <input class="detailedAddress" placeholder="请输入详细地址" ref="myAddressDetail">
-              <div class="modalZi">联系人</div>
-              <input class="detailedAddress" placeholder="请输入姓名" ref="myName">
-              <div class="modalZi">联系电话</div>
-              <input class="detailedAddress detailedAddressPhone" placeholder="请输入电话" ref="myPhone">
-              <!-- <button class="confirmAdd">添加</button>
-              <button class="cancelAdd">取消</button> -->
-            </div>
-        </div>
-        
-        <div class="buttonBox">
-          <button class="TanConfirmButton" @click="addAddressButton">{{ dianWoButtonZi }}</button>
-          <button class="TanCancelButton" @click="hidder1">取消</button>
-        </div>
-    </div>
-</div>
 </template>
 <script setup>
     import {ref,onMounted} from 'vue'
@@ -125,7 +85,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import {selectById} from '@/apis/shop.js'
     import {selectCollectByUserIdShopId, insertCollect, deleteCollect} from '@/apis/collect.js'
-    import {useDishStore} from'@/stores/dish.js'
+    import {useDishStore} from'@/stores/dishStore.js'
     const dishStore=useDishStore()
 
     let dishes=ref([])
@@ -180,139 +140,6 @@
     .shopBackground{
         background-color: #efefef;
     }
-    .might{
-        margin: 0 auto;
-        background-color: #143b5f;
-    }
-    .shopImageDetail{
-        margin:0 auto;
-        width: 900px;
-        position: relative;
-    }
-    .shopNavigation{
-        width: 900px;
-        height: 50px;
-        margin: 0 auto;
-        background-color: #efefef;
-        padding-left: 20px;
-        line-height: 50px;
-        display: block;
-        left: 0;
-        position: sticky;
-        z-index: 1; 
-        top: 53px;
-    }
-    .shopNavigation .searchInputBox{
-        margin-right: 5px;
-    }
-    .searchInput{
-        margin: 0;
-        height: 26px;
-        border-radius: 25px;
-        padding: 7px;
-    }
-    .shopNavigation span{
-        margin-right: 55px;
-        cursor: pointer;
-    }
-    .shopNavigation{
-        margin-top:53px;
-    }
-    .picture{
-        width: 900px;
-        height: 300px; /* 设置图片的高度，以剪切掉顶部的部分 */
-        object-fit: cover;
-    }
-    .shopContent{
-        width: 900px;
-        margin:0 auto;
-        background-color: white;
-        padding: 20px 20px 0 20px;
-    }
-    .shopContentDetail1{       
-        border-radius: 20px;
-        background-color: white;
-        box-shadow: 0px 0px 3px #8cb5db;
-        height: 200px;
-        display: flex;
-        transform: translateY(-121px);
-    }
-    .flexBox1{
-        flex:5;
-    }
-    .flexBox2{
-        margin-top: 42px;
-        flex:1;
-    }
-    .shopDetailImg{
-        border-radius: 100px;
-    }
-    .shopName{
-        margin-left: 20px;
-        padding-top: 32px;
-    }
-    .shopScore{
-        margin-left: 10px;
-        margin-right: 30px;
-        display: inline-block;
-        padding: 10px;
-        color: #de5454;
-        font-weight: 700;
-    }
-    .shopDetail{
-        margin-left: 10px;
-        padding: 10px;
-    }
-    .shopDetailImg{
-        width: 100px;
-        height: 100px;
-    }
-    .shopContentDetail2{
-        padding-bottom: 50px;
-        border-radius: 20px;
-        transform: translateY(-100px);
-        box-shadow: 0px 0px 3px #8cb5db ;
-    }
-    .topBox{
-        padding: 5px 5px 20px 5px;
-    }
-    .topBox span{
-        display: inline-block;
-        padding: 10px 123px 10px 123px;
-        cursor: pointer;
-    }
-    .topBox span:hover{
-        background-color: #efefef;
-        border-radius: 10px 10px 0 0;
-    }
-    .topBoxActive{
-        border-bottom: 3px solid #0084ff;
-    }
-    .bottomBox{
-        display: flex;
-    }
-    .leftBox{
-        margin: 0 5px 20px 20px ;
-        background-color: #e8eeff;
-        border-radius: 20px;
-        flex: 1;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-    }
-    .leftBox div{
-        padding: 10px;
-        cursor: pointer;
-    }
-    .leftBox div:hover{
-        border-radius: 20px;
-        background-color: #eaecf3;
-    } 
-    .rightBox{
-        margin: 0 20px 20px 5px;
-        border-radius: 20px;
-        flex: 5;
-    }
     .footerBox{
         height: 55px;
         width: 100%;
@@ -364,5 +191,65 @@
     .nullBox{
         height: 200px;
         width: 100%;
+    }
+    
+
+    /* 弹窗 */
+    .zhezhao,
+    .zhezhao1{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    background: #000;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+    }
+    .tankuang,
+    .tankuang1{
+    position: fixed;
+    top:40px;
+    left:50%;
+    transform:translateX(-50%);
+    background: #fff;
+    border-radius: 5px;
+    color: black;
+    }
+    .tankuang{
+    width: 550px;
+    }
+    .tankuang1{
+    width: 500px;
+    }
+    #header{
+    height: 40px;
+    border-bottom: 1px solid #ccc;
+    }
+    #header span
+    {
+    line-height:40px;
+    margin-left:30px;
+    font-size:16px;
+    color:#000;
+    }
+    #header-right{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border-radius: 5px;
+    background: rgb(167, 166, 166);
+    color: #fff;
+    right: 23px;
+    top: 16px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 17px;
+    }
+    .modalContent{
+    margin-top: 40px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-right: 10px;
+    margin-left: 10px;
     }
 </style>

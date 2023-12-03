@@ -8,27 +8,30 @@
           <span class="dishDetail" @click="dishContentBoxClick(dish.id)">{{ dish.detail }}</span><br>
           <span class="dishZi">月售：</span><span>{{ dish.sale }}</span><br>
           <span class="dishPrice">{{ dish.price }}</span><span>元起</span>
-          <div class="dishContentBoxBottom" @click="dishContentBoxBottomZi">选规格</div>
+          <div class="dishContentBoxBottom" @click="dishContentBoxBottomClick">选规格</div>
       </div>
   </div>
 </template>
 <script setup>
 import {useRouter,useRoute} from "vue-router"
 import {ref,defineEmits} from 'vue';
-import {useDishStore} from'@/stores/dish.js'
+import {useDishStore} from'@/stores/dishStore.js'
+import {useDishOneStore} from'@/stores/dishOneStore.js'
+import {useAttributeStore} from'@/stores/attributeStore.js'
+
 const dishStore=useDishStore()
+const dishOneStore=useDishOneStore()
+const attributeStore=useAttributeStore()
 const emit = defineEmits()
 const router=useRouter()
-const route = useRoute();
-defineProps({
-   dish:{
-       type:Object
-   }
-})
+const route = useRoute()
+const {dish}= defineProps(['dish'])
 
-function dishContentBoxBottomZi () {
+function dishContentBoxBottomClick () {
     console.log('点击')
     dishStore.modifySelectDishDown(true)
+    dishOneStore.setDishOne(dish)
+    attributeStore.obtainAttributeList(dish.id)
 }
 
 //点击菜品盒子

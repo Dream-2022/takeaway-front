@@ -32,7 +32,7 @@ defineProps({
 })
 
 const redirectToShop=(id)=>{
-    Router.push(`/shopDetailPage/${id}/shopDishPage`);
+    Router.push(`/shopDetailPage/${id}/shopDishPage/ShopDishBox`);
 }
 </script>
 <style scoped>

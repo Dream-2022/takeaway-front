@@ -58,7 +58,7 @@
     import 'bootstrap/js/dist/modal.js'
     import {selectCategoryAll} from'@/apis/category.js'
     import {selectShopByUserId} from'@/apis/shop.js'
-    import {useAttributeStore} from'@/stores/attribute.js'
+    import {useAttributeStore} from'@/stores/attributeStore.js'
     import {dishDetailAll, selectDishByKeyword} from'@/apis/dish.js'
     import DealBox from '@/views/Manage/Components/dealBox.vue'
     const emits=defineEmits(["clickFather"])

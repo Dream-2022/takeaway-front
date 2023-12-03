@@ -7,11 +7,19 @@ import PersonPage from '../views/Main/personPage.vue'
 import SearchPage from '../views/Search/searchPage.vue'
 import ShopDetailPage from '../views/Shop/shopDetailPage.vue'
 import ShopDishPage from '../views/Shop/shopDishPage.vue'
+
+import ShopDishBox from '../views/Shop/Components/shopDishBox.vue'
+import ShopRemarkBox from '../views/Shop/Components/shopRemarkBox.vue'
+import ShopInformationBox from '../views/Shop/Components/shopInformationBox.vue'
+
 import ProductDetailPage from '../views/Shop/productDetailPage.vue'
+
 import ManagePage from '../views/Manage/managePage.vue'
-import OrderHandlePage from '../views/Manage/Components/orderHandlePage.vue'
-import DealPage from '../views/Manage/Components/dealPage.vue'
-import SetMealPage from '../views/Manage/Components/setMealPage.vue'
+import OrderHandlePage from '../views/Manage/Pages/orderHandlePage.vue'
+import DealPage from '../views/Manage/Pages/dealPage.vue'
+import SetMealPage from '../views/Manage/Pages/setMealPage.vue'
+import CategoryManagePage from '../views/Manage/Pages/categoryManagePage.vue'
+
 import BusinessPage from '../views/Business/businessPage.vue'
 
 const routes = createRouter({
@@ -46,8 +54,19 @@ const routes = createRouter({
           component: ShopDetailPage,  
           redirect: "/shopDetailPage/:id/shopDishPage",
           children: [  
-            { path: 'shopDishPage', component: ShopDishPage },  
-            { path: 'productDetailPage/:dishId', component: ProductDetailPage }  
+            { path: 'productDetailPage/:dishId', component: ProductDetailPage },
+            { 
+              path: 'shopDishPage', 
+              component: ShopDishPage ,
+              name:'shopDishPage',
+              redirect: "/shopDetailPage/:id/shopDishPage/ShopDishBox",
+              children:[
+                {path:'shopDishBox',component:ShopDishBox},
+                {path:'shopRemarkBox',component:ShopRemarkBox},
+                {path:'shopInformationBox',component:ShopInformationBox}
+              ]
+            }
+            
           ]  
         },
       ]
@@ -61,7 +80,8 @@ const routes = createRouter({
       children:[
         {path:'orderHandlePage',component:OrderHandlePage},
         {path:'dealPage',component:DealPage},
-        {path:'setMealPage',component:SetMealPage}
+        {path:'setMealPage',component:SetMealPage},
+        {path:'categoryManagePage',component:CategoryManagePage}
       ]
     },
     {

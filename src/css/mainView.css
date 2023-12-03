@@ -1,0 +1,254 @@
+
+.banner {
+    padding-top: 69px;
+    background-image: url('../assets/image/main5.png');
+    background-size: cover;
+    background-position: center;
+    height: 377px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    color: #0292FE;
+    text-align: center;
+}
+h2{
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) ;
+}
+p{
+    font-size: 16px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) ;
+}
+.banner div{
+    flex: 0 0 100%;
+}
+.sculpture {
+    padding-right: 5px;
+    float: right;
+    width: 13%;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+}
+.left-section {
+    flex: 2;
+    padding: 20px;
+}
+
+.left-section .title {
+  justify-content: center;
+  display: inline-block;
+  text-align: center;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.nextTo{
+  margin-bottom: 10px;
+}
+.nextTo1{
+  margin: 10px;
+  font-weight:500;
+  font-size: 20px;
+  color:#0292FE;
+}
+.nextTo2{
+  margin: 10px;
+  color:#0292FE;
+}
+.shops-box{
+  margin-bottom: 100px;
+}
+.shops {
+    display: grid;
+    grid-gap: 20px;
+    align-items: start;
+}
+.content-box{
+  box-shadow: 0px 0px 5px 0px rgb(0,0,0,.3);
+  border-radius: 8px;
+}
+.content-image{
+  width:200px;
+  height:150px;
+}
+.shop-name{
+  margin-top:12px;
+}
+.shop-score{
+  color: #de5454;
+  font-weight: 600;
+  display: inline;
+  margin-right: 10px;
+}
+.shop-deliver{
+  display: inline;
+  margin-right: 10px;
+}
+.shop-type{
+  color: #de5454;
+  font-weight: 600;
+  display: inline;
+  margin-right: 10px;
+}
+.shop-price, .shop-zi-price{
+  color: #df833d;
+  display: inline;
+}
+.shop-content{
+  display: block;
+  padding-right: 20px;
+}
+
+/*分页元素*/
+.pagination-link{
+    background-color: #cccccc;
+    border-radius: 10px;
+    width: 20px;
+}
+.pageUp, .pageDown{
+    cursor: pointer;
+    margin-bottom: 100px;
+}
+.pageUp:hover, .pageDown:hover{
+    background-color: #f5f4f4;
+    color: #424242;
+    border-radius: 5px;
+}
+.pagination .active{
+    background-color: #ececec;
+}
+
+.article {
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.article h4 {
+    margin-top: 0;
+}
+
+.article p {
+    color: #666;
+}
+
+.article a {
+    color: #333;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a {
+    display: inline-block;
+    margin-right: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.pagination .prev,
+.pagination .next {
+    font-weight: bold;
+}
+
+.right-section {
+    flex: 1;
+    padding: 20px;
+    margin-top: 5px;
+}
+
+.box {
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+
+}
+.newBox{
+    box-shadow: 0px 0px 5px 0px rgba(2, 52, 255, 0.3);
+    margin-top: 7px;
+}
+.box li{
+    display: inline-block;
+    margin-right: 10px;
+}
+.labelList li{
+    margin-top: 8px;
+    margin-left: 15px;
+    font-size: 16px;
+}
+.lis{
+    cursor: pointer;
+}
+.box h3 {
+    margin-top: 0;
+}
+
+.box ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+.box ul li {
+    margin-bottom: 10px;
+}
+.labelList{
+    margin-left: 20px;
+    display: inline-block;
+}
+.userList li {
+    display: block;
+    margin-left: 11px;
+    margin-bottom: 10px;
+    margin-top: 25px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.container .left-section .title-fruit,
+.container .left-section .title-flower,
+.container .left-section .title-medicine,
+.container .left-section .title-dessert,
+.container .left-section .title-tea,
+.container .left-section .title-western,
+.container .left-section .title-collect
+{
+    display: inline-block;
+    font-size: 20px;
+    border-bottom: 2px solid #ccc;
+    cursor: pointer;
+    margin: 5px 10px;
+}
+.container .left-section .title-fruit,
+.container .left-section .title-flower,
+.container .left-section .title-medicine,
+.container .left-section .title-dessert,
+.container .left-section .title-tea,
+.container .left-section .title-western,
+.container .left-section .title-collect
+{
+    margin-bottom: 20px;
+    margin-top: 30px;
+    font-weight: bold;
+}
+.container .left-section .title-fruit{
+    margin-left: 165px;
+ }
+.container .left-section .active{
+    border-bottom: 2px solid #007bff;
+}
+#slider-body {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50px;
+    width: 100%;
+    z-index: 98;
+}
