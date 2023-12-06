@@ -23,21 +23,11 @@ export const useAttributeStore = defineStore('attribute',()=>{
                 checked: 0,
                 flavorList:[
                     {
-                        flavorName:"默认口味2",
+                        flavorName:"默认口味1",
                         price: 2
                     },
                     {
                         flavorName:"默认口味2",
-                        price: 2
-                    }
-                ]
-            },
-            {
-                attributeName: "默认属性",
-                checked: 0,
-                flavorList:[
-                    {
-                        flavorName:"默认口味1",
                         price: 2
                     }
                 ]
@@ -89,7 +79,7 @@ export const useAttributeStore = defineStore('attribute',()=>{
       }
       //获取属性数组
       const getAttributeList=()=>{
-        return attributeList.value
+        return attributeList
       }
     
     const clearAttribute=()=>{

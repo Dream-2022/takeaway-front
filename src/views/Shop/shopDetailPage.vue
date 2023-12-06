@@ -1,75 +1,41 @@
 <template>
     <div class="shopBackground">
-        <!-- <div>
-            <div class="shopImageDetail">
-                <div class="shopNavigation">
-                    <span class="searchInputBox">
-                        <input class="searchInput" placeholder="想吃什么搜一搜">
-                    </span>
-                    <span @click="isClickSearchClick"><i class="search icon"></i></span>
 
-                    <span>聊天</span>
-                    <span v-show="!isCollect" @click="collectClick">收藏店铺&nbsp;<i class="star outline icon"></i></span>
-                    <span v-show="isCollect" @click="collectClick">取消收藏&nbsp;<i class="star icon"></i></span>
-                    <span>反馈举报</span>
-                </div>
-                <img :src="shopDetail.background" class="picture">
-                
-            </div>
-        
-            <div class="shopContent">
-                <div class="shopContentDetail1">
-                    
-                    <div class="flexBox1">   
-                        <h2 class="shopName">{{ shopDetail.name }}</h2>
-                        <span class="shopScore">4.9分</span>
-                        <span class="shopZi">月售：</span><span class="shopSaleNum">96</span>
-                        <div class="shopDetail">{{ shopDetail.profile }}</div>
-                    </div>         
-                    <div class="flexBox2">
-                        <img :src="shopDetail.logoPhoto" class="shopDetailImg">
-                    </div>        
-                    
-                    
-                
-                </div>
-                <div class="shopContentDetail2">
-                    <div class="topBox">
-                        <span class="topBoxActive">点餐</span>
-                        <span>评价</span>
-                        <span>品牌故事</span>
-                    </div>
-                    <div class="bottomBox">
-                        <div class="leftBox">
-                            <div>推荐尝鲜</div>
-                            <div>老板推荐</div>
-                            <div>凑单零食</div>
-                            <div>鲜果茶</div>
-                            <div>轻负担好茶</div>
-                        </div>
-                        <div class="rightBox">
-
-
-                            <span v-for="item in dishes" :key="item.id">
-                                <DishBox :dish="item">
-                                </DishBox>
-                            </span>
-
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-        <!-- <div class="tall"></div> -->
-        <!-- <ProductDetailPage></ProductDetailPage> -->
         <router-view></router-view>
-        <!-- <ShopDishPage></ShopDishPage> -->
-        <div class="footerBox">
-            <span><i class="shopping cart icon"></i></span>
-            <span class="shoppingNumber">1</span>
 
-            <span>￥</span><span class="shoppingPrice">15</span>
+        <div class="footerBox">
+            <div class="cartBox">
+                <div class="cartBoxTop">
+                    <span class="cartBoxTopZi">已选商品</span>
+                    <span class="cartBoxTopPackZi">打包费&nbsp;&nbsp;</span><span class="cartBoxTopPrice">{{ cartOneStore.cartDishPackSum }}</span><span class="cartBoxTopPackZi2">&nbsp;元</span>
+                    <span class="cartBoxTopClean"><i class="trash alternate outline icon"></i>清空</span>
+                </div>
+
+                <div class="cartDishBoxes">
+                    <div class="cartDishBox" v-for="item in cartOneStore?.cartOne[0]?.dishIdList" :key="item">
+                        <div class="cartDishBoxFlex">
+                            <div class="cartDishBoxLeft">
+                                <img :src="item.picture" class="cartDishImg">
+                            </div>
+                            <div class="cartDishBoxMight">
+                                <div class="cartDishBoxRightName">{{ item.dishName }}</div>
+                                <div class="cartDishBoxRightFlavorZi">已选:&nbsp;&nbsp;</div>
+                                <div class="cartDishBoxRightFlavor">{{ cartFlavorListValue }}</div><br>
+                                <span class="cartDishBoxRightPriceZi">￥</span><span class="cartDishBoxRightPrice">{{ item.price }}</span>
+                            </div>
+                            <div class="cartDishBoxRight">
+                                <span class="cartDishBoxRightMinus" @click="cartDishBoxRightMinusClick(item)"><i class="minus circle icon"></i></span>
+                                <span class="cartDishBoxRightNumber">{{ item.quantity }}</span>
+                                <span class="cartDishBoxRightPlus" @click="cartDishBoxRightPlusClick(item)"><i class="plus circle icon"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span><i class="shopping cart icon"></i></span>
+            <span class="shoppingNumber">{{ cartOneStore?.cartOne[0]?.dishIdList.length }}</span>
+
+            <span>￥</span><span class="shoppingPrice">{{ cartOneStore.cartDishPriceSum }}</span>
             <span class="footerZi">另需配送费约￥</span><span>{{ shopDetail.packing }}</span>
             <button class="footerBottom">结算</button>
         </div>
@@ -86,10 +52,12 @@
     import {selectById} from '@/apis/shop.js'
     import {selectCollectByUserIdShopId, insertCollect, deleteCollect} from '@/apis/collect.js'
     import {useDishStore} from'@/stores/dishStore.js'
+    import {useCartOneStore} from'@/stores/cartOneStore.js'
     const dishStore=useDishStore()
-
+    const cartOneStore=useCartOneStore()
     let dishes=ref([])
     let shopDetail=ref([])
+    
     const route = useRoute();
     onMounted(async() => {
         console.log(route.params.id)
@@ -133,15 +101,33 @@
             else{
                 ElMessage.error(res2.data.message)
             }
+        //设置购物车的打包费和总价
+        cartOneStore.setCartDishPackSum()
 	})
     
+    //点击减少购物车数量
+    function cartDishBoxRightMinusClick(dishOne){
+        if(dishOne.quantity==1){
+            cartOneStore.deleteDishFromCart(dishOne)
+        }
+        else{
+            cartOneStore.changeQuantityDish(dishOne,-1)
+        }
+        //设置购物车的打包费和总价
+        cartOneStore.setCartDishPackSum()
+    }
+    //点击增加购物车数量
+    function cartDishBoxRightPlusClick(dishOne){
+        cartOneStore.changeQuantityDish(dishOne,1)
+        //设置购物车的打包费和总价
+        cartOneStore.setCartDishPackSum()
+    }
 </script>
 <style scoped>
     .shopBackground{
         background-color: #efefef;
     }
     .footerBox{
-        height: 55px;
         width: 100%;
         background-color: #0084ff;
         margin:0 auto;
@@ -149,7 +135,113 @@
         position: sticky;
         z-index: 1; 
         bottom: 0;
+        padding-bottom: 8px;
         color: white;
+    }
+    .cartBox{
+        background-color: #fff;
+        box-shadow:  0px 0px 3px rgb(42, 108, 161);
+        color:black;
+    }
+    .cartBoxTop{
+        padding-left: 50px;
+        padding-top:10px;
+        padding-bottom: 10px;
+    }
+    .cartBoxTopZi{
+        font-size: 15px;
+    }
+    .cartBoxTopPackZi{
+        color: #454545;
+        font-size: 13px;
+        margin-left: 30px;
+    }
+    .cartBoxTopClean{
+        color: #454545;
+        font-size: 13px;
+        margin-left: 68%;
+        cursor: pointer;
+    }
+    .cartBoxTopClean i.icon{
+        margin:0
+    }
+    .cartBoxTopPrice{
+        color: #ffa200;
+        font-weight: 600;
+        font-size: 13px;
+    }    
+    .cartBoxTopPackZi2{
+        color: #ffa200;
+        font-size: 13px;
+    }
+    .cartDishBoxFlex{
+        display: flex;
+    }
+    .cartDishBoxLeft{
+        flex: 1;
+    }
+    .cartDishBoxMight{
+        flex: 6;
+    }
+    .cartDishBoxRight{
+        line-height: 70px;
+        flex: 2;
+    }
+    .cartDishBoxRightMinus,
+    .cartDishBoxRightPlus{
+        cursor: pointer;
+        padding:3px 10px 3px 12px;
+        display: inline-block;
+        font-size: 19px;
+        color: #0084FF;
+       
+    }
+    .cartDishBoxRightMinusGray{
+        color: #b1d0ed;
+    }
+    .cartDishBoxRightMinus i.icon,
+    .cartDishBoxRightPlus i.icon{
+        margin: 0;
+    }
+    .cartDishBoxRightNumber{
+        padding: 5px 14px 5px 14px;
+        background-color: #f2f2f2;
+    }
+    .cartDishBoxRightName{
+        margin-top: 2px;
+        font-weight: 600;
+    }
+    .cartDishBoxRightPriceZi,
+    .cartDishBoxRightPrice{
+        color: #ffa200;
+        margin-top:10px;
+        display: inline-block;
+    }
+    .cartDishBoxRightPrice{
+        font-size: 17px;
+        font-weight: 600;
+    }
+    .cartDishBoxRightFlavor,
+    .cartDishBoxRightFlavorZi{
+        display: inline-block;
+        font-size: 13px;
+        color:#767676;
+    }
+    .cartDishBox{
+        padding: 5px 0 5px 50px;
+    }
+    .cartDishBoxes{
+        max-height: 330px;
+        white-space: nowrap;
+        overflow-x:scroll;
+    }
+    .cartDishBox:hover{
+        background-color: #f6f6f6;
+    }
+    .cartDishImg{
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
     }
     .shopping{
         font-size: 34px;

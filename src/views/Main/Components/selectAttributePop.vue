@@ -13,8 +13,9 @@
           </div>
           <div class="modalDown">
               <div class="modalDishName">{{ dishOneStore.dish.dishName }}</div>
-              <span class="modalDishZi">已选：</span><span class="modalDishZi2">常温/常温/常温/常温</span><br>
-              <span class="modalDishPriceZi">￥</span><span class="modalDishPrice">{{ dishOneStore.dish.price }}</span>
+              <div class="modalDishZi">已选：</div><div class="modalDishZi2">{{ modalDishFlavorZi }}</div><br>
+              <div class="modalDishPackZi">打包费：￥</div><div class="modalDishPack">1</div><br>
+              <span class="modalDishPriceZi">￥</span><span class="modalDishPrice">{{ modalDishPriceValue }}</span>
           </div>
         </div>
         <div class="modalMight">
@@ -29,9 +30,11 @@
           <div  v-for="item in attributeStore.attributeList" :key="item">
             <div class="modalDishLowerAttribute">
                 <div class="modalDishLowerAttributeName">{{ item.attributeName }}</div>
+                <div class="modalDishLowerAttributeId">{{ item.id }}</div>
                 <div class="modalDishLowerFlavors">
-                  <span v-for="item2 in item.flavorList" :key="item2">
-                    <div class="modalDishLowerFlavor" @click="modalDishLowerFlavorClick(item,item2)">
+                  <span v-for="(item2,index) in item.flavorList" :key="item2">
+                    <div class="modalDishLowerFlavor" :class="(index==0&&item.checked==0)? 'modalDishLowerFlavorValue' :''" @click="modalDishLowerFlavorClick(item,item.id,item2,item2.id)">
+                        <div class="modalDishLowerFlavorId">{{ item2.id }}</div>
                         <div class="modalDishLowerFlavorName">{{ item2.flavorName }}</div>
                         <div class="modalDishLowerFlavorZi" v-if="item2.price!=0">￥</div><div class="modalDishLowerFlavorPrice" v-if="item2.price!=0">{{ item2.price }}</div>
                     </div>
@@ -49,31 +52,202 @@
 </div>
 </template>
 <script setup>
-  import { onMounted, ref } from 'vue' 
+  import { onMounted ,onUpdated, ref, toRaw } from 'vue' 
   import { ElMessage } from 'element-plus';
   import {useDishStore} from'@/stores/dishStore.js'
   import {useDishOneStore} from'@/stores/dishOneStore.js'
+  import {useCartOneStore} from'@/stores/cartOneStore.js'
   import {useAttributeStore} from'@/stores/attributeStore.js'
 
   const dishStore=useDishStore()
   const dishOneStore=useDishOneStore()
+  const cartOneStore=useCartOneStore()
   const attributeStore=useAttributeStore()
-  //选好口味
-  function addAddressButton(){
-    console.log(attributeStore.attributeList)
-    console.log(dishOneStore.getSelectDishOne)
-    console.log(dishOneStore.getSelectDishOne.value)
-  }
-  //选中口味
-  function modalDishLowerFlavorClick(item,item2){
-    //判断是单选还是多选
-    if(item.checked==0){
-      console.log("单选")
+  let modalDishPriceValue=ref(0)
+  let modalDishFlavorZi=ref("")//显示在页面上已选的口味
+  onMounted(async()=>{
+      cartOneStore.initialization()
+  })
+  onUpdated(async()=>{
+      //初始化页面的已选口味
+      changeSelected()
 
+  })
+  //选好了
+  function addAddressButton(){
+    //先将页面上所有选中的口味id加入到map中
+    let myFlavorMap = new Map();
+    // dishOneStore.dish.price=modalDishPriceValue.value
+    const modalFlavorList=document.querySelectorAll('.modalDishLowerFlavor')
+    console.log(modalFlavorList)
+    for(let i=0;i<modalFlavorList.length;i++){
+      console.log(modalFlavorList[i])
+      if(modalFlavorList[i].classList.contains('modalDishLowerFlavorValue')){
+        console.log(modalFlavorList[i].childNodes[0].innerHTML)
+        myFlavorMap.set(modalFlavorList[i].childNodes[0].innerHTML, 1)
+      }
     }
+    console.log(myFlavorMap)
+
+    //查找是否跟之前选中的是一样的，将quantity+1------------------------------------
+    // if(dishOneStore.dish==)
+    console.log(cartOneStore.cartOne)
+    const cartCurrentDish=cartOneStore.cartOne[0].dishIdList
+    console.log(cartCurrentDish)
+    
+    for(let i=0;i<cartCurrentDish.length;i++){
+      //如果商品id都匹配不上，说明不是同一件商品
+      console.log(cartCurrentDish[i].id)
+      console.log(dishOneStore.dish.id)
+      console.log(cartCurrentDish[i].id==dishOneStore.dish.id)
+      if(cartCurrentDish[i].id!=dishOneStore.dish.id){
+        continue;
+      }
+      let flag=0;
+      let flag1=0//解决：单选，单选，多选（第一个商品选择了两个）--》（后面的商品选择了三个），这时前两个匹配也会相当于同一个商品
+      const cartCurrentDishAttributeList=cartCurrentDish[i].attributeList
+      console.log(cartCurrentDishAttributeList)
+      console.log(myFlavorMap.size)
+      console.log(cartCurrentDishAttributeList.length)
+
+      for(let j=0;j<cartCurrentDishAttributeList.length;j++){
+        console.log(cartCurrentDishAttributeList[j].flavorList[0])
+        console.log(cartCurrentDishAttributeList[j].flavorList[0]==undefined)
+        if(cartCurrentDishAttributeList[j].flavorList[0]==undefined){
+          continue
+        }
+        flag=flag+1
+        flag1=flag1+1
+        console.log("+"+flag)
+        const cartCurrentFlavorId=cartCurrentDishAttributeList[j].flavorList[0].id
+        console.log(cartCurrentFlavorId)
+        if(myFlavorMap.has(cartCurrentFlavorId+'')){
+          console.log("这里符合")
+          flag=flag-1
+          console.log("-"+flag)
+        }
+      }
+      //将quantity+1
+      console.log(flag)
+      if(flag==0&&myFlavorMap.size==flag1){
+        cartCurrentDish[i].quantity=cartCurrentDish[i].quantity+1
+        console.log("和之前加的菜品重复了,直接将quantity+1")
+        console.log(cartCurrentDish)
+        //设置购物车的打包费和总价
+        cartOneStore.setCartDishPackSum()
+        dishStore.modifySelectDishDown(false)//关闭弹窗
+        return
+      }
+    }
+
+
+
+    console.log(dishNumber.value)//数量
+    console.log(dishOneStore.dish)
+    dishOneStore.dish.quantity=dishNumber.value
+    console.log(dishOneStore.dish.quantity)
+    console.log(attributeStore.attributeList)
+
+    
+
+    //然后将map中没有值的从selectAttributes中去掉
+    const selectAttributes=toRaw(attributeStore.attributeList)
+    console.log(selectAttributes)
+    console.log(myFlavorMap.has(1))
+    for(let i=0;i<selectAttributes.length;i++){
+      const selectFlavorList= selectAttributes[i].flavorList
+      for(let j=0;j<selectFlavorList.length;j++){
+        console.log(selectFlavorList[j].id)
+        console.log(myFlavorMap.has(selectFlavorList[j].id+''))
+        if(!myFlavorMap.has(selectFlavorList[j].id+'')){
+          console.log("移除")
+          selectFlavorList.splice(j, 1)
+          j--;
+        }
+      }
+    }
+    console.log(selectAttributes)
+    dishOneStore.dish.attributeList=selectAttributes
+    console.log(dishOneStore.dish.attributeList)
+    console.log(dishOneStore.dish)
+    console.log(modalDishPriceValue.value)
+    cartOneStore.addDishToCart(dishOneStore.dish,modalDishPriceValue.value)
+    //设置购物车的打包费和总价
+    cartOneStore.setCartDishPackSum()
+    dishStore.modifySelectDishDown(false)//关闭弹窗
+
+  }
+  //选中口味(分两种情况)
+  function modalDishLowerFlavorClick(item,attributeId,item2,flavorId){
+    const modalFlavorIdAll=document.querySelectorAll('.modalDishLowerFlavorId')
+    const modalAttributeIdBoxAll=document.querySelectorAll('.modalDishLowerAttributeId')
+    //判断是单选还是多选
+
+    let flag=0;
     if(item.checked==1){
       console.log("多选")
-
+      //已经选中的状态，就要移除这个选中
+      for(let i=0;i<modalFlavorIdAll.length;i++){
+        if(modalFlavorIdAll[i].innerHTML==flavorId&&modalFlavorIdAll[i].parentElement.classList.contains('modalDishLowerFlavorValue')){
+          modalFlavorIdAll[i].parentElement.classList.remove('modalDishLowerFlavorValue')
+          flag=1;
+        }
+      }
+    }
+    if(flag==0){
+      console.log("单选")
+      console.log(item)
+      console.log(attributeId)
+      console.log(item2)
+      console.log(flavorId)
+      //遍历取消modalDishLowerFlavorValue属性
+      for(let i=0;i<modalAttributeIdBoxAll.length;i++){
+        console.log(modalAttributeIdBoxAll[i])
+        if(modalAttributeIdBoxAll[i].innerHTML==attributeId){
+          const modalAttributeIdBox=modalAttributeIdBoxAll[i]
+          const childBoxes=modalAttributeIdBox.parentElement.childNodes[2].childNodes
+          console.log(modalAttributeIdBox.parentElement)
+          console.log(modalAttributeIdBox.parentElement.childNodes)
+          console.log(modalAttributeIdBox.parentElement.childNodes[2])
+          console.log(modalAttributeIdBox.parentElement.childNodes[2].childNodes)
+          console.log(childBoxes)
+          for(let j=1;j<childBoxes.length-1;j++){
+            console.log(childBoxes[j].childNodes[0])
+            if(childBoxes[j].childNodes[0].classList.contains('modalDishLowerFlavorValue')){
+              childBoxes[j].childNodes[0].classList.remove('modalDishLowerFlavorValue')
+            }
+          }
+        }
+      }
+      //然后选中的加入modalDishLowerFlavorValue属性
+      for(let i=0;i<modalFlavorIdAll.length;i++){
+        if(modalFlavorIdAll[i].innerHTML==flavorId){
+          modalFlavorIdAll[i].parentElement.classList.add('modalDishLowerFlavorValue')
+        }
+      }
+    }
+    changeSelected()
+  } 
+  //更改下拉框中已选的内容
+  function changeSelected(){
+    const modalFlavorAll =document.querySelectorAll('.modalDishLowerFlavor')
+    modalDishFlavorZi.value=""
+    //更改价格
+    modalDishPriceValue.value=(Number)(dishOneStore.dish.price)
+    for(let i=0;i<modalFlavorAll.length;i++){
+      if(modalFlavorAll[i].classList.contains('modalDishLowerFlavorValue')){
+        //判断口味是否有价格(有价格就加上价格)
+        if(modalFlavorAll[i].childNodes[3].innerHTML !=undefined){   
+          modalDishPriceValue.value=(Number)(modalDishPriceValue.value)+(Number)(modalFlavorAll[i].childNodes[3].innerHTML)
+        }
+        //更改已选
+        if(modalDishFlavorZi.value==""){
+          modalDishFlavorZi.value=modalFlavorAll[i].childNodes[1].innerHTML
+        }
+        else{
+          modalDishFlavorZi.value=modalDishFlavorZi.value+" / "+modalFlavorAll[i].childNodes[1].innerHTML
+        }
+      }
     }
   }
 
@@ -119,25 +293,28 @@
   border-radius: 10px;
 }
 .modalDishName{
-  margin-bottom: 5px;
   font-size: 16px;
   font-weight: 700;
   margin-left: 20px;
 }
-.modalDishZi{
+.modalDishZi,
+.modalDishPackZi,
+.modalDishPack{
   margin-left: 20px;
   font-size: 13px;
   color: #686868;
   display: inline-block;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.modalDishPack{
+  margin-left: 3px;
 }
 .modalDishZi2{
   margin-left: 5px;
   font-size: 13px;
   color: #686868;
   display: inline-block;
-}
-.modalDown{
-  margin-top: 10px;
 }
 .modalDishPriceZi{
   color: rgb(255, 153, 43);
@@ -199,6 +376,9 @@
   font-size: 14px;
   font-weight: 600;
 }
+.modalDishLowerAttributeId{
+  display: none;
+}
 .modalDishLowerAttributeName{
   margin-bottom: 5px;
 }
@@ -216,6 +396,14 @@
   margin-left: 1px;
   border-radius: 5px;
   margin-bottom: 8px;
+  border: 1px solid #ccc;
+}
+.modalDishLowerFlavorId{
+  display: none;
+}
+.modalDishLowerFlavorValue{
+  border: 1px solid rgb(0, 148, 254);
+  color: rgb(0, 148, 254);
 }
 .modalDishLowerAttribute{
   margin-top: 15px;
@@ -260,6 +448,9 @@
   border-bottom: 1px solid #ccc;
   margin-right: 10px;
   margin-left: 10px;
+  max-height: 500px;
+  white-space: nowrap;
+  overflow-y:scroll;
 }
 
 .buttonBox{

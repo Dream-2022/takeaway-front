@@ -31,10 +31,11 @@
     onMounted(async() => {
         //通过categoryId找dishId
         const apiData0={
-            shopId: route.params.id
+            shopId: route.params.id,
+            pageNum: 1
         }
         const res0=await dishDetailAll(apiData0)
-        console.log(route.params.id)
+            console.log(route.params.id)
             console.log('成功发送')
             console.log(res0.data)
             if(res0.data.code==0){
@@ -44,7 +45,17 @@
             else{
                 ElMessage.error(res0.data.message)
             }
-        })
+        
+        //通过shopId找到所有categoryId，通过categoryId找到所有的dishId
+        // const res1=await dishDetailAll(apiData0)
+        //     console.log(route.params.id)
+        //     console.log('成功发送')
+        //     console.log(res1.data)
+        //     if(res1.data.code==0){
+        //         console.log("获取商品信息成功")
+        //         dishes.value=res1.data.data
+        //     }
+    })
     //设置商品分类的默认选择    
     onUpdated(async() => {
         console.log(document.querySelector(".leftBox").childNodes)

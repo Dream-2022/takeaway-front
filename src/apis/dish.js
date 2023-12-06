@@ -7,6 +7,14 @@ export const dishDetailAll=(data)=>{
         data
     })
 }
+//通过shopId获取全部商品信息(不分页)
+export const dishDetailAllNoPage=(data)=>{
+    return http({
+        url: '/api/pre/dish/dishDetailAllNoPage',
+        method: 'POST',
+        data
+    })
+}
 //通过分类，状态，关键词获取商品列表
 export const selectDishByKeyword=(data)=>{
     return http({

@@ -5,7 +5,7 @@
                 <span>菜品分类</span>
                 
                 <select class="dealClassSelect" name="菜品分类" @change="handleClassChange" ref="myClassSelect">
-                    <option value="0">全部</option>
+                    <option :value="0">全部</option>
                     <option v-for="item in classList" :key="item.id" :value="item.id">{{ item.categoryName }}</option>
                 </select>
             </div>
@@ -44,6 +44,16 @@
                 <span v-for="item in dealDealList" :key="item.id" :value="item.id">
                     <DealBox :dish="item" :id="item.id"></DealBox>
                 </span>
+                <!-- 分页 -->
+                <span v-if="dealDealList.length!=0">
+                    <div class="pagination">
+                        <span class="pageUp"  @click="pageUpClick">上一页</span>
+                        <span :class="index==0?'pageActive':''" class="pagination-link" v-for="(page,index) in dealDealList[0].pageNum" :key="page" @click="pageNumClick">
+                            {{index+1}}
+                        </span>
+                        <span class="pageDown" @click="pageDownClick">下一页</span>
+                    </div>
+                </span>
             </div>
         </div>
     </div>
@@ -52,7 +62,8 @@
 
 </template>
 <script setup>
-    import {onMounted, ref} from 'vue' 
+    import {onMounted, onUpdated, ref} from 'vue' 
+    import { ElMessage } from 'element-plus';
      // 弹窗
     import '@/utils/bootstrap.css'
     import 'bootstrap/js/dist/modal.js'
@@ -91,23 +102,120 @@
             if(res1.data.code==0){
                 shopDetail.value=res1.data.data
             }
+        //根据页数获取页面的菜品
+        getDishListByPageNum(1)
 
-        const adiData2={
-            shopId: shopDetail.value.id
-        }
-
-        //获取全部的商品
-        const res2=await dishDetailAll(adiData2)
-        console.log(res2.data)
-            console.log(res2.data.data)
-            if(res2.data.code==0){
-                dealDealList.value=res2.data.data
-                console.log(dealDealList.value)
-            }
     })
+    onUpdated(()=>{
+        //判断是否是最后一页或者是第一页,并修改样式
+        pageJudgment()
+    })
+    function pageJudgment(){
+        //判断是否是最后一页或者是第一页
+        const paginationLinkList=document.querySelectorAll('.pagination-link')
+        console.log(paginationLinkList)
+        for(let i=0;i<paginationLinkList.length;i++){
+            console.log(paginationLinkList[i])
+            if(paginationLinkList[i].classList.contains('pageActive')){
+                console.log(paginationLinkList[i].innerHTML)
+                if(paginationLinkList[i].innerHTML==1){
+                    document.querySelector('.pageUp').classList.add('pageGray')
+                }
+                if(paginationLinkList[i].innerHTML==dealDealList.value[0].pageNum){
+                    document.querySelector('.pageDown').classList.add('pageGray')
+                }
+                return paginationLinkList[i]
+            }
+        }
+        
+    }
+    //点击上一页
+    function pageUpClick(){
+        //样式
+        const paginationLinkList=document.querySelectorAll('.pagination-link')
+        let pageCurrent=pageJudgment().innerHTML
+        if(pageCurrent==1){
+            ElMessage.warning("当前是第一页")
+            return
+        }
+        let pageNew=Number(pageCurrent)-1
+        for(let i=0;i<paginationLinkList.length;i++){
+            if(paginationLinkList[i].innerHTML==pageNew){
+                paginationLinkList[i].classList.add('pageActive')
+            }
+            if(paginationLinkList[i].innerHTML==pageCurrent){
+                paginationLinkList[i].classList.remove('pageActive')
+            }
+        }
+        if(pageNew==1){
+            document.querySelector('.pageUp').classList.add('pageGray')
+        }
+        document.querySelector('.pageDown').classList.remove('pageGray')
+        //根据页数获取页面的菜品
+        getDishListByPageNum(pageNew)
+
+    }
+    //点击下一页
+    function pageDownClick(){
+        //样式
+        const paginationLinkList=document.querySelectorAll('.pagination-link')
+        let pageCurrent=pageJudgment().innerHTML
+        console.log(pageCurrent)
+        console.log(dealDealList.value[0])
+        console.log(dealDealList.value[0].pageNum)
+        if(pageCurrent==dealDealList.value[0].pageNum){
+            ElMessage.warning("当前是最后一页")
+            return
+        }
+        let pageNew=Number(pageCurrent)+1
+        for(let i=0;i<paginationLinkList.length;i++){
+            if(paginationLinkList[i].innerHTML==pageNew){
+                paginationLinkList[i].classList.add('pageActive')
+            }
+            if(paginationLinkList[i].innerHTML==pageCurrent){
+                paginationLinkList[i].classList.remove('pageActive')
+            }
+            
+        }
+        if(pageNew==dealDealList.value[0].pageNum){
+            document.querySelector('.pageDown').classList.add('pageGray')
+        }
+        document.querySelector('.pageUp').classList.remove('pageGray')
+        //根据页数获取页面的菜品
+        getDishListByPageNum(pageNew)
+    }
+    //点击页数
+    function pageNumClick(event){
+        const paginationLinkList=document.querySelectorAll('.pagination-link')
+        for(let i=0;i<paginationLinkList.length;i++){
+            if(paginationLinkList[i].classList.contains('pageActive')){
+                paginationLinkList[i].classList.remove('pageActive')
+            }
+        }
+        event.target.classList.add('pageActive')
+        //根据页数获取页面的菜品
+        let pageNew=(Number)(event.target.innerHTML)
+        getDishListByPageNum(pageNew)
+        if(pageNew==dealDealList.value[0].pageNum){
+            document.querySelector('.pageDown').classList.add('pageGray')
+        }else{
+            document.querySelector('.pageDown').classList.remove('pageGray')
+        }
+        if(pageNew==1){
+            document.querySelector('.pageUp').classList.add('pageGray')
+        }else{
+            document.querySelector('.pageUp').classList.remove('pageGray')
+        }
+    }
 
     //点击新建菜品(打开下拉框)
     function addDealClick(){
+        console.log(dealDealList.value.length)
+        console.log(dealDealList.value)
+        console.log(dealDealList.length)
+        console.log(dealDealList.value.size)
+        console.log(dealDealList.size)
+        console.log(dealDealList.value[0].pageNum)
         console.log("点击")
         attributeStore.initialization()
         emits("clickFather",true);
@@ -136,6 +244,7 @@
     async function searchFunction(categoryId,saleState,searchInput){
         const apiData={
             shopId: shopDetail.value.id,
+            pageNum:1,
             saleState,
             categoryId,
             searchInput
@@ -146,6 +255,26 @@
             if(res.data.code==0){
                 console.log("获取成功")
                 dealDealList.value=res.data.data
+            }
+    }
+    //根据页数获取页面的菜品
+    async function getDishListByPageNum(pageNum){
+        const adiData2={
+            shopId: shopDetail.value.id,
+            pageNum:pageNum,
+            saleState:myClassSelect.value.value,
+            categoryId:myStateSelect.value.value,
+            searchInput:mySearchInput.value.value
+        }
+        console.log(adiData2)
+        //获取全部的商品
+        const res2=await selectDishByKeyword(adiData2)
+        console.log(res2.data)
+            console.log(res2.data.data)
+            if(res2.data.code==0){
+                dealDealList.value=res2.data.data
+                console.log(dealDealList.value)
+
             }
     }
    
@@ -255,5 +384,44 @@
     }
     .table8{
         width:20%;
+    }
+    
+    /*分页元素*/
+    .pagination-link{
+        background-color: #cccccc;
+        border-radius: 10px;
+        width: 20px;
+    }
+    .pageUp, .pageDown{
+        cursor: pointer;
+        margin-bottom: 50px;
+    }
+    .pageGray{
+        color: #ccc !important;;
+    }
+    .pageUp:hover, .pageDown:hover{
+        background-color: #f5f4f4;
+        color: #424242;
+        border-radius: 5px;
+    }
+    .pagination .pageActive{
+        background-color: #ececec;
+        box-shadow: 2px 2px 2px rgb(99, 99, 99);
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    .pagination span {
+        height: 20px;
+        cursor: pointer;
+        display: inline-block;
+        margin-right: 10px;
+        color: #333;
+        text-decoration: none;
     }
 </style>

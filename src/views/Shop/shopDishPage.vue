@@ -57,7 +57,8 @@
     let shopDetail=ref([])
     onMounted(async() => {
         const apiData0={
-            shopId: route.params.id
+            shopId: route.params.id,
+            pageNum: 1
         }
         const res0=await dishDetailAll(apiData0)
         console.log(route.params.id)

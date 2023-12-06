@@ -1,7 +1,7 @@
 import {ref} from 'vue'
 import {defineStore} from "pinia";
 import { ElMessage } from 'element-plus';
-import {dishDetailAll,selectDishById} from '@/apis/dish.js'
+import {dishDetailAll,selectDishById,dishDetailAllNoPage } from '@/apis/dish.js'
 
 export const useDishStore = defineStore('dish',()=>{
     const dishList=ref([
@@ -45,7 +45,7 @@ export const useDishStore = defineStore('dish',()=>{
         const apiData={
             shopId: shopId
         }
-        const res=await dishDetailAll(apiData)
+        const res=await dishDetailAllNoPage(apiData)
         console.log(res.data.data)
         if(res.data.code==0){
             console.log(res.data)

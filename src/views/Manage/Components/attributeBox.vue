@@ -74,7 +74,7 @@
     function addDishFlavorInputAddClick(){
         console.log(addDishFlavorContent.value)
         console.log(addDishFlavorPrice.value)
-        if(addDishFlavorContent.value==""||addDishFlavorPrice.value==""){
+        if(addDishFlavorContent.value==""||addDishFlavorPrice.value===""){
             ElMessage.error("输入不能为空")
             return
         }
