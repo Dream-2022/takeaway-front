@@ -4,6 +4,7 @@
             <span class="flavorDetailBox">
                 <span class="flavorAttribute">
                     <div class="flavorAttributeZi">{{ attribute.attributeName }}</div>
+                    <div class="flavorAttributeId">1</div>
                     <div class="editFlavorAttributeBox">
                         <span class="deleteFlavorAttribute" @click="deleteAttributeClick(flavorAttribute)"><i class="trash alternate outline icon"></i></span>
                         <span class="modifyFlavorAttribute" @click="modifyAttributeClick"><i class="edit outline icon"></i></span>
@@ -147,7 +148,11 @@
         display: inline-block;
     }
     .flavorAttributeZi{
+
         padding: 2px;
+    }
+    .flavorAttributeId{
+        display: none;
     }
     .editFlavorAttributeBox{
         display: flex;

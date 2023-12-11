@@ -34,6 +34,22 @@ export const useAttributeStore = defineStore('attribute',()=>{
             }
           ]
       }
+      //添加一个属性
+      const addAttributeOne=(FlavorContent,radioCheckboxValue)=>{
+        const attributeOne=({
+            attributeName: FlavorContent,
+            checked: radioCheckboxValue,
+            flavorList:[
+                {
+                    flavorName:"默认口味",
+                    price: 2
+                }
+            ]
+        })
+        console.log(attributeList.value)
+        
+        attributeList.value.push(attributeOne)
+      }
       //删除一个属性
       const deleteAttributeOne=(att)=>{
         const newAttribute = attributeList.value.filter(item => item !== att);  
@@ -89,6 +105,7 @@ export const useAttributeStore = defineStore('attribute',()=>{
     return {
         attributeList,
         initialization,
+        addAttributeOne,
         deleteAttributeOne,
         modifyAttributeOne,
         addFlavorOne,

@@ -58,7 +58,9 @@
   import {useDishOneStore} from'@/stores/dishOneStore.js'
   import {useCartOneStore} from'@/stores/cartOneStore.js'
   import {useAttributeStore} from'@/stores/attributeStore.js'
-
+  import { useRoute, useRouter } from 'vue-router';
+  
+  const route = useRoute();
   const dishStore=useDishStore()
   const dishOneStore=useDishOneStore()
   const cartOneStore=useCartOneStore()
@@ -66,7 +68,8 @@
   let modalDishPriceValue=ref(0)
   let modalDishFlavorZi=ref("")//显示在页面上已选的口味
   onMounted(async()=>{
-      cartOneStore.initialization()
+      console.log(route.params.id)
+      cartOneStore.initialization(localStorage.getItem("id"),route.params.id)
   })
   onUpdated(async()=>{
       //初始化页面的已选口味
@@ -171,7 +174,8 @@
     console.log(dishOneStore.dish.attributeList)
     console.log(dishOneStore.dish)
     console.log(modalDishPriceValue.value)
-    cartOneStore.addDishToCart(dishOneStore.dish,modalDishPriceValue.value)
+    console.log(route.params.id)
+    cartOneStore.addDishToCart(dishOneStore.dish,modalDishPriceValue.value,route.params.id)
     //设置购物车的打包费和总价
     cartOneStore.setCartDishPackSum()
     dishStore.modifySelectDishDown(false)//关闭弹窗

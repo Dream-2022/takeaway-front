@@ -28,7 +28,7 @@
     </div>
     
 
-    
+<!-- 新建菜品弹窗 -->
 <div class="zhezhao" id='zhezhao'></div>
 <div class="tankuang" style="display:none;">
     <div id="header">
@@ -76,7 +76,7 @@
                         <button class="addDishFlavorInputCancelButton" @click="addDishFlavorInputCancelClick">取消</button>
                     </div>
                     <div class="FlavorBoxes">
-                        <div v-for="item in attributeStore.getAttributeList()" :key="item">
+                        <div v-for="item in attributeStore.attributeList" :key="item">
                             <AttributeBox :attribute="item"></AttributeBox>
                         </div>
                     </div>
@@ -103,16 +103,21 @@
         </div>
     </div>
 </div>
+
+<!-- 新建分类弹窗 -->
+<AddCategoryPop></AddCategoryPop>
 </template>
 <script setup>
   import {onMounted, ref} from 'vue' 
   import {useRouter} from "vue-router"
   import {selectShopByUserId,uploadShopImage} from'@/apis/shop.js'
   import {selectCategoryAll} from'@/apis/category.js'
+  import {insertAttributeOne} from'@/apis/attributeApi.js'
   import {useAttributeStore} from'@/stores/attributeStore.js'
   import {insertDish} from '@/apis/dish.js'
   import { ElMessage } from 'element-plus';
   import AttributeBox from'@/views/Manage/Components/attributeBox.vue'
+  import AddCategoryPop from'@/views/Manage/Components/addCategoryPop.vue'
   const router = useRouter();
   const attributeStore=useAttributeStore()
   var shopDetail=ref([])//商家信息
@@ -213,17 +218,39 @@
         detail:addDishDetailRef.value,
         pack:addDishPackingRef.value,
         weight:addDishWeightRef.value,
-        material:addDishMaterialRef.value,
-        attributeList:attributeStore.getAttributeList()
+        material:addDishMaterialRef.value
     }
     const res=await insertDish(apiData)
       console.log(res.data)
       console.log(res.data.data)
       if(res.data.code==0){
         console.log("添加成功")
+        hidder()
         ElMessage.success("菜品添加成功")
       }
-
+    console.log(res.data.data.id)
+    const attributeList=attributeStore.getAttributeList().value
+    console.log(attributeList)
+    console.log(attributeList.length)
+    for(let i=0;i<attributeList.length;i++){
+        console.log(attributeList[i])
+        console.log(attributeList[i].attributeName)
+        console.log(attributeList[i].checked)
+        console.log(attributeList[i].flavorList)
+        const apiData1={
+            dishId:res.data.data.id,
+            attributeName:attributeList[i].attributeName,
+            checked:attributeList[i].checked,
+            flavorList:attributeList[i].flavorList
+        }
+        const res1=await insertAttributeOne(apiData1)
+        console.log(res1.data)
+        console.log(res1.data.data)
+        if(res1.data.code==0){
+          console.log("属性添加成功")
+        }
+    }
+    
     //添加菜品的口味
     console.log(res.data.data.id)
   }
@@ -241,7 +268,7 @@
         ElMessage.error("添加的属性名不能为空")
         return
     }
-    attributeStore.addAttribute(addDishFlavorContent.value,radioCheckboxValue.value)
+    attributeStore.addAttributeOne(addDishFlavorContent.value,radioCheckboxValue.value)
     ElMessage.success("添加成功")
     existFlavorButton.value=true
   }
@@ -282,9 +309,7 @@
                     console.log(res)
                     const userObj = res.data.data
                     console.log(userObj)
-                    localStorage.setItem("picture",userObj.url);
                     console.log("洒水："+userObj.url)
-                    localStorage.setItem("picture",userObj.url)
                     myStorePhoto.value=userObj.url
                     console.log(myStorePhoto.value)
                     console.log(myStorePhoto)

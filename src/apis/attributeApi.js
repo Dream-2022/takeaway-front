@@ -7,3 +7,11 @@ export const selectDishAttributeByDishId=(data)=>{
         data
     })
 }
+//添加一个属性
+export const insertAttributeOne=(data)=>{
+    return http({
+        url: '/api/pre/dishAttribute/insertAttributeOne',
+        method: 'POST',
+        data
+    })
+}

@@ -130,10 +130,12 @@
     import { ElMessage } from 'element-plus';
     import { useRoute, useRouter } from 'vue-router';
     import 'element-plus/theme-chalk/index.css'
-    import http from "@/utils/http.js"
+    import {useCartStore} from'@/stores/cartStore.js'
+
     import {changeUserInfo,obtainCodeInfo,modifyPassword,registerUser} from '@/apis/login.js'
     // D:\javaj\TakeawayPlatform\TakeawayFront\src\utils\http.js
     const router = useRouter();
+    const cartStore=useCartStore()
     let promptLogin=ref(" ")//登录页面的格式提示
     let promptLoginForget=ref(" ")//登录忘记密码页面的格式提示
     let ObtainCode=ref("获取验证码")//显示验证码
@@ -348,6 +350,10 @@
                 localStorage.setItem("picture",user.picture)
                 localStorage.setItem("profile",user.profile)
                 localStorage.setItem("birthday",user.birthday)
+
+                //接下来是找到对应的购物车--------------
+                cartStore.initializationCartAll(user.id)
+
                 console.log("页面跳转")
                 setTimeout(()=>{
                     router.push('/MainPage') 

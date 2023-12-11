@@ -1,7 +1,7 @@
 import { ref,toRaw } from 'vue'
 import {ElMessage} from "element-plus";
 import {defineStore} from "pinia";
-
+import {useCartStore} from'@/stores/cartStore.js'
 export const useCartOneStore = defineStore('cartOne',()=>{
     const cartOne=ref(
         {
@@ -10,20 +10,29 @@ export const useCartOneStore = defineStore('cartOne',()=>{
             dishIdList:[]
         }
     );
+    const cartStore=useCartStore()
     let cartDishPriceSum=ref(0)//购物车总价
     let cartDishPackSum=ref(0)//打包费总价
     //设置总价和打包费
     const setCartDishPackSum=()=>{
         cartDishPriceSum.value=0
         cartDishPackSum.value=0
+        console.log(cartOne.value)
+        console.log(cartOne.value[0])
         for (let i = 0; i < cartOne.value[0].dishIdList.length; i++) {  
             cartDishPackSum.value=cartDishPackSum.value+(cartOne.value[0].dishIdList[i].quantity)*(cartOne.value[0].dishIdList[i].pack)
-            cartDishPriceSum.value=cartDishPriceSum.value+(cartOne.value[0].dishIdList[i].quantity)*(cartOne.value[0].dishIdList[i].price)+cartDishPackSum.value
+            cartDishPriceSum.value=cartDishPriceSum.value+(cartOne.value[0].dishIdList[i].quantity)*(cartOne.value[0].dishIdList[i].price)
         }
+        cartDishPriceSum.value=cartDishPriceSum.value+cartDishPackSum.value
     }
     //点击弹窗时，初始化属性数组
     const initialization=(userId,shopId)=>{
+        if(shopId==undefined){
+            return
+        }
         console.log(cartOne.value)
+        // console.log(cartStore.cartList.value)
+        
         if(cartOne.value.userId!=userId||cartOne.value.shopId!=shopId){
             cartOne.value=[{
                 userId:0,
@@ -34,10 +43,10 @@ export const useCartOneStore = defineStore('cartOne',()=>{
         
     }
     //写入本地
-    const addDishToCart=(dish,dishPrice)=>{
+    const addDishToCart=(dish,dishPrice,shopId)=>{
         //首先判断是否跟之前加入的是一样的
-        cartOne.userId=1
-        cartOne.shopId=2
+        cartOne.value[0].userId=localStorage.getItem("id")
+        cartOne.value[0].shopId=shopId
         console.log(cartOne.value)
         console.log(cartOne)
         console.log(cartOne.value[0].dishIdList)
@@ -52,6 +61,9 @@ export const useCartOneStore = defineStore('cartOne',()=>{
         // console.log(cartOne.value.dishIdList.length)
         // cartOne.value.dishIdList.push(newDish)
         // cartOne.value.dishIdList.push(newDish)
+        //然后发送给总的购物车，将这个购物车信息加入，然后传到后端
+        console.log(JSON.parse(JSON.stringify(cartOne.value)))
+        cartStore.addCartOne(JSON.parse(JSON.stringify(cartOne.value[0])))
     }
     //从购物车中删除一个商品
     const deleteDishFromCart=(dish)=>{

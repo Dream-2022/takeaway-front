@@ -10,6 +10,10 @@ export const useCategoryStore = defineStore('category',()=>{
             categoryName: ""
         }
       ]);
+    let openAddCategoryDown=ref(false)//打开新增分类弹窗
+    const setAddCategoryDown=(downValue)=>{
+        openAddCategoryDown.value=downValue
+    }
     //通过shopId从数据库获取分类列表
     const obtainCategoryList=async(shopId)=>{
         const apiData={
@@ -34,6 +38,8 @@ export const useCategoryStore = defineStore('category',()=>{
     
     return {
         categoryList,
+        openAddCategoryDown,
+        setAddCategoryDown,
         obtainCategoryList,
         getCategoryList
     }

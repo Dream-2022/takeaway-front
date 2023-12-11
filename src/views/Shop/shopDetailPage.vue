@@ -4,7 +4,7 @@
         <router-view></router-view>
 
         <div class="footerBox">
-            <div class="cartBox">
+            <div class="cartBox cartBoxNone">
                 <div class="cartBoxTop">
                     <span class="cartBoxTopZi">已选商品</span>
                     <span class="cartBoxTopPackZi">打包费&nbsp;&nbsp;</span><span class="cartBoxTopPrice">{{ cartOneStore.cartDishPackSum }}</span><span class="cartBoxTopPackZi2">&nbsp;元</span>
@@ -32,12 +32,12 @@
                     </div>
                 </div>
             </div>
-            <span><i class="shopping cart icon"></i></span>
+            <span @click="cartBoxClick"><i class="shopping cart icon"></i></span>
             <span class="shoppingNumber">{{ cartOneStore?.cartOne[0]?.dishIdList.length }}</span>
 
-            <span>￥</span><span class="shoppingPrice">{{ cartOneStore.cartDishPriceSum }}</span>
+            <span  @click="cartBoxClick">￥</span><span class="shoppingPrice" @click="cartBoxClick">{{ cartOneStore.cartDishPriceSum }}</span>
             <span class="footerZi">另需配送费约￥</span><span>{{ shopDetail.packing }}</span>
-            <button class="footerBottom">结算</button>
+            <button class="footerButton" @click="footerButtonClick">结算</button>
         </div>
         <div class="nullBox"></div>
 
@@ -59,6 +59,7 @@
     let shopDetail=ref([])
     
     const route = useRoute();
+    const router = useRouter();
     onMounted(async() => {
         console.log(route.params.id)
         //获取dish列表
@@ -105,6 +106,22 @@
         cartOneStore.setCartDishPackSum()
 	})
     
+    //点击结算购物车
+    function footerButtonClick(){
+        //跳转页面
+        router.push('/OrderPage') 
+    }
+
+    //点击查看购物车
+    function cartBoxClick(){
+        if(document.querySelector('.cartBox').classList.contains('cartBoxNone')){
+            document.querySelector('.cartBox').classList.remove('cartBoxNone')
+        }
+        else{
+            document.querySelector('.cartBox').classList.add('cartBoxNone')
+        }
+    }
+
     //点击减少购物车数量
     function cartDishBoxRightMinusClick(dishOne){
         if(dishOne.quantity==1){
@@ -142,6 +159,9 @@
         background-color: #fff;
         box-shadow:  0px 0px 3px rgb(42, 108, 161);
         color:black;
+    }
+    .cartBoxNone{
+        display: none;
     }
     .cartBoxTop{
         padding-left: 50px;
@@ -269,7 +289,7 @@
         margin-left: 20px;
         color: #f0f0f0
     }
-    .footerBottom{
+    .footerButton{
         border: 1px solid white;
         background-color: #fff;
         color: #0071da;

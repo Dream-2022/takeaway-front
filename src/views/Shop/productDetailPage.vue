@@ -77,7 +77,11 @@
     import {ref,onMounted,onBeforeUnmount} from 'vue'
     import { useRoute, useRouter } from 'vue-router';
     import {useDishStore} from'@/stores/dishStore.js'
+    import {useDishOneStore} from'@/stores/dishOneStore.js'
+    import {useAttributeStore} from'@/stores/attributeStore.js'
     const dishStore=useDishStore()
+    const dishOneStore=useDishOneStore()
+    const attributeStore=useAttributeStore()
     const router = useRouter();
     const route = useRoute();
     var dishContent=ref([])
@@ -93,7 +97,13 @@
     
     var navBox=ref()
 
-    
+    //加入购物车
+    function addShoppingCartButton(){
+        dishStore.modifySelectDishDown(true)
+        console.log(dishOneStore.dish)
+        dishOneStore.obtainDishOne(route.params.dishId)
+        attributeStore.obtainAttributeList(dishOneStore.dish.id)
+    }    
     //检测滑动事件
     console.log(route.params.id)
     function handleScroll() {

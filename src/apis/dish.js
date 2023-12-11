@@ -46,3 +46,19 @@ export const selectDishById=(data)=>{
         data
     })
 }
+//通过categoryId找到所有的商品
+export const selectDishByCategoryId=(data)=>{
+    return http({
+        url: '/api/pre/dish/selectDishByCategoryId',
+        method: 'POST',
+        data
+    })
+}
+//通过shopId和商品关键词找到对应的商品
+export const selectDishByValue=(data)=>{
+    return http({
+        url: '/api/pre/dish/selectDishByValue',
+        method: 'POST',
+        data
+    })
+}

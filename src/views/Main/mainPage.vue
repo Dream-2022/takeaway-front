@@ -177,35 +177,35 @@
   const router = useRouter();
   const Router=useRouter()
 
-let dianWoButtonZi=ref("添加")
-function dianwo(){
-   document.getElementById('zhezhao').style.display="";
-   document.querySelector('.tankuang').style.display="";
-   obtainMyAddressAll(localStorage.getItem("id"))
-}
-function hidder(){
-   document.getElementById('zhezhao').style.display="none";
-   document.querySelector('.tankuang').style.display="none";
-}
-function dianwo1(){
-   document.getElementById('zhezhao1').style.display="";
-   document.querySelector('.tankuang1').style.display="";
-}
-function hidder1(){
-   document.getElementById('zhezhao1').style.display="none";
-   document.querySelector('.tankuang1').style.display="none";
-}
-//在第一个弹窗时点击添加按钮，进入第二个弹窗
-function addAddressClick(){
-  dianWoButtonZi.value="添加"
-  myAddressDetail.value.value=""
-  myName.value.value=""
-  myPhone.value.value=""
-  //初始化市县下拉框
-  dropdownChu()
-  hidder()
-  dianwo1()
-}
+  let dianWoButtonZi=ref("添加")
+  function dianwo(){
+    document.getElementById('zhezhao').style.display="";
+    document.querySelector('.tankuang').style.display="";
+    obtainMyAddressAll(localStorage.getItem("id"))
+  }
+  function hidder(){
+    document.getElementById('zhezhao').style.display="none";
+    document.querySelector('.tankuang').style.display="none";
+  }
+  function dianwo1(){
+    document.getElementById('zhezhao1').style.display="";
+    document.querySelector('.tankuang1').style.display="";
+  }
+  function hidder1(){
+    document.getElementById('zhezhao1').style.display="none";
+    document.querySelector('.tankuang1').style.display="none";
+  }
+  //在第一个弹窗时点击添加按钮，进入第二个弹窗
+  function addAddressClick(){
+    dianWoButtonZi.value="添加"
+    myAddressDetail.value.value=""
+    myName.value.value=""
+    myPhone.value.value=""
+    //初始化市县下拉框
+    dropdownChu()
+    hidder()
+    dianwo1()
+  }
 
 //存储地址
 let addressList=ref([])
@@ -336,8 +336,6 @@ async function dropdownChange(newProvince,City,County){
               
           }
       }
-
-  
 }
 //省下拉框的内容改变
 async function handleProvinceChange(event){

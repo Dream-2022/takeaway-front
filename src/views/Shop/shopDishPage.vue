@@ -3,7 +3,7 @@
         <div class="shopImageDetail">
             <div class="shopNavigation">
                 <span class="searchInputBox">
-                    <input class="searchInput"  placeholder="想吃什么搜一搜">
+                    <input class="searchInput"  placeholder="想吃什么搜一搜" v-model="searchInputValue">
                 </span>
                 <span @click="isClickSearchClick"><i class="search icon"></i></span>
 
@@ -50,6 +50,7 @@
     import {insertCollect, deleteCollect} from '@/apis/collect.js'
     import {dishDetailAll} from '@/apis/dish.js'
     import {selectById} from '@/apis/shop.js'
+    const router = useRouter();
     const route = useRoute();
     const categoryStore=useCategoryStore()
 
@@ -89,6 +90,18 @@
         categoryStore.obtainCategoryList(shopDetail.value.id)
 	})
 
+    let searchInputValue=ref("")
+    //点击在店内搜索
+    function isClickSearchClick(){
+        console.log("点击")
+        const id= route.params.id
+        const searchValue=searchInputValue.value
+        if(searchInputValue.value==""){
+            ElMessage.warning("请输入搜索内容")
+            return
+        }
+        router.push(`/shopDetailPage/${id}/shopSearchPage/${searchValue}`);
+    }
     //点击收藏或取消收藏店铺
     var isCollect=ref(false)
     async function collectClick(){

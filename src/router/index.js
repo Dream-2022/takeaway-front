@@ -12,7 +12,8 @@ import ShopDishBox from '../views/Shop/Components/shopDishBox.vue'
 import ShopRemarkBox from '../views/Shop/Components/shopRemarkBox.vue'
 import ShopInformationBox from '../views/Shop/Components/shopInformationBox.vue'
 
-import ProductDetailPage from '../views/Shop/productDetailPage.vue'
+import ProductDetailPage from '../views/Shop/productDetailPage.vue' 
+import ShopSearchPage from '../views/Shop/shopSearchPage.vue' 
 
 import ManagePage from '../views/Manage/managePage.vue'
 import OrderHandlePage from '../views/Manage/Pages/orderHandlePage.vue'
@@ -21,6 +22,8 @@ import SetMealPage from '../views/Manage/Pages/setMealPage.vue'
 import CategoryManagePage from '../views/Manage/Pages/categoryManagePage.vue'
 
 import BusinessPage from '../views/Business/businessPage.vue'
+
+import OrderPage from '../views/Order/orderPage.vue'
 
 const routes = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,6 +58,7 @@ const routes = createRouter({
           redirect: "/shopDetailPage/:id/shopDishPage",
           children: [  
             { path: 'productDetailPage/:dishId', component: ProductDetailPage },
+            { path: 'shopSearchPage/:searchValue', component: ShopSearchPage },
             { 
               path: 'shopDishPage', 
               component: ShopDishPage ,
@@ -83,6 +87,11 @@ const routes = createRouter({
         {path:'setMealPage',component:SetMealPage},
         {path:'categoryManagePage',component:CategoryManagePage}
       ]
+    },
+    {
+      path:'/orderPage',
+      name:'orderPage',
+      component: OrderPage
     },
     {
       path:'/businessPage',

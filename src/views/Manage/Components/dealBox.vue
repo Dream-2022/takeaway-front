@@ -26,6 +26,10 @@ import { ref, defineProps } from 'vue'
     })
 </script>
 <style scoped>
+.categoryDishBox .dealPageTableFirst{
+    
+    visibility: hidden;
+}
 .TrDealPageTable{
     margin-bottom: 8px;
 }
