@@ -20,7 +20,7 @@
                             <div class="cartDishBoxMight">
                                 <div class="cartDishBoxRightName">{{ item.dishName }}</div>
                                 <div class="cartDishBoxRightFlavorZi">已选:&nbsp;&nbsp;</div>
-                                <div class="cartDishBoxRightFlavor">{{ cartFlavorListValue }}</div><br>
+                                <div class="cartDishBoxRightFlavor">{{ item.dishFlavorZi }}</div><br>
                                 <span class="cartDishBoxRightPriceZi">￥</span><span class="cartDishBoxRightPrice">{{ item.price }}</span>
                             </div>
                             <div class="cartDishBoxRight">
@@ -33,7 +33,7 @@
                 </div>
             </div>
             <span @click="cartBoxClick"><i class="shopping cart icon"></i></span>
-            <span class="shoppingNumber">{{ cartOneStore?.cartOne[0]?.dishIdList.length }}</span>
+            <span class="shoppingNumber">{{ cartOneStore?.cartOne[0]?.dishIdList==undefined?0:cartOneStore?.cartOne[0]?.dishIdList.length }}</span>
 
             <span  @click="cartBoxClick">￥</span><span class="shoppingPrice" @click="cartBoxClick">{{ cartOneStore.cartDishPriceSum }}</span>
             <span class="footerZi">另需配送费约￥</span><span>{{ shopDetail.packing }}</span>
@@ -52,19 +52,23 @@
     import {selectById} from '@/apis/shop.js'
     import {selectCollectByUserIdShopId, insertCollect, deleteCollect} from '@/apis/collect.js'
     import {useDishStore} from'@/stores/dishStore.js'
+    import {useCartStore} from'@/stores/cartStore.js'
     import {useCartOneStore} from'@/stores/cartOneStore.js'
     const dishStore=useDishStore()
+    const cartStore=useCartStore()
     const cartOneStore=useCartOneStore()
     let dishes=ref([])
     let shopDetail=ref([])
     
     const route = useRoute();
     const router = useRouter();
-    onMounted(async() => {
+    onMounted(async () => {
+        await cartStore.initializationCartAll(localStorage.getItem("id"))
+        console.log(cartStore.cartList)
         console.log(route.params.id)
         //获取dish列表
         dishStore.obtainDishList(route.params.id)
-        dishes.value=dishStore.getDishList()
+        dishes.value=dishStore.dishList
 
         const apiData={
             shopId: route.params.id
@@ -102,12 +106,81 @@
             else{
                 ElMessage.error(res2.data.message)
             }
-        //设置购物车的打包费和总价
-        cartOneStore.setCartDishPackSum()
+       
+        //从cartList中找是否存在满足userId和shopId的
+        console.log(cartStore.cartList)
+        console.log(cartStore.cartList.length)
+        let flag=true
+        cartOneStore.cartOne.value=[]
+        for(let i=0;i<cartStore.cartList.length;i++){
+            console.log(cartStore.cartList[i])
+            console.log([cartStore.cartList[i]])
+            console.log(cartStore.cartList[i].userId)
+            console.log(cartStore.cartList[i].detailJson)
+            // console.log(JSON.parse(cartStore.cartList[i].detailJson))
+            const detail=JSON.parse(cartStore.cartList[i].detailJson)
+            console.log(detail)
+            if(cartStore.cartList[i].userId==localStorage.getItem("id")&&cartStore.cartList[i].shopId==route.params.id){
+                //说明原先存在该购物车，直接赋值到cartOne
+                console.log("说明存在")
+                // cartOneStore.cartOne[0].userId=localStorage.getItem("id")
+                // cartOneStore.cartOne[0].shopId=route.params.id
+                // console.log(cartStore.cartList[i])
+                // console.log(cartStore.cartList[i].detailJson)
+                // console.log(JSON.parse(JSON.stringify(cartStore.cartList[i].detailJson)))
+                // console.log(JSON.parse(cartStore.cartList[i].detailJson))
+                // cartOneStore.cartOne[0].dishIdList=(JSON.parse(cartStore.cartList[i].detailJson).dishIdList)
+
+                // console.log(cartOneStore.cartOne.value[0])
+                // cartOneStore.cartOne=[cartStore.cartList[i]]
+                // console.log(cartOneStore.cartOne)
+                // cartOneStore.cartOne[0].dishIdList=JSON.parse(cartStore.detailJson)
+                cartOneStore.cartOne=detail
+                
+                console.log( cartOneStore.cartOne)
+                flag=false
+            }
+        }
+        //如果不存在就初始化一下
+        if(flag){
+            console.log("如果不存在就初始化一下")
+            cartOneStore.cartOne=[]
+        }
+        console.log(cartOneStore.cartOne)
+        console.log(cartOneStore.cartOne[0])
+
+         //设置购物车的打包费和总价
+         cartOneStore.setCartDishPackSum()
 	})
     
     //点击结算购物车
     function footerButtonClick(){
+        //获取商家的名称
+        console.log(shopDetail.value)
+        console.log(shopDetail.value.name)
+        cartOneStore.cartOne[0].shopName=shopDetail.value.name
+        //将加入的购物车先进行处理（为了渲染选中的属性方便，先将里面的dishFlavorZi渲染好）
+        const dishList=cartOneStore.cartOne[0].dishIdList
+        console.log(dishList)
+        let dishFlavorZi=ref("")
+        for(let i=0;i<dishList.length;i++){
+            console.log(dishList[i])
+            for(let j=0;j<dishList[i].attributeList.length;j++){
+                console.log(dishList[i].attributeList[j])
+                for(let k=0;k<dishList[i].attributeList[j].flavorList.length;k++){
+                    if(dishFlavorZi.value==""){
+                        dishFlavorZi.value=dishList[i].attributeList[j].flavorList[k].flavorName
+                    }
+                    else{
+                        dishFlavorZi.value=dishFlavorZi.value+"/"+dishList[i].attributeList[j].flavorList[k].flavorName
+                    }
+                }
+            }
+            console.log(dishFlavorZi.value)
+            dishList[i].dishFlavorZi=dishFlavorZi.value
+        }
+        console.log(dishList)
+        localStorage.setItem("orderShopList",JSON.stringify(cartOneStore.cartOne))
         //跳转页面
         router.push('/OrderPage') 
     }

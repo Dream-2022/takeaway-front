@@ -4,11 +4,11 @@ import {defineStore} from "pinia";
 import {useCartStore} from'@/stores/cartStore.js'
 export const useCartOneStore = defineStore('cartOne',()=>{
     const cartOne=ref(
-        {
+        [{
             userId:0,
             shopId:0,
             dishIdList:[]
-        }
+        }]
     );
     const cartStore=useCartStore()
     let cartDishPriceSum=ref(0)//购物车总价
@@ -19,11 +19,16 @@ export const useCartOneStore = defineStore('cartOne',()=>{
         cartDishPackSum.value=0
         console.log(cartOne.value)
         console.log(cartOne.value[0])
-        for (let i = 0; i < cartOne.value[0].dishIdList.length; i++) {  
-            cartDishPackSum.value=cartDishPackSum.value+(cartOne.value[0].dishIdList[i].quantity)*(cartOne.value[0].dishIdList[i].pack)
-            cartDishPriceSum.value=cartDishPriceSum.value+(cartOne.value[0].dishIdList[i].quantity)*(cartOne.value[0].dishIdList[i].price)
+        console.log(cartOne?.value[0]?.dishIdList)
+        if(cartOne?.value[0]?.dishIdList){
+            for (let i = 0; i < cartOne.value[0].dishIdList.length; i++) {  
+                cartDishPackSum.value=cartDishPackSum.value+(cartOne.value[0].dishIdList[i].quantity)*(cartOne.value[0].dishIdList[i].pack)
+                cartDishPriceSum.value=cartDishPriceSum.value+(cartOne.value[0].dishIdList[i].quantity)*(cartOne.value[0].dishIdList[i].price)
+            }
         }
-        cartDishPriceSum.value=cartDishPriceSum.value+cartDishPackSum.value
+        cartDishPackSum.value=(cartDishPackSum.value).toFixed(2)
+        cartDishPriceSum.value=cartDishPriceSum.value+(Number)(cartDishPackSum.value)
+        cartDishPriceSum.value=(cartDishPriceSum.value).toFixed(2)
     }
     //点击弹窗时，初始化属性数组
     const initialization=(userId,shopId)=>{
@@ -45,25 +50,57 @@ export const useCartOneStore = defineStore('cartOne',()=>{
     //写入本地
     const addDishToCart=(dish,dishPrice,shopId)=>{
         //首先判断是否跟之前加入的是一样的
-        cartOne.value[0].userId=localStorage.getItem("id")
-        cartOne.value[0].shopId=shopId
-        console.log(cartOne.value)
         console.log(cartOne)
-        console.log(cartOne.value[0].dishIdList)
+        // if(cartOne.userId!=localStorage.getItem("id")||cartOne.shopId!=localStorage.getItem("shopId")){
+        //     cartOne=[]
+        // }
+        console.log(cartOne)
+        
+        
+        console.log(cartOne.value)
+        console.log(cartOne.value[0])
+        // console.log(cartOne.dishIdList)
 
+        console.log(dish)
         const dishJson= JSON.parse(JSON.stringify(dish))
         dishJson.price=JSON.parse(JSON.stringify(dishPrice))
-        cartOne.value[0].dishIdList.push(JSON.parse(JSON.stringify(dishJson)))
-        console.log(cartOne.value[0].dishIdList)
-
+        console.log(dishJson)
+        console.log(JSON.stringify(dishJson))
+        console.log(cartOne.value)
+        console.log(cartOne.value.length)
+        if(cartOne.value.length==0){
+            const cartX={
+                userId:localStorage.getItem("id"),
+                shopId: localStorage.getItem("shopId"),
+                dishIdList:[dishJson]
+            }
+            console.log(cartX)
+            cartOne.value.push(cartX)
+        }else{
+            console.log(cartOne.value)
+            console.log(cartOne.value[0].dishIdList)
+            cartOne.value[0].dishIdList.push(dishJson)
+        }
+        
+        // console.log(cartOne.value[0].dishIdList)
+        // if(cartOne.value[0].dishIdList==undefined){
+        //     console.log("是空的")
+        //     cartOne.value[0].dishIdList=[]
+        // }
+        // cartOne.value[0].userId=
+        // cartOne.value[0].shopId=
+        // cartOne.value[0].dishIdList.push(dishJson)
+        console.log(cartOne)
+        console.log(cartOne.value)
+        console.log(cartOne.dishIdList)
         //   console.log(cartOne.value)
         //   cartOne.value=JSON.parse(JSON.stringify(cartOne.value))
         // console.log(cartOne.value.dishIdList.length)
         // cartOne.value.dishIdList.push(newDish)
         // cartOne.value.dishIdList.push(newDish)
         //然后发送给总的购物车，将这个购物车信息加入，然后传到后端
-        console.log(JSON.parse(JSON.stringify(cartOne.value)))
-        cartStore.addCartOne(JSON.parse(JSON.stringify(cartOne.value[0])))
+        // console.log(cartOne.value[0])
+        cartStore.addCartOne(cartOne)
     }
     //从购物车中删除一个商品
     const deleteDishFromCart=(dish)=>{

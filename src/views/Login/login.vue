@@ -346,7 +346,6 @@
                 localStorage.setItem("email",user.email)
                 localStorage.setItem("nickname",user.nickname);
                 localStorage.setItem("gender",user.gender)
-                localStorage.setItem("phone",user.phone)
                 localStorage.setItem("picture",user.picture)
                 localStorage.setItem("profile",user.profile)
                 localStorage.setItem("birthday",user.birthday)

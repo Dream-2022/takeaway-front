@@ -8,7 +8,7 @@
         </div>
         <div class="categoryBoxBottom">
             <div class="categoryBottomBoxes">
-                <div class="categoryBottomBox" v-for="item in classList" :key="item">
+                <div class="categoryBottomBox" v-for="item in categoryStore.categoryList" :key="item">
                     <div class="categoryBottomUpper">
                         <div class="categoryBoxLeft">
                             <div class="categoryBoxLeftName">{{ item.categoryName }}</div>
@@ -48,22 +48,13 @@
     import { ElMessage } from 'element-plus';
     const categoryStore=useCategoryStore()
 
-    let classList=ref([])
     let dishList=ref([])
     let boxNoneValue=ref(false)
     let categoryBoxInputValue=ref("")//输入查询的内容
     onMounted(async()=>{
         //获取菜品分类下拉框
-        const apiData={
-            shopId: localStorage.getItem("shopId")
-        }
-        const res=await selectCategoryAll(apiData)
-            console.log(res.data)
-            console.log(res.data.data)
-            console.log(res.data.data)
-            if(res.data.code==0){
-                classList.value=res.data.data
-            }
+        categoryStore.obtainCategoryList(localStorage.getItem("shopId"))
+
         boxNoneValue.value=(document.querySelector('.categoryBottomBoxes').childNodes.length==2)
     })
 

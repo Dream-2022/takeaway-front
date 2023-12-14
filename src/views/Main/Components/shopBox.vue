@@ -32,6 +32,7 @@ defineProps({
 })
 
 const redirectToShop=(id)=>{
+    localStorage.setItem("shopId",id)
     Router.push(`/shopDetailPage/${id}/shopDishPage/ShopDishBox`);
 }
 </script>

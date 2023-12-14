@@ -11,6 +11,8 @@
             <div class="productZi">月售:</div><div class="productSale">1000</div><br>
             <div class="productZi2">￥</div><strong class="productPrice">{{ dishContent.price }}</strong><div class="productZi2">&nbsp;起</div>
             <div class="addShoppingCart" @click="addShoppingCartButton">加入购物车</div>
+            <div class="addDishCollet" @click="addDishCollectButton" v-if="dishCollectValue"><i class="star outline icon"></i>收藏菜品</div>
+            <div class="addDishCollet" @click="deleteDishCollectButton" v-if="!dishCollectValue"><i class="star icon"></i>收藏菜品</div>
         </div>
         <div class="productBottomBox">
             <nav id="navbar-example2" class="navbar bg-body-tertiary px-3 mb-3">
@@ -76,6 +78,8 @@
 <script setup>
     import {ref,onMounted,onBeforeUnmount} from 'vue'
     import { useRoute, useRouter } from 'vue-router';
+    import { ElMessage } from 'element-plus';
+    import {selectCollectDishByIdAndDishId, deleteDishCollect, addDishCollect } from'@/apis/collectDishApi.js'
     import {useDishStore} from'@/stores/dishStore.js'
     import {useDishOneStore} from'@/stores/dishOneStore.js'
     import {useAttributeStore} from'@/stores/attributeStore.js'
@@ -85,11 +89,26 @@
     const router = useRouter();
     const route = useRoute();
     var dishContent=ref([])
+    let  dishCollectValue=ref(true)
     onMounted(async() => {
-      window.addEventListener('scroll', handleScroll);
-      //渲染页面
-      dishContent.value=dishStore.getDishOne(route.params.dishId)
-      console.log(dishContent.value)
+        window.addEventListener('scroll', handleScroll);
+        //渲染页面
+        await dishStore.obtainDishList(route.params.id)
+        dishContent.value=dishStore.getDishOne(route.params.dishId)
+        console.log(dishContent.value)
+        //判断该用户是否收藏了该商品
+        const apiData={
+            userId: localStorage.getItem("id"),
+            dishId: route.params.dishId
+        }
+        const res=await selectCollectDishByIdAndDishId(apiData)
+            console.log(res.data.data)
+            if(res.data.data=="收藏了商品"){
+                dishCollectValue.value=false
+            }else{
+                console.log("未收藏商品")
+                dishCollectValue.value=true
+            }
     });
     onBeforeUnmount(() => {
       window.removeEventListener('scroll', handleScroll);
@@ -103,7 +122,29 @@
         console.log(dishOneStore.dish)
         dishOneStore.obtainDishOne(route.params.dishId)
         attributeStore.obtainAttributeList(dishOneStore.dish.id)
-    }    
+    }   
+    //收藏菜品
+    async function addDishCollectButton(){
+        const apiData={
+            userId: localStorage.getItem("id"),
+            dishId: route.params.dishId
+        }
+        const res=await addDishCollect(apiData)
+            console.log(res.data.data)
+            dishCollectValue.value=false
+            ElMessage.success("收藏成功")
+    } 
+    //取消收藏菜品
+    async function deleteDishCollectButton(){
+        const apiData={
+            userId: localStorage.getItem("id"),
+            dishId: route.params.dishId
+        }
+        const res=await deleteDishCollect(apiData)
+            console.log(res.data.data)
+            dishCollectValue.value=true
+            ElMessage.success("取消收藏成功")
+    }
     //检测滑动事件
     console.log(route.params.id)
     function handleScroll() {
@@ -220,6 +261,16 @@
         right: 67px;
         background-color: #0292FE;
         color: white;
+        padding: 5px 15px 5px 15px;
+        border-radius: 20px;
+    }
+    .addDishCollet{
+        position: absolute;
+        cursor: pointer;
+        top: 24px;
+        right: 65px;
+        color:#006cbe;
+        font-size: 16px;
         padding: 5px 15px 5px 15px;
         border-radius: 20px;
     }

@@ -18,12 +18,10 @@ import {ref,defineEmits} from 'vue';
 import {useDishStore} from'@/stores/dishStore.js'
 import {useDishOneStore} from'@/stores/dishOneStore.js'
 import {useAttributeStore} from'@/stores/attributeStore.js'
-import {useCartOneStore} from'@/stores/cartOneStore.js'
 
 const dishStore=useDishStore()
 const dishOneStore=useDishOneStore()
 const attributeStore=useAttributeStore()
-const cartOneStore=useCartOneStore()
 const emit = defineEmits()
 const router=useRouter()
 const route = useRoute()

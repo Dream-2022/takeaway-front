@@ -13,15 +13,19 @@ export const useCartStore = defineStore('cart',()=>{
         }
         const res=await selectCartAll(apiData)
             console.log(res.data.data)
-            if(res.data.code==0){
+            if(res.data.data.length!=0){
                 console.log("获取成功")
+                console.log(res.data.data)
                 console.log(res.data.data[0].userId)
                 console.log(res.data.data[0].detailJson)
-                cartList.value=JSON.parse(res.data.data[0].detailJson)
+                cartList.value=res.data.data
                 console.log(cartList.value)
                 for(let i=0;i<cartList.value.length;i++){
                     console.log(cartList.value[i])
                 }
+            }else{
+                console.log("说明没有数据")
+                cartList.value=([])
             }
     }
     //加入一个购物车
@@ -54,18 +58,21 @@ export const useCartStore = defineStore('cart',()=>{
         }
         //再添加
         console.log(cartOne)
+        cartOne.dishJson=JSON.stringify(cartOne)
         cartList.value.push(cartOne)
         console.log(cartList)
         console.log(cartList.value)
         console.log(JSON.stringify(cartList.value))
+        console.log(JSON.stringify(cartOne))
 
-
+       
         //加入购物车，如果存在对应的shopId和userId，就先删除再加入
         const apiData={
-            shopId: cartOne.shopId,
+            shopId: localStorage.getItem("shopId"),
             userId: localStorage.getItem("id"),
-            detailJson:JSON.stringify(cartList.value)
+            detailJson:JSON.stringify(cartOne.value)
         }
+        console.log(apiData)
         const res=await addCart(apiData)
             console.log(res.data.data)
             if(res.data.code==0){

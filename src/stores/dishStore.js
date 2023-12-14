@@ -6,7 +6,7 @@ import {dishDetailAll,selectDishById,dishDetailAllNoPage } from '@/apis/dish.js'
 export const useDishStore = defineStore('dish',()=>{
     const dishList=ref([
         {
-            id:1,
+            id:0,
             dishName:"",
             category_id:"",
             picture:"",
@@ -46,20 +46,23 @@ export const useDishStore = defineStore('dish',()=>{
             shopId: shopId
         }
         const res=await dishDetailAllNoPage(apiData)
-        console.log(res.data.data)
-        if(res.data.code==0){
-            console.log(res.data)
+            console.log(res.data.data)
             if(res.data.code==0){
                 dishList.value=res.data.data
             }
             else{
                 ElMessage.error(res.data.message)
             }
-        }
     }
     const getDishOne=(dishId)=>{
+        console.log(dishId)
+        console.log(dishList.value)
         for(let i=0;i<dishList.value.length;i++){
+            console.log(dishList.value[i])
+            console.log(dishList.value[i].id)
+            console.log(dishList.value[i].id==dishId)
             if(dishList.value[i].id==dishId){
+                console.log(dishList.value[i])
                 return dishList.value[i]
             }
         }

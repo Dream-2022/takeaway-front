@@ -22,11 +22,11 @@
     import { useRoute, useRouter } from 'vue-router';
     import {useCategoryStore} from'@/stores/categoryStore.js'
     import DishBox from '@/views/Shop/Components/dishBox.vue';
-    import {dishDetailAll} from '@/apis/dish.js'
+    import {dishDetailAll,dishDetailAllNoPage} from '@/apis/dish.js'
 
     const route = useRoute();
     const categoryStore=useCategoryStore()
-    let dishes=ref([])//通过cate找dishId
+    let dishes=ref([])//通过cate找dishId!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     let shopDetail=ref([])
     onMounted(async() => {
         //通过categoryId找dishId
@@ -34,7 +34,7 @@
             shopId: route.params.id,
             pageNum: 1
         }
-        const res0=await dishDetailAll(apiData0)
+        const res0=await dishDetailAllNoPage(apiData0)
             console.log(route.params.id)
             console.log('成功发送')
             console.log(res0.data)

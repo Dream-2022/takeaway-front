@@ -1,9 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login/login.vue'
 import Layout from '../views/layOut.vue'
+
 import MainPage from '../views/Main/mainPage.vue'
 import MainView from '../views/Main/mainView.vue'
 import PersonPage from '../views/Main/personPage.vue'
+import MyCartPage from '../views/Main/myCartPage.vue'
+
 import SearchPage from '../views/Search/searchPage.vue'
 import ShopDetailPage from '../views/Shop/shopDetailPage.vue'
 import ShopDishPage from '../views/Shop/shopDishPage.vue'
@@ -24,6 +27,7 @@ import CategoryManagePage from '../views/Manage/Pages/categoryManagePage.vue'
 import BusinessPage from '../views/Business/businessPage.vue'
 
 import OrderPage from '../views/Order/orderPage.vue'
+import PaymentPage from '../views/Order/paymentPage.vue'
 
 const routes = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +50,7 @@ const routes = createRouter({
       children:[
         {path:'mainView',component:MainView},
         {path:'personPage',component:PersonPage},
+        {path:'myCartPage',component:MyCartPage},
         {
           path:'searchPage/:shopName',
           name:'searchPage',
@@ -92,6 +97,11 @@ const routes = createRouter({
       path:'/orderPage',
       name:'orderPage',
       component: OrderPage
+    },
+    {
+      path:'/paymentPage',
+      name:'paymentPage',
+      component: PaymentPage
     },
     {
       path:'/businessPage',

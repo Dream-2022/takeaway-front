@@ -55,5 +55,13 @@ export const reDistrictCity=(data)=>{
         data
     })
 }
+//根据useId找到对应的默认地址
+export const selectAddressDefault=(data)=>{
+    return http({
+        url: '/api/pre/address/selectAddressDefault',
+        method: 'POST',
+        data
+    })
+}
 
 

@@ -113,12 +113,15 @@
   import {selectShopByUserId,uploadShopImage} from'@/apis/shop.js'
   import {selectCategoryAll} from'@/apis/category.js'
   import {insertAttributeOne} from'@/apis/attributeApi.js'
+  import {useDishStore} from'@/stores/dishStore.js'
   import {useAttributeStore} from'@/stores/attributeStore.js'
   import {insertDish} from '@/apis/dish.js'
   import { ElMessage } from 'element-plus';
+  import { selectDishByKeyword } from'@/apis/dish.js'
   import AttributeBox from'@/views/Manage/Components/attributeBox.vue'
   import AddCategoryPop from'@/views/Manage/Components/addCategoryPop.vue'
   const router = useRouter();
+  const dishStore=useDishStore()
   const attributeStore=useAttributeStore()
   var shopDetail=ref([])//商家信息
   var shopState=ref()
@@ -195,7 +198,7 @@
             ElMessage.error("商品库存不能为空")
             return
         }
-        if(addDishPackingRef.value==""){
+        if(addDishPackingRef.value===""){
             ElMessage.error("打包费不能为空")
             return
         }
@@ -253,6 +256,24 @@
     
     //添加菜品的口味
     console.log(res.data.data.id)
+    //刷新
+    const adiData2={
+        shopId: shopDetail.value.id,
+        pageNum:1,
+        saleState:0,
+        categoryId:0,
+        searchInput:""
+    }
+    console.log(adiData2)
+    //获取全部的商品
+    const res2=await selectDishByKeyword(adiData2)
+        console.log(res2.data)
+        console.log(res2.data.data)
+        if(res2.data.code==0){
+            dishStore.dishList=res2.data.data
+            console.log(dishStore.dishList)
+
+        }
   }
 
   //新建菜品弹窗中添加口味属性

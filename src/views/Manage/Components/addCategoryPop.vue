@@ -23,9 +23,14 @@
     import {insertCategory} from'@/apis/category.js'
 
     import { ElMessage } from 'element-plus';
+    import { useDishStore } from '@/stores/dishStore.js';
+    const dishStore=useDishStore()
     const categoryStore=useCategoryStore()
 
     let categoryInputValue=ref("")
+    onMounted(async()=>{
+        categoryInputValue.value=""
+    })
     async function addCategoryButton(){
         console.log(categoryInputValue.value)
         if(categoryInputValue.value==""){
@@ -40,9 +45,37 @@
         console.log(res.data)
         if(res.data.code==0){
             ElMessage.success("新建成功")
+            categoryStore.setAddCategoryDown(false)
         }else{
             ElMessage.warning(res.data.message)
         }
+        //更新分类列表的数据
+        categoryStore.obtainCategoryList(localStorage.getItem("shopId"))
+        categoryInputValue.value=""
+
+        //刷新数据
+        getDishListByPageNum(1) 
+
+    }
+     //根据页数获取页面的菜品
+     async function getDishListByPageNum(pageNum){
+        const adiData2={
+            shopId: shopDetail.value.id,
+            pageNum:pageNum,
+            saleState:myClassSelect.value.value,
+            categoryId:myStateSelect.value.value,
+            searchInput:mySearchInput.value.value
+        }
+        console.log(adiData2)
+        //获取全部的商品
+        const res2=await selectDishByKeyword(adiData2)
+        console.log(res2.data)
+            console.log(res2.data.data)
+            if(res2.data.code==0){
+                dishStore.dishList.value=res2.data.data
+                console.log(dishStore.dishList.value)
+
+            }
     }
     function hidder2(){
         categoryStore.setAddCategoryDown(false)

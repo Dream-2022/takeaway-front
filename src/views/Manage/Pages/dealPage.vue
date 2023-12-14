@@ -41,14 +41,14 @@
                     <span class="table7">售卖状态</span>
                     <span class="table8">操作</span>
                 </div>
-                <span v-for="item in dealDealList" :key="item.id" :value="item.id">
+                <span v-for="item in dishStore.dishList" :key="item.id" :value="item.id">
                     <DealBox :dish="item" :id="item.id"></DealBox>
                 </span>
                 <!-- 分页 -->
-                <span v-if="dealDealList.length!=0">
+                <span v-if="dishStore.dishList.length!=0">
                     <div class="pagination">
                         <span class="pageUp"  @click="pageUpClick">上一页</span>
-                        <span :class="index==0?'pageActive':''" class="pagination-link" v-for="(page,index) in dealDealList[0].pageNum" :key="page" @click="pageNumClick">
+                        <span :class="index==0?'pageActive':''" class="pagination-link" v-for="(page,index) in dishStore.dishList[0].pageNum" :key="page" @click="pageNumClick">
                             {{index+1}}
                         </span>
                         <span class="pageDown" @click="pageDownClick">下一页</span>
@@ -70,12 +70,13 @@
     import {selectCategoryAll} from'@/apis/category.js'
     import {selectShopByUserId} from'@/apis/shop.js'
     import {useAttributeStore} from'@/stores/attributeStore.js'
+    import {useDishStore} from'@/stores/dishStore.js'
     import {dishDetailAll, selectDishByKeyword} from'@/apis/dish.js'
     import DealBox from '@/views/Manage/Components/dealBox.vue'
     const emits=defineEmits(["clickFather"])
+    const dishStore=useDishStore()
     const attributeStore=useAttributeStore()
     var classList=ref([])
-    var dealDealList=ref([])
     var shopDetail=ref([])
     var myClassSelect=ref()
     var myStateSelect=ref()
@@ -103,15 +104,18 @@
                 shopDetail.value=res1.data.data
             }
         //根据页数获取页面的菜品
-        getDishListByPageNum(1)
+        console.log(dishStore.dishList)
+        dishStore.dishList=([])
+        await getDishListByPageNum(1)
+        console.log(dishStore.dishList)
 
     })
     onUpdated(()=>{
         //判断是否是最后一页或者是第一页,并修改样式
         pageJudgment()
     })
+    //判断是否是最后一页或者是第一页
     function pageJudgment(){
-        //判断是否是最后一页或者是第一页
         const paginationLinkList=document.querySelectorAll('.pagination-link')
         console.log(paginationLinkList)
         for(let i=0;i<paginationLinkList.length;i++){
@@ -121,7 +125,7 @@
                 if(paginationLinkList[i].innerHTML==1){
                     document.querySelector('.pageUp').classList.add('pageGray')
                 }
-                if(paginationLinkList[i].innerHTML==dealDealList.value[0].pageNum){
+                if(paginationLinkList[i].innerHTML==dishStore?.dishList[0]?.pageNum){
                     document.querySelector('.pageDown').classList.add('pageGray')
                 }
                 return paginationLinkList[i]
@@ -161,9 +165,9 @@
         const paginationLinkList=document.querySelectorAll('.pagination-link')
         let pageCurrent=pageJudgment().innerHTML
         console.log(pageCurrent)
-        console.log(dealDealList.value[0])
-        console.log(dealDealList.value[0].pageNum)
-        if(pageCurrent==dealDealList.value[0].pageNum){
+        console.log(dishStore.dishList[0])
+        console.log(dishStore.dishList[0].pageNum)
+        if(pageCurrent==dishStore.dishList[0].pageNum){
             ElMessage.warning("当前是最后一页")
             return
         }
@@ -177,7 +181,7 @@
             }
             
         }
-        if(pageNew==dealDealList.value[0].pageNum){
+        if(pageNew==dishStore.dishList[0].pageNum){
             document.querySelector('.pageDown').classList.add('pageGray')
         }
         document.querySelector('.pageUp').classList.remove('pageGray')
@@ -196,7 +200,7 @@
         //根据页数获取页面的菜品
         let pageNew=(Number)(event.target.innerHTML)
         getDishListByPageNum(pageNew)
-        if(pageNew==dealDealList.value[0].pageNum){
+        if(pageNew==dishStore.dishList[0].pageNum){
             document.querySelector('.pageDown').classList.add('pageGray')
         }else{
             document.querySelector('.pageDown').classList.remove('pageGray')
@@ -209,13 +213,7 @@
     }
 
     //点击新建菜品(打开下拉框)
-    function addDealClick(){
-        console.log(dealDealList.value.length)
-        console.log(dealDealList.value)
-        console.log(dealDealList.length)
-        console.log(dealDealList.value.size)
-        console.log(dealDealList.size)
-        console.log(dealDealList.value[0].pageNum)
+    async function addDealClick(){
         console.log("点击")
         attributeStore.initialization()
         emits("clickFather",true);
@@ -254,7 +252,7 @@
             console.log(res.data.data)
             if(res.data.code==0){
                 console.log("获取成功")
-                dealDealList.value=res.data.data
+                dishStore.dishList.value=res.data.data
             }
     }
     //根据页数获取页面的菜品
@@ -272,8 +270,8 @@
         console.log(res2.data)
             console.log(res2.data.data)
             if(res2.data.code==0){
-                dealDealList.value=res2.data.data
-                console.log(dealDealList.value)
+                dishStore.dishList=res2.data.data
+                console.log(dishStore.dishList)
 
             }
     }

@@ -33,7 +33,7 @@
               <div>
                 <span class="Nickname">{{ username }}</span>
                 <span><RouterLink to="/mainPage/personPage" class="dropdown">个人中心</RouterLink></span>
-                <span><RouterLink to="/mainPage/personPage" class="dropdown">消息记录</RouterLink></span>
+                <span><RouterLink to="/mainPage/myCartPage" class="dropdown">购物车</RouterLink></span>
                 <span v-show="userMessage"><RouterLink to="/businessPage" class="dropdown">成为商家</RouterLink></span>
                 <span v-show="!userMessage"><RouterLink to="/managePage" class="dropdown">进入商家端</RouterLink></span>
                 <span class="messagePageBox"><a class="messagePage"><RouterLink to="/mainPage/personPage"></RouterLink>我的消息</a></span>
