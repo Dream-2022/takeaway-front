@@ -49,14 +49,21 @@
                 <div class="orderBoxBottomPackZi1">打包费</div>
                 <div class="orderBoxBottomPackZi2">
                     <span>￥</span>
-                    <span>1</span>
+                    <span>{{ orderPackAll }}</span>
                 </div>
             </div>
             <div class="orderBoxBottomDelivery">
                 <div class="orderBoxBottomDeliveryZi1">配送费</div>
                 <div class="orderBoxBottomDeliveryZi2">
                     <span>￥</span>
-                    <span>1</span>
+                    <span>{{ orderDeliveryAll }}</span>
+                </div>
+            </div>
+            <div class="orderBoxBottomDelivery">
+                <div class="orderBoxBottomPrice1">共计</div>
+                <div class="orderBoxBottomPrice2">
+                    <span>￥</span>
+                    <span>{{ orderPriceAll }}</span>
                 </div>
             </div>
         </div>
@@ -180,11 +187,17 @@
     import { ElMessage } from 'element-plus';
     import { useRoute, useRouter } from 'vue-router';
     import {useOrderOneStore} from'@/stores/orderOneStore.js'
+    import {useCartOneStore} from'@/stores/cartOneStore.js'
     import {addressById,reDistrictProvinceAll,reDistrictCity,addressInsert,addressUpdate,addressDelete,addressDefault,selectAddressDefault} from '@/apis/address.js'
+    import {selectById} from '@/apis/shop.js'
     import {addDishOrderOne} from '@/apis/dishOrderApi.js'
     const router = useRouter();
     const orderOneStore=useOrderOneStore()
+    const cartOneStore=useCartOneStore()
 
+    let orderPackAll=ref(0)
+    let orderPriceAll=ref(0)
+    let orderDeliveryAll=ref(0)
     let orderBoxBelowNotesValue=ref("")
     let orderBoxNoteValue=ref(false)
     let orderBoxTablewareValue=ref(false)
@@ -199,6 +212,7 @@
     })//用户选中的地址
     const cartDishListValue=ref([])
     onMounted(async()=>{
+        orderOneStore.orderOne=[]
         document.getElementById('zhezhao').style.display="none";
         document.getElementById('zhezhao1').style.display="none";
         //获取我的全部地址
@@ -224,11 +238,63 @@
         //渲染页面(找到购物列表)
         console.log("从商家购物车跳转")
         //从cartOne中获取到购物车
+        console.log(cartOneStore.cartOne[0].shopId)
+        if(cartOneStore.cartOne[0].shopId==0){
+            cartDishListValue.value=JSON.parse(localStorage.getItem("orderShopList"))
+        }else{
+            cartDishListValue.value=cartOneStore.cartOne
+        }
         console.log(localStorage.getItem("orderShopList"))
-        cartDishListValue.value=JSON.parse(localStorage.getItem("orderShopList"))
         console.log(cartDishListValue.value)
         console.log(cartDishListValue.value.dishIdList)
 
+        //获取商品的flavorZiList
+        
+        for(let k=0;k<cartDishListValue.value.length;k++){
+            const dishList=cartDishListValue.value[k].dishIdList
+            console.log(cartDishListValue.value)
+            for(let i=0;i<dishList.length;i++){
+                console.log(dishList[i])
+                let dishFlavorZi=ref("")
+                for(let j=0;j<dishList[i].attributeList.length;j++){
+                    console.log(dishList[i].attributeList[j])
+                    for(let k=0;k<dishList[i].attributeList[j].flavorList.length;k++){
+                        if(dishFlavorZi.value==""){
+                            dishFlavorZi.value=dishList[i].attributeList[j].flavorList[k].flavorName
+                        }
+                        else{
+                            dishFlavorZi.value=dishFlavorZi.value+"/"+dishList[i].attributeList[j].flavorList[k].flavorName
+                        }
+                    }
+                }
+                console.log(dishFlavorZi.value)
+                dishList[i].dishFlavorZi=dishFlavorZi.value
+            }
+        }
+        
+
+        //初始化订单的价格
+        for(let i=0;i<cartDishListValue.value.length;i++){
+            console.log(cartDishListValue.value[i])
+            const apiData={
+                shopId: cartDishListValue.value[i].shopId
+            }
+            const res=await selectById(apiData)
+                console.log(res.data.data)
+                orderDeliveryAll.value=orderDeliveryAll.value+res.data.data.delivery
+            for(let j=0;j<cartDishListValue.value[i].dishIdList.length;j++){
+                const dishX=cartDishListValue.value[i].dishIdList[j]
+                console.log(dishX)
+                orderPackAll.value=orderPackAll.value+dishX.pack
+                orderPriceAll.value=orderPriceAll.value+dishX.price
+            }
+        }
+        orderPackAll.value=(orderPackAll.value).toFixed(2)
+        orderDeliveryAll.value=(orderDeliveryAll.value).toFixed(2)
+        orderPriceAll.value=(orderPriceAll.value+(Number)(orderPackAll.value)+(Number)(orderDeliveryAll.value)).toFixed(2)
+        console.log(orderDeliveryAll.value)
+        console.log(orderPackAll.value)
+        console.log(orderPriceAll.value)
     })
     //点击提交订单
     async function submitButtonClick(){
@@ -245,28 +311,41 @@
             ElMessage.warning("请选择餐具数")
             return
         }
+        const phone=DeliveryAddressValue.value.phone
         //接下来进入支付页面---------------------------------
         //userId，点击支付时间，支付状态，收货地址字符串，购买商品,备注，餐具数量
         console.log(DeliveryAddressValue.value)
         console.log(cartDishListValue.value)
-        const apiData={
-            userId: localStorage.getItem("id"),
-            state: "提交订单",
-            addressValue: JSON.stringify(DeliveryAddressValue.value),
-            dishValue: JSON.stringify(cartDishListValue.value),
-            notes: orderBoxBelowNotesValue.value,
-            tablewareNum:orderBoxBelowTablewareValue.value
+        for(let i=0;i<cartDishListValue.value.length;i++){
+            const apiData={
+                userId: localStorage.getItem("id"),
+                shopId: cartDishListValue.value[i].shopId,
+                state: "提交订单",
+                phone ,
+                addressValue: JSON.stringify(DeliveryAddressValue.value),
+                dishValue: JSON.stringify(cartDishListValue.value[i]),
+                notes: orderBoxBelowNotesValue.value,
+                tablewareNum:orderBoxBelowTablewareValue.value
+            }
+            const res=await addDishOrderOne(apiData)
+                console.log(res.data.data)
+                console.log(res.data.data.id)
+            
+            //将订单消息加入store
+            orderOneStore.setOrderOne(res.data.data)
+            console.log(orderOneStore.orderOne)
         }
-        const res=await addDishOrderOne(apiData)
-            console.log(res.data.data)
-            console.log(res.data.data.id)
-            localStorage.setItem("orderId",res.data.data.id)
+        console.log(orderOneStore.orderOne.value)
+        console.log(JSON.stringify(orderOneStore.orderOne.value))
+        console.log(DeliveryAddressValue.value)
+        console.log(JSON.stringify(DeliveryAddressValue.value))
+        localStorage.setItem("orderOneList",JSON.stringify(orderOneStore.orderOne))
+        localStorage.setItem("addressValue",JSON.stringify(DeliveryAddressValue.value))
+        
         
         //将地址信息加入
         localStorage.setItem("addressValue",JSON.stringify(DeliveryAddressValue.value))
-        //将订单消息加入store
-        orderOneStore.setOrderOne(res.data.data)
-        console.log(orderOneStore.orderOne)
+        
         //跳转页面
         router.push(`/paymentPage`);
 
@@ -399,57 +478,57 @@
     }
     //添加地址
     async function addAddressButton(){
-    if(myAddressDetail.value.value===""||myName.value.value===""||myPhone.value.value===""){
-        ElMessage.error("请输入完整信息")
-        return
-    }
-    var regex = /^[1][3,4,5,7,8][0-9]{9}$/;
-    if (!regex.test(myPhone.value.value)) {
-        ElMessage.error("手机号码格式不正确");
-        return
-    }
-    if(dianWoButtonZi.value=="添加"){
-        console.log(myProvinceSelect.value.value)
-        console.log("myCitySelect:"+myCitySelect.value.value)
-        console.log("myCountySelect:"+myCountySelect.value.value)
-        //将信息新增进address表
-        const apiData1={
-                addressProvince:myProvinceSelect.value.value,
-                addressCity:myCitySelect.value.value,
-                addressCounty:myCountySelect.value.value,
-                addressDetail:myAddressDetail.value.value,
-                myName:myName.value.value,
-                user_id:localStorage.getItem("id"),
-                phone:myPhone.value.value
-            }
-        const res1=await addressInsert(apiData1)
-            console.log(res1.data)
-            if(res1.data.code==0){
-                ElMessage.success("添加成功")
-            }
-            hidder1()
-            dianwo()
-    }
-    if(dianWoButtonZi.value=="修改"){
-        console.log("修改"+myProvinceSelect.value.value)
-        const apiData1={
-                addressProvince:myProvinceSelect.value.value,
-                addressCity:myCitySelect.value.value,
-                addressCounty:myCountySelect.value.value,
-                addressDetail:myAddressDetail.value.value,
-                myName:myName.value.value,
-                user_id:localStorage.getItem("id"),
-                id: myProvinceSelect.value.value,
-                phone:myPhone.value.value
-            }
-        const res1=await addressUpdate(apiData1)
-            console.log(res1.data)
-            if(res1.data.code==0){
-                ElMessage.success("添加成功")
-            }
-            hidder1()
-            dianwo()
-    }
+        if(myAddressDetail.value.value===""||myName.value.value===""||myPhone.value.value===""){
+            ElMessage.error("请输入完整信息")
+            return
+        }
+        var regex = /^[1][3,4,5,7,8][0-9]{9}$/;
+        if (!regex.test(myPhone.value.value)) {
+            ElMessage.error("手机号码格式不正确");
+            return
+        }
+        if(dianWoButtonZi.value=="添加"){
+            console.log(myProvinceSelect.value.value)
+            console.log("myCitySelect:"+myCitySelect.value.value)
+            console.log("myCountySelect:"+myCountySelect.value.value)
+            //将信息新增进address表
+            const apiData1={
+                    addressProvince:myProvinceSelect.value.value,
+                    addressCity:myCitySelect.value.value,
+                    addressCounty:myCountySelect.value.value,
+                    addressDetail:myAddressDetail.value.value,
+                    myName:myName.value.value,
+                    user_id:localStorage.getItem("id"),
+                    phone:myPhone.value.value
+                }
+            const res1=await addressInsert(apiData1)
+                console.log(res1.data)
+                if(res1.data.code==0){
+                    ElMessage.success("添加成功")
+                }
+                hidder1()
+                dianwo()
+        }
+        if(dianWoButtonZi.value=="修改"){
+            console.log("修改"+myProvinceSelect.value.value)
+            const apiData1={
+                    addressProvince:myProvinceSelect.value.value,
+                    addressCity:myCitySelect.value.value,
+                    addressCounty:myCountySelect.value.value,
+                    addressDetail:myAddressDetail.value.value,
+                    myName:myName.value.value,
+                    user_id:localStorage.getItem("id"),
+                    id: myProvinceSelect.value.value,
+                    phone:myPhone.value.value
+                }
+            const res1=await addressUpdate(apiData1)
+                console.log(res1.data)
+                if(res1.data.code==0){
+                    ElMessage.success("添加成功")
+                }
+                hidder1()
+                dianwo()
+        }
     }
     //删除地址
     async function deleteAddressButton(event){
@@ -733,13 +812,23 @@
         margin-bottom: 20px;
     }
     .orderBoxBottomPackZi1,
-    .orderBoxBottomDeliveryZi1{
+    .orderBoxBottomDeliveryZi1,
+    .orderBoxBottomPrice1{
         flex: 6;
     }
     .orderBoxBottomPackZi2,
-    .orderBoxBottomDeliveryZi2{
+    .orderBoxBottomDeliveryZi2,
+    .orderBoxBottomPrice2{
         flex: 1;
         font-weight: 600;
+    }
+    .orderBoxBottomPrice1,
+    .orderBoxBottomPrice2{
+        margin-top: 20px;
+        font-size: 18px;
+    }
+    .orderBoxBottomPrice2{
+        color: rgb(75, 186, 255);
     }
     .orderBoxBelow{
         padding-top: 30px;

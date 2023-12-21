@@ -68,6 +68,7 @@ export const useCartOneStore = defineStore('cartOne',()=>{
         console.log(JSON.stringify(dishJson))
         console.log(cartOne.value)
         console.log(cartOne.value.length)
+       
         if(cartOne.value.length==0){
             const cartX={
                 userId:localStorage.getItem("id"),
@@ -93,6 +94,29 @@ export const useCartOneStore = defineStore('cartOne',()=>{
         console.log(cartOne)
         console.log(cartOne.value)
         console.log(cartOne.dishIdList)
+        console.log(cartOne.value[0].dishIdList.length)
+         //------------
+        for(let i=0;i<cartOne.value[0].dishIdList.length;i++){
+            console.log(cartOne.value[0].dishIdList[i])
+            let flavorListZi=""
+            for(let j=0;j<cartOne.value[0].dishIdList[i].attributeList.length;j++){
+                const attributeOne=cartOne.value[0].dishIdList[i].attributeList[j]
+                console.log(attributeOne)
+                for(let k=0;k<attributeOne.flavorList.length;k++){
+                    console.log(attributeOne.flavorList[k])
+                    if(flavorListZi==""){
+                        flavorListZi=attributeOne.flavorList[k].flavorName
+                    }
+                    else{
+                        flavorListZi=flavorListZi+"/"+attributeOne.flavorList[k].flavorName
+                    }
+                }
+            }
+            console.log(flavorListZi)
+            cartOne.value[0].dishIdList[i].flavorListZi=flavorListZi
+            console.log(cartOne.value[0].dishIdList[i].flavorListZi)
+        }
+        //-----------------
         //   console.log(cartOne.value)
         //   cartOne.value=JSON.parse(JSON.stringify(cartOne.value))
         // console.log(cartOne.value.dishIdList.length)

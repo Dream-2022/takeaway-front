@@ -1,9 +1,10 @@
 import http from '@/utils/http.js'
 //获取全部商家信息
-export const detailAll=()=>{
+export const detailAll=(data)=>{
     return http({
         url: '/api/pre/shop/detailAll',
-        method: 'GET'
+        method: 'POST',
+        data
     })
 }
 //通过shopId获取商家信息

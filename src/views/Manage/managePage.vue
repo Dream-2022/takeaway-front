@@ -11,18 +11,17 @@
         <div class="manageBottom">
             <div class="manageLeft">
                 <div class="zIndex"  ref="navBox">
-                    <RouterLink :to="'/managePage/orderHandlePage'"><div class="manageButton link1 " @click="clearActiveClassAndAdd">订单处理</div></RouterLink>
-                    <RouterLink :to="'/managePage/setMealPage'"><div  class="manageButton link2 manageLeftActive" @click="clearActiveClassAndAdd">工作台</div></RouterLink>
-                    <RouterLink :to="'/managePage/setMealPage'"><div  class="manageButton link3" @click="clearActiveClassAndAdd">数据统计</div></RouterLink>
+                    <RouterLink :to="'/managePage/orderHandlePage'"><div class="manageButton link1 manageLeftActive" @click="clearActiveClassAndAdd">订单处理</div></RouterLink>
+                    <RouterLink :to="'/managePage/informationPage'"><div  class="manageButton link2 " @click="clearActiveClassAndAdd">订单评论</div></RouterLink>
                     <RouterLink :to="'/managePage/dealPage'"><div class="manageButton link4" @click="clearActiveClassAndAdd">菜品管理</div></RouterLink>
-                    <RouterLink :to="'/managePage/setMealPage'"><div  class="manageButton link5" @click="clearActiveClassAndAdd">套餐管理</div></RouterLink>
+                    <RouterLink :to="'/managePage/informationPage'"><div  class="manageButton link5" @click="clearActiveClassAndAdd">用户举报</div></RouterLink>
                     <RouterLink :to="'/managePage/categoryManagePage'"><div  class="manageButton link6" @click="clearActiveClassAndAdd">分类管理</div></RouterLink>
-                    <RouterLink :to="'/managePage/setMealPage'"><div  class="manageButton link7" @click="clearActiveClassAndAdd">修改信息</div></RouterLink>
+                    <RouterLink :to="'/managePage/informationPage'"><div  class="manageButton link7" @click="clearActiveClassAndAdd">修改信息</div></RouterLink>
                     <RouterLink :to="'/mainPage'"><div>返回<i class="reply icon"></i></div></RouterLink>
                 </div>
             </div>
             <div class="manageRight">
-                <router-view @clickFather="clickFather"></router-view>
+                <router-view @clickFather="clickFather" @clickFather2="clickFather2"></router-view>
             </div>
         </div>
     </div>
@@ -32,7 +31,7 @@
 <div class="zhezhao" id='zhezhao'></div>
 <div class="tankuang" style="display:none;">
     <div id="header">
-        <div class="headTitle">新建菜品</div>
+        <div class="headTitle">{{ tanAddOrModifyDish }}</div>
         <div id="header-right" @click="hidder">x</div>
 
         <div class="modalContent">
@@ -106,27 +105,32 @@
 
 <!-- 新建分类弹窗 -->
 <AddCategoryPop></AddCategoryPop>
+
+<!-- 查看订单弹窗 -->
+<ViewOrderPop></ViewOrderPop>
 </template>
 <script setup>
   import {onMounted, ref} from 'vue' 
   import {useRouter} from "vue-router"
   import {selectShopByUserId,uploadShopImage} from'@/apis/shop.js'
   import {selectCategoryAll} from'@/apis/category.js'
-  import {insertAttributeOne} from'@/apis/attributeApi.js'
+  import {insertAttributeOne, selectDishAttributeByDishId} from'@/apis/attributeApi.js'
   import {useDishStore} from'@/stores/dishStore.js'
   import {useAttributeStore} from'@/stores/attributeStore.js'
-  import {insertDish} from '@/apis/dish.js'
+  import {insertDish, updateDishByAll, selectDishByKeyword} from '@/apis/dish.js'
   import { ElMessage } from 'element-plus';
-  import { selectDishByKeyword } from'@/apis/dish.js'
   import AttributeBox from'@/views/Manage/Components/attributeBox.vue'
   import AddCategoryPop from'@/views/Manage/Components/addCategoryPop.vue'
+  import ViewOrderPop from'@/views/Manage/Components/viewOrderPop.vue'
   const router = useRouter();
   const dishStore=useDishStore()
   const attributeStore=useAttributeStore()
   var shopDetail=ref([])//商家信息
   var shopState=ref()
+  let tanAddOrModifyDish=ref("新增商品")
   var dishCategoryAll=ref([])//添加菜品下拉框 的全部分类
   onMounted(async()=>{
+    localStorage.setItem("shopper",localStorage.getItem("shopId"))
     document.getElementById('zhezhao').style.display="none";
     //userId获取他的商家id和信息
     const apiData={
@@ -168,7 +172,7 @@
     console.log("点击")
     existFlavorButton.value=false
   }
-
+  let sonMsg=ref()
   //添加商品下拉框 的确认添加事件
   var addDishNameRef=ref("")
   var myCategorySelect=ref("")
@@ -211,69 +215,99 @@
             return
         }
     }
-    const apiData={
-        shopId:localStorage.getItem("shopId"),
-        dishName:addDishNameRef.value,
-        categoryName:myCategorySelect.value.value,
-        picture:myStorePhoto.value,
-        price:addDishPriceRef.value,
-        number:addDishNumberRef.value,
-        detail:addDishDetailRef.value,
-        pack:addDishPackingRef.value,
-        weight:addDishWeightRef.value,
-        material:addDishMaterialRef.value
-    }
-    const res=await insertDish(apiData)
-      console.log(res.data)
-      console.log(res.data.data)
-      if(res.data.code==0){
-        console.log("添加成功")
-        hidder()
-        ElMessage.success("菜品添加成功")
-      }
-    console.log(res.data.data.id)
-    const attributeList=attributeStore.getAttributeList().value
-    console.log(attributeList)
-    console.log(attributeList.length)
-    for(let i=0;i<attributeList.length;i++){
-        console.log(attributeList[i])
-        console.log(attributeList[i].attributeName)
-        console.log(attributeList[i].checked)
-        console.log(attributeList[i].flavorList)
-        const apiData1={
-            dishId:res.data.data.id,
-            attributeName:attributeList[i].attributeName,
-            checked:attributeList[i].checked,
-            flavorList:attributeList[i].flavorList
+    if(tanAddOrModifyDish.value=="新增商品"){
+        const apiData={
+            shopId:localStorage.getItem("shopId"),
+            dishName:addDishNameRef.value,
+            categoryName:myCategorySelect.value.value,
+            picture:myStorePhoto.value,
+            price:addDishPriceRef.value,
+            number:addDishNumberRef.value,
+            detail:addDishDetailRef.value,
+            pack:addDishPackingRef.value,
+            weight:addDishWeightRef.value,
+            material:addDishMaterialRef.value
         }
-        const res1=await insertAttributeOne(apiData1)
-        console.log(res1.data)
-        console.log(res1.data.data)
-        if(res1.data.code==0){
-          console.log("属性添加成功")
+        const res=await insertDish(apiData)
+        console.log(res.data)
+        console.log(res.data.data)
+        if(res.data.code==0){
+            console.log("添加成功")
+            hidder()
+            ElMessage.success("菜品添加成功")
         }
-    }
-    
-    //添加菜品的口味
-    console.log(res.data.data.id)
-    //刷新
-    const adiData2={
-        shopId: shopDetail.value.id,
-        pageNum:1,
-        saleState:0,
-        categoryId:0,
-        searchInput:""
-    }
-    console.log(adiData2)
-    //获取全部的商品
-    const res2=await selectDishByKeyword(adiData2)
-        console.log(res2.data)
-        console.log(res2.data.data)
-        if(res2.data.code==0){
-            dishStore.dishList=res2.data.data
-            console.log(dishStore.dishList)
+        console.log(res.data.data.id)
+        const attributeList=attributeStore.getAttributeList().value
+        console.log(attributeList)
+        console.log(attributeList.length)
+        for(let i=0;i<attributeList.length;i++){
+            console.log(attributeList[i])
+            console.log(attributeList[i].attributeName)
+            console.log(attributeList[i].checked)
+            console.log(attributeList[i].flavorList)
+            const apiData1={
+                dishId:res.data.data.id,
+                attributeName:attributeList[i].attributeName,
+                checked:attributeList[i].checked,
+                flavorList:attributeList[i].flavorList
+            }
+            const res1=await insertAttributeOne(apiData1)
+            console.log(res1.data)
+            console.log(res1.data.data)
+            if(res1.data.code==0){
+            console.log("属性添加成功")
+            }
+        }
+        
+        //添加菜品的口味
+        console.log(res.data.data.id)
+        //刷新
+        const adiData2={
+            shopId: shopDetail.value.id,
+            pageNum:1,
+            saleState:0,
+            categoryId:0,
+            searchInput:""
+        }
+        console.log(adiData2)
+        //获取全部的商品
+        const res2=await selectDishByKeyword(adiData2)
+            console.log(res2.data)
+            console.log(res2.data.data)
+            if(res2.data.code==0){
+                dishStore.dishList=res2.data.data
+                console.log(dishStore.dishList)
 
+            }
+    }
+    if(tanAddOrModifyDish.value=="修改商品"){
+        console.log(sonMsg.value)
+        const apiData={
+            dishId: sonMsg.value.id,
+            shopId:localStorage.getItem("shopId"),
+            dishName:addDishNameRef.value,
+            categoryName:myCategorySelect.value.value,
+            picture:myStorePhoto.value,
+            price:addDishPriceRef.value,
+            number:addDishNumberRef.value,
+            detail:addDishDetailRef.value,
+            pack:addDishPackingRef.value,
+            weight:addDishWeightRef.value,
+            material:addDishMaterialRef.value
         }
+        console.log(apiData)
+        const res=await updateDishByAll(apiData)
+            console.log(res.data.data)
+            for(let i=0;i<dishStore.dishList.length;i++){
+                console.log(dishStore.dishList[i])
+                if(dishStore.dishList[i]==sonMsg.value){
+                    console.log(dishStore.dishList[i])
+                    dishStore.dishList[i]=apiData
+                }
+            }
+        ElMessage.success('修改成功')
+    }
+    hidder()
   }
 
   //新建菜品弹窗中添加口味属性
@@ -338,9 +372,8 @@
         }
     };
 
-  var sonMsg=ref()
+
   function clickFather(params){
-    sonMsg.value=params
     console.log("触发了",params)
     //清空盒子里面输入的内容
     addDishNameRef.value=""
@@ -348,11 +381,34 @@
     addDishDetailRef.value=""
     addDishPriceRef.value=""
     addDishNumberRef.value=""
-    addDishDetailRef.value=""
     addDishPackingRef.value=""
     addDishWeightRef.value=""
     addDishMaterialRef.value=""
+    tanAddOrModifyDish.value="新增商品"
 
+    dianwo()
+  }
+  async function clickFather2(dish){
+    sonMsg.value=dish
+    console.log("触发了2"+dish)
+    //清空盒子里面输入的内容
+    addDishNameRef.value=dish.dishName
+    myStorePhoto.value=dish.picture
+    addDishDetailRef.value=dish.detail
+    addDishPriceRef.value=dish.price
+    addDishNumberRef.value=dish.number
+    addDishPackingRef.value=dish.pack
+    addDishWeightRef.value=dish.weight
+    addDishMaterialRef.value=dish.material
+    tanAddOrModifyDish.value="修改商品"
+
+    //然后渲染口味列表
+    const apiData={
+        dishId: dish.id
+    }
+    const res=await selectDishAttributeByDishId(apiData)
+        console.log(res.data.data)
+        attributeStore.attributeList=res.data.data
     dianwo()
   }
   function dianwo(){

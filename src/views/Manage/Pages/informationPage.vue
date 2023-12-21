@@ -1,11 +1,5 @@
 <template>
-    <div class="businessPage">
-        <div class="navigation">
-            <span class="navigationLogo"><i class="edge icon"></i>饿了么</span>
-            <span class="navigationZi2" @click="returnMain">返回客户端</span>
-            <span class="navigationZi1">商家版</span>
-        </div>
-        <div class="businessBox">
+     <div class="businessBox">
             <div class="businessBox-top">
                 <div class="businessBox-top-zi1">门店信息</div>
                 <div class="businessBox-top-zi2">请准确填写信息，管理员会尽快审核</div>
@@ -111,32 +105,52 @@
             
         </div>
         <div class="footer">
-            
             <span class="businessConfirm" @click="businessConfirmClick">确认</span>
-            <span class="businessSave" @click="businessSaveClick">保存</span>
         </div>
-    </div>
 </template>
 <script setup>
-    import {onMounted, ref} from 'vue' 
+    import {onMounted, ref, toRaw} from 'vue' 
     import { ElMessage } from 'element-plus';
     import { useRoute, useRouter } from 'vue-router';
-    import {reDistrictProvinceAll,reDistrictCity} from '@/apis/address.js'
     import {descriptionDetailAll} from '@/apis/dish.js'
+    import {selectById } from '@/apis/shop.js'
+    import {reDistrictProvinceAll,reDistrictCity} from '@/apis/address.js'
     import {insertShop, uploadShopImage} from '@/apis/shop.js'
-    const router = useRouter();
-    //返回主页
-    function returnMain(){
-        console.log("点击")
-        router.push('/MainPage') 
-    }
     
-    
+    //营业类目
+    let businessCategoryList=ref([])
+    var imgStoreImageRef=ref(null) 
+    var uploadStoreImageInput=ref(null)
+    var imgInStoreImageRef=ref(null) 
+    var uploadInStoreImageInput=ref(null)
+    var imgLogoStoreImageRef=ref(null) 
+    var uploadLogoStoreImageInput=ref(null)
+    var imgBackgroundRef=ref(null) 
+    var uploadBackgroundInput=ref(null)
+    //点击保存注册商家信息
+    let myName=ref()
+    let myProvinceSelect=ref()
+    let myCitySelect=ref()
+    let myCountySelect=ref()
+    let myAddressDetail=ref()
+    let myBusinessCategorySelect=ref()
+    let myStorePhoto=ref()
+    let myInPhoto=ref()
+    let myLogoPhoto=ref()
+    let myBackground=ref()
+    let myProfile=ref()
+    let myTakeawayCall=ref()
+    let myRealName=ref()
+    let myContactCall=ref()
+    let myBegin=ref()
+    let myPacking=ref()
+    let myDelivery=ref()
+    let myPhone=ref()
     let reDistrictProvinceList=ref([])
     let reDistrictCityList=ref([])
     let reDistrictCountyList=ref([])
-    //营业类目
-    let businessCategoryList=ref([])
+    //商家信息
+    let shopValue=ref([])
     onMounted(async()=>{
         //初始化省市县下拉框
         dropdownChu()
@@ -146,63 +160,39 @@
             if(res.data.code==0){
                 businessCategoryList.value=res.data.data
             }
+        const apiData1={
+            shopId: localStorage.getItem("shopId")
+        }
+        const res1=await selectById(apiData1)
+            console.log(res1.data.data)
+            shopValue=res1.data.data
+            console.log(shopValue)
+            console.log(shopValue.name)
+            console.log(shopValue.logoPhoto)
+            myAddressDetail.value.value=shopValue.addressDetail
+            myName.value.value=shopValue.name
+            myBusinessCategorySelect.value.value=shopValue.typeId
+            myStorePhoto=shopValue.storePhoto
+            myInPhoto=shopValue.inPhoto
+            myLogoPhoto=shopValue.logoPhoto
+            myBackground=shopValue.background
+            myProfile.value.value=shopValue.profile
+            myTakeawayCall.value.value=shopValue.takeawayCall
+            myRealName.value.value=shopValue.realName
+            myContactCall.value.value=shopValue.contactCall
+            myBegin.value.value=shopValue.begin
+            myPacking.value.value=shopValue.packing
+            myDelivery.value.value=shopValue.delivery
+
+            console.log("执行了省myProvinceSelect:"+myProvinceSelect.value.value+','+shopValue.addressProvince)
+            myProvinceSelect.value.value=shopValue.addressProvince
+            console.log("执行了省myProvinceSelect:"+myProvinceSelect.value.value+','+shopValue.addressProvince)
+
+            await dropdownChange(shopValue.addressProvince,shopValue.addressCity,shopValue.addressCounty)
+            myCitySelect.value.value=shopValue.addressCity
+            myCountySelect.value.value=shopValue.addressCounty    
     })
-
-
-    //点击保存注册商家信息
-    let myName=ref()
-    let myProvinceSelect=ref()
-    let myCitySelect=ref()
-    let myCountySelect=ref()
-    let myAddressDetail=ref()
-    let myBusinessCategorySelect=ref()
-    let myStorePhoto=ref("http://localhost:8080/upload/upload.png")
-    let myInPhoto=ref("http://localhost:8080/upload/upload.png")
-    let myLogoPhoto=ref("http://localhost:8080/upload/upload.png")
-    let myBackground=ref("http://localhost:8080/upload/upload.png")
-    let myProfile=ref()
-    let myTakeawayCall=ref()
-    let myRealName=ref()
-    let myContactCall=ref()
-    let myBegin=ref()
-    let myPacking=ref()
-    let myDelivery=ref()
-    //点击确认按钮
     async function businessConfirmClick(){
-        if(myName.value.value==""||myAddressDetail.value.value==""||myProfile.value.value==""||myBegin.value.value==""||myTakeawayCall.value.value==""||myContactCall.value.value==""||myRealName.value.value==""||myPacking.value.value==""||myDelivery.value.value==""){
-            ElMessage.warning("输入的信息不能为空")
-            return
-        }
-        const apiData={
-            userId:localStorage.getItem("id"),
-            name:myName.value.value,
-            addressProvince:myProvinceSelect.value.value,
-            addressCity:myCitySelect.value.value,
-            addressCounty:myCountySelect.value.value,
-            addressDetail:myAddressDetail.value.value,
-            profile:myProfile.value.value,
-            logoPhoto:myLogoPhoto.value,
-            storePhoto:myStorePhoto.value,
-            inPhoto:myInPhoto.value,
-            background:myBackground.value,
-            begin:myBegin.value.value,
-            takeawayCall:myTakeawayCall.value.value,
-            contactCall:myContactCall.value.value,
-            realName:myRealName.value.value,
-            type:myBusinessCategorySelect.value.value,
-            packing:myPacking.value.value,
-            delivery:myDelivery.value.value,
-            state:"0"
-        }
-        const res=await insertShop(apiData)
-        console.log(res.data)
-        console.log(res.data.data)
-        if(res.data.code==0){
-            ElMessage.success("确认成功")
-            router.push('/MainPage') 
-        }
-    }
-    async function businessSaveClick(){
         console.log(myName.value.value+','+myProvinceSelect.value.value+','+myLogoPhoto.value+',')
         const apiData={
             userId:localStorage.getItem("id"),
@@ -223,114 +213,17 @@
             type:myBusinessCategorySelect.value.value,
             packing:myPacking.value.value,
             delivery:myDelivery.value.value,
-            state:"2"
+            state:"0"//等待管理员审核
         }
-    const res=await insertShop(apiData)
-        console.log(res.data)
-        console.log(res.data.data)
-        if(res.data.code==0){
-            ElMessage.success("保存成功")
-        }
-    }
-
-    //省下拉框的内容改变
-    async function handleProvinceChange(event){
-    const newProvince = event.target.value;
-    myProvinceSelect.value.value = newProvince;
-    //新的省
-    console.log("新的省"+newProvince)
-    dropdownChange(newProvince,"","")
-    }
-    //处理市下拉框的内容改变
-    async function handleCityChange(event){
-    const newCity = event.target.value;
-    //新的市
-    console.log("新的市"+newCity)
-    const apiData={
-        pid: newCity
-    }
-    const res=await reDistrictCity(apiData)
-        console.log(res.data.data)
-        if(res.data.code==0){
-            reDistrictCountyList.value=res.data.data
-        }
-    }
-    //处理县下拉框的改变
-    function handleCountyChange(event){
-    const newCounty = event.target.value;
-    //新的市
-    console.log("新的县"+newCounty)
-    }
-
-    //初始化市县下拉框为北京
-    async function dropdownChu(){
-        //获取省市县下拉框
-        const apiData1={
-            id:localStorage.getItem("id")
-        }
-        const res2=await reDistrictProvinceAll(apiData1)
-            console.log('成功发送')
-            console.log(res2.data)
-            console.log(res2.data.data)
-            if(res2.data.code==0){
-                reDistrictProvinceList.value=res2.data.data
-            }
-        const apiData3={
-            pid: 2
-        }
-        const res3=await reDistrictCity(apiData3)
-            console.log(res3.data.data)
-            if(res3.data.code==0){
-                reDistrictCityList.value=res3.data.data
-            }
-        const apiData4={
-            pid: 52
-        }
-        const res4=await reDistrictCity(apiData4)
-            console.log(res4.data.data)
-            if(res4.data.code==0){
-                reDistrictCountyList.value=res4.data.data
-            }
-    }
-    //省，市下拉框的改变
-    async function dropdownChange(newProvince,City,County){
-        const apiData={
-            pid: newProvince
-        }
-        const res=await reDistrictCity(apiData)
+        const res=await insertShop(apiData)
+            console.log(res.data)
             console.log(res.data.data)
             if(res.data.code==0){
-                reDistrictCityList.value=res.data.data
+                ElMessage.success("保存成功")
             }
-        if(City!=""||County!=""){
-            console.log("执行了市"+myCitySelect.value.value)
-            myCitySelect.value.value=toRaw(City)
-            console.log(myCitySelect.value.value+','+City)
-        }
-        const apiData1={
-            pid: myProvinceSelect.value.value
-        }
-        const res1=await reDistrictCity(apiData1)
-            console.log(res1.data.data)
-            if(res1.data.code==0){
-                reDistrictCountyList.value=res1.data.data
-            }
-        if(City!=""||County!=""){
-            console.log("执行了县"+myCountySelect.value.value)
-            myCountySelect.value.value=toRaw(County)
-            console.log(myCountySelect.value.value+','+County)
-        }
+        
     }
-
-    //点击上传门店照
-    var imgStoreImageRef=ref(null) 
-    var uploadStoreImageInput=ref(null)
-    var imgInStoreImageRef=ref(null) 
-    var uploadInStoreImageInput=ref(null)
-    var imgLogoStoreImageRef=ref(null) 
-    var uploadLogoStoreImageInput=ref(null)
-    var imgBackgroundRef=ref(null) 
-    var uploadBackgroundInput=ref(null)
+    //点击照片
     function storeImageClick(){
         uploadStoreImageInput.value.click();
     }
@@ -370,7 +263,7 @@
                     const userObj = res.data.data
                     console.log(userObj)
                     console.log("洒水："+userObj.url)
-                    myStorePhoto.value=userObj.url
+                    myStorePhoto=userObj.url
                     console.log(myStorePhoto.value)
                     console.log(myStorePhoto)
             };
@@ -403,7 +296,7 @@
                     const userObj = res.data.data
                     console.log(userObj)
                     console.log("洒水："+userObj.url)
-                    myInPhoto.value=userObj.url
+                    myInPhoto=userObj.url
                     console.log(myInPhoto.value)
                     console.log(myInPhoto)
             };
@@ -452,7 +345,7 @@
             reader.readAsDataURL(file);
             reader.onloadend =async function() {
                 console.log(file)
-                imgBackgroundRef.value.src=file.path
+                imgBackgroundRef.src=file.path
                 console.log(reader.result)
 
                 // 创建一个 FormData 对象
@@ -476,42 +369,98 @@
             };
         }
     };
+    //初始化市县下拉框为北京
+    async function dropdownChu(){
+        //获取省市县下拉框
+        const apiData1={
+            id:localStorage.getItem("id")
+        }
+        const res2=await reDistrictProvinceAll(apiData1)
+            console.log('成功发送')
+            console.log(res2.data)
+            console.log(res2.data.data)
+            if(res2.data.code==0){
+                reDistrictProvinceList.value=res2.data.data
+            }
+        const apiData3={
+            pid: 2
+        }
+        const res3=await reDistrictCity(apiData3)
+            console.log(res3.data.data)
+            if(res3.data.code==0){
+                reDistrictCityList.value=res3.data.data
+            }
+        const apiData4={
+            pid: 52
+        }
+        const res4=await reDistrictCity(apiData4)
+            console.log(res4.data.data)
+            if(res4.data.code==0){
+                reDistrictCountyList.value=res4.data.data
+            }
+    }
+    //省，市下拉框的改变
+    async function dropdownChange(newProvince,City,County){
+        const apiData={
+            pid: newProvince
+        }
+        const res=await reDistrictCity(apiData)
+            console.log(res.data.data)
+            if(res.data.code==0){
+                reDistrictCityList.value=res.data.data
+            }
+        if(City!=""||County!=""){
+            console.log("执行了市"+myCitySelect.value.value)
+            myCitySelect.value.value=toRaw(City)
+            console.log(myCitySelect.value.value+','+City)
+        }
+        const apiData1={
+            pid: City
+        }
+        const res1=await reDistrictCity(apiData1)
+            console.log(res1.data.data)
+            if(res1.data.code==0){
+                reDistrictCountyList.value=res1.data.data
+            }
+        if(City!=""||County!=""){
+            console.log("执行了县"+myCountySelect.value.value)
+            myCountySelect.value.value=toRaw(County)
+            console.log(myCountySelect.value.value+','+County)
+        }
+    }
+    //省下拉框的内容改变
+    async function handleProvinceChange(event){
+        const newProvince = event.target.value;
+        myProvinceSelect.value.value = newProvince;
+        //新的省
+        console.log("新的省"+newProvince)
+        dropdownChange(newProvince,"","")
+    }
+    //处理市下拉框的内容改变
+    async function handleCityChange(event){
+        const newCity = event.target.value;
+        //新的市
+        console.log("新的市"+newCity)
+        const apiData={
+            pid: newCity
+        }
+        const res=await reDistrictCity(apiData)
+            console.log(res.data.data)
+            if(res.data.code==0){
+                reDistrictCountyList.value=res.data.data
+            }
+    }
+    //处理县下拉框的改变
+    function handleCountyChange(event){
+        const newCounty = event.target.value;
+        //新的市
+        console.log("新的县"+newCounty)
+    }
 </script>
 <style scoped>
-    .navigation{
-        height: 57px;
-        background-color: #01B6FD;
-    }
-    button{
-        border: none;
-    }
-    .navigationLogo{
-        line-height: 57px;
-        color: white;
-        font-weight: 600px;
-        font-size: 20px;
-        padding-left: 40px;
-    }
-    .navigationZi1{
-        float: right;
-        color: white;
-        margin-right: 40px;
-        margin-top: 20px;
-    }
-    .navigationZi2{
-        cursor: pointer;
-        height: 26px;
-        background-color: white;
-        color: #138dbd;
-        margin-right: 60px;
-        margin-top: 17px;
-        float: right;
-        padding: 4px 10px 4px 10px;
-        border-radius: 10px;
-    }
     .businessBox{
         margin: 0 auto;
-        width: 60%;
+        width: 90%;
     }
     .businessBox-top{
         background-color: rgb(230, 241, 250);

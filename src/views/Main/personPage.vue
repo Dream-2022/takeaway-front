@@ -2,8 +2,8 @@
     <div class="personBox">
         <div class="personBox-navigation">
             <div class="personBox-navigation-information active">个人资料</div>
-            <div class="personBox-navigation-account action">账号设置</div>
-            <div class="personBox-navigation-member">会员充值</div>
+            <div class="personBox-navigation-account">商家收藏</div>
+            <div class="personBox-navigation-member">菜品收藏</div>
         </div>
         <div class="person-detail">
             <div class="person-detail-container">
@@ -389,11 +389,11 @@ function avatarImageClick(){
     margin-bottom: 50px;
     height: 700px;
 }
+.personBox-navigation div:hover{
+    background-color: #e7f0f8;
+}
 .active{
     background-color: #d0e3f4;
-}
-.action{
-    background-color: #e5edf5;
 }
 .person-detail{
     flex: 4;

@@ -3,7 +3,7 @@
 
         <router-view></router-view>
 
-        <div class="footerBox">
+        <div class="footerBox" v-if="isDishValue">
             <div class="cartBox cartBoxNone">
                 <div class="cartBoxTop">
                     <span class="cartBoxTopZi">已选商品</span>
@@ -20,7 +20,7 @@
                             <div class="cartDishBoxMight">
                                 <div class="cartDishBoxRightName">{{ item.dishName }}</div>
                                 <div class="cartDishBoxRightFlavorZi">已选:&nbsp;&nbsp;</div>
-                                <div class="cartDishBoxRightFlavor">{{ item.dishFlavorZi }}</div><br>
+                                <div class="cartDishBoxRightFlavor">{{ item.flavorListZi }}</div><br>
                                 <span class="cartDishBoxRightPriceZi">￥</span><span class="cartDishBoxRightPrice">{{ item.price }}</span>
                             </div>
                             <div class="cartDishBoxRight">
@@ -59,10 +59,17 @@
     const cartOneStore=useCartOneStore()
     let dishes=ref([])
     let shopDetail=ref([])
-    
+    let isDishValue=ref(true)
     const route = useRoute();
     const router = useRouter();
     onMounted(async () => {
+
+        if(localStorage.getItem('shopper')==undefined){
+            isDishValue.value=true
+        }
+        else{
+            isDishValue.value=false
+        }
         await cartStore.initializationCartAll(localStorage.getItem("id"))
         console.log(cartStore.cartList)
         console.log(route.params.id)
@@ -155,30 +162,21 @@
     
     //点击结算购物车
     function footerButtonClick(){
-        //获取商家的名称
+        //判断价格是否达标
+        console.log(cartOneStore.cartDishPriceSum)
+        console.log(shopDetail.begin)
+        if(shopDetail.begin<cartOneStore.cartDishPriceSum){
+            ElMessage.warning("价格")
+            return
+        }
+         //获取商家的名称
         console.log(shopDetail.value)
         console.log(shopDetail.value.name)
         cartOneStore.cartOne[0].shopName=shopDetail.value.name
         //将加入的购物车先进行处理（为了渲染选中的属性方便，先将里面的dishFlavorZi渲染好）
         const dishList=cartOneStore.cartOne[0].dishIdList
         console.log(dishList)
-        let dishFlavorZi=ref("")
-        for(let i=0;i<dishList.length;i++){
-            console.log(dishList[i])
-            for(let j=0;j<dishList[i].attributeList.length;j++){
-                console.log(dishList[i].attributeList[j])
-                for(let k=0;k<dishList[i].attributeList[j].flavorList.length;k++){
-                    if(dishFlavorZi.value==""){
-                        dishFlavorZi.value=dishList[i].attributeList[j].flavorList[k].flavorName
-                    }
-                    else{
-                        dishFlavorZi.value=dishFlavorZi.value+"/"+dishList[i].attributeList[j].flavorList[k].flavorName
-                    }
-                }
-            }
-            console.log(dishFlavorZi.value)
-            dishList[i].dishFlavorZi=dishFlavorZi.value
-        }
+        
         console.log(dishList)
         localStorage.setItem("orderShopList",JSON.stringify(cartOneStore.cartOne))
         //跳转页面
@@ -219,7 +217,7 @@
     }
     .footerBox{
         width: 100%;
-        background-color: #0084ff;
+        background-color: #0292FE;
         margin:0 auto;
         width: 900px;
         position: sticky;

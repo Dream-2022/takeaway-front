@@ -42,7 +42,7 @@
                     <span class="table8">操作</span>
                 </div>
                 <span v-for="item in dishStore.dishList" :key="item.id" :value="item.id">
-                    <DealBox :dish="item" :id="item.id"></DealBox>
+                    <DealBox :dish="item" :id="item.id" @clickFather1="clickFather1"></DealBox>
                 </span>
                 <!-- 分页 -->
                 <span v-if="dishStore.dishList.length!=0">
@@ -73,7 +73,7 @@
     import {useDishStore} from'@/stores/dishStore.js'
     import {dishDetailAll, selectDishByKeyword} from'@/apis/dish.js'
     import DealBox from '@/views/Manage/Components/dealBox.vue'
-    const emits=defineEmits(["clickFather"])
+    const emits=defineEmits(["clickFather","clickFather2"])
     const dishStore=useDishStore()
     const attributeStore=useAttributeStore()
     var classList=ref([])
@@ -114,6 +114,10 @@
         //判断是否是最后一页或者是第一页,并修改样式
         pageJudgment()
     })
+    function clickFather1(params){
+        console.log("触发了",params)
+        emits("clickFather2",params);
+    }
     //判断是否是最后一页或者是第一页
     function pageJudgment(){
         const paginationLinkList=document.querySelectorAll('.pagination-link')

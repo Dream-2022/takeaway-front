@@ -1,5 +1,5 @@
 import http from '@/utils/http.js'
-//通过shopId和User_id判断是否收藏商品
+//通过userId查找他的全部购物车
 export const selectCartAll=(data)=>{
     return http({
         url: '/api/pre/cart/selectCartAll',
@@ -11,6 +11,22 @@ export const selectCartAll=(data)=>{
 export const addCart=(data)=>{
     return http({
         url: '/api/pre/cart/addCart',
+        method: 'POST',
+        data
+    })
+}
+//通过shopId和user_id删除购物车
+export const deleteCart=(data)=>{
+    return http({
+        url: '/api/pre/cart/deleteCart',
+        method: 'POST',
+        data
+    })
+}
+//通过userId删除他的全部购物车
+export const deleteAllCartByUserId=(data)=>{
+    return http({
+        url: '/api/pre/cart/deleteAllCartByUserId',
         method: 'POST',
         data
     })

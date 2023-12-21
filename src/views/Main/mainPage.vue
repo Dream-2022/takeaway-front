@@ -7,8 +7,8 @@
       <li class="left"><RouterLink active-class="" :to="'/mainPage/MainView'"><i class="edge icon"></i>饿了么</RouterLink></li>
       <div class="minScreen">
         <li><a><RouterLink active-class="" :to="'/mainPage/MainView'"><i class="home icon"></i>首页</RouterLink></a></li>
-        <li><a class="messagePage"><RouterLink to="/mainPage/personPage"></RouterLink><i class="bell icon"></i>消息</a></li>
-        <li><a href="#"><i class="clipboard icon"></i>订单</a></li>
+        <li><RouterLink to="/mainPage/myMessagePage" class="messagePage"><i class="bell icon"></i>消息</RouterLink></li>
+        <li><RouterLink to="/mainPage/myOrderPage"><i class="clipboard icon"></i>订单</RouterLink></li>
         
       </div>
       <div class="commonScreen">
@@ -178,6 +178,8 @@
   const Router=useRouter()
 
   let dianWoButtonZi=ref("添加")
+
+
   function dianwo(){
     document.getElementById('zhezhao').style.display="";
     document.querySelector('.tankuang').style.display="";
@@ -287,9 +289,10 @@ onMounted(async()=>{
         if(res.data.data=="成为商家"){
             userMessage.value=1
             localStorage.setItem("userType","customer")
-        }else if(res.data.data=="进入商家端"){
+        }else{
             userMessage.value=0
             localStorage.setItem("userType","shopper")
+            localStorage.setItem("shopId",res.data.data.id)
         }
       }
 })

@@ -10,9 +10,11 @@
             <div class="productZi">打包费￥</div><div class="productPacking">{{ dishContent.pack }}</div>
             <div class="productZi">月售:</div><div class="productSale">1000</div><br>
             <div class="productZi2">￥</div><strong class="productPrice">{{ dishContent.price }}</strong><div class="productZi2">&nbsp;起</div>
-            <div class="addShoppingCart" @click="addShoppingCartButton">加入购物车</div>
-            <div class="addDishCollet" @click="addDishCollectButton" v-if="dishCollectValue"><i class="star outline icon"></i>收藏菜品</div>
-            <div class="addDishCollet" @click="deleteDishCollectButton" v-if="!dishCollectValue"><i class="star icon"></i>收藏菜品</div>
+            <div class="addShoppingCart" @click="addShoppingCartButton" v-if="dishCollectAll">加入购物车</div>
+            <span v-if="dishCollectAll">
+                <div class="addDishCollet" @click="addDishCollectButton" v-if="dishCollectValue"><i class="star outline icon"></i>收藏菜品</div>
+                <div class="addDishCollet" @click="deleteDishCollectButton" v-if="!dishCollectValue"><i class="star icon"></i>收藏菜品</div>
+            </span>
         </div>
         <div class="productBottomBox">
             <nav id="navbar-example2" class="navbar bg-body-tertiary px-3 mb-3">
@@ -90,6 +92,7 @@
     const route = useRoute();
     var dishContent=ref([])
     let  dishCollectValue=ref(true)
+    let  dishCollectAll=ref(true)
     onMounted(async() => {
         window.addEventListener('scroll', handleScroll);
         //渲染页面
@@ -109,6 +112,12 @@
                 console.log("未收藏商品")
                 dishCollectValue.value=true
             }
+        console.log(localStorage.getItem("shopper")==undefined)    
+        if(localStorage.getItem("shopper")==undefined){
+            dishCollectAll.value=true
+        }else{
+            dishCollectAll.value=false
+        }
     });
     onBeforeUnmount(() => {
       window.removeEventListener('scroll', handleScroll);

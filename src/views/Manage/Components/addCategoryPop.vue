@@ -1,5 +1,5 @@
 <template>
-<!--  -->
+<!-- 新建分类弹窗 -->
     <div class="zhezhao2" id='zhezhao2' v-if="categoryStore.openAddCategoryDown"></div>
     <div class="tankuang2" v-if="categoryStore.openAddCategoryDown" >
         <div id="header2">
@@ -51,6 +51,7 @@
         }
         //更新分类列表的数据
         categoryStore.obtainCategoryList(localStorage.getItem("shopId"))
+        
         categoryInputValue.value=""
 
         //刷新数据

@@ -15,10 +15,12 @@ export const useCategoryStore = defineStore('category',()=>{
         openAddCategoryDown.value=downValue
     }
     //通过shopId从数据库获取分类列表
-    const obtainCategoryList=async(shopId)=>{
+    const obtainCategoryList=async(shopId,categoryContent)=>{
         const apiData={
-            shopId:shopId
+            shopId:shopId,
+            categoryContent:categoryContent
         }
+        console.log(apiData)
         const res=await selectCategoryAll(apiData)
         console.log(res.data.data)
         if(res.data.code==0){

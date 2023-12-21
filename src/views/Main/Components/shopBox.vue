@@ -11,7 +11,7 @@
               <tr>
                 <td class="section">
                   <span class="shop-score">4.9分</span>
-                  <span class="shop-zi-price">月售:</span><span class="shop-price">100</span><br>
+                  <span class="shop-zi-price" v-if="false">月售:</span><span v-if="false" class="shop-price">100</span><br>
                   <span class="shop-type">{{ shop.type }}</span><span class="shop-zi-deliver">起送￥</span><span class="shop-deliver">{{ shop.begin }}</span><br>
                   <span class="shop-content">{{ shop.profile }}</span>
                 </td>

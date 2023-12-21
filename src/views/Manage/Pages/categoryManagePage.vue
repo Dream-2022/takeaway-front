@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div :class="`${abc}123`">
         <div class="categoryBoxTop">
             <span class="categoryBoxTopTitle">分类名称：</span>
             <input class="categoryBoxInput" placeholder="请输入分类名称" v-model="categoryBoxInputValue">
@@ -14,19 +14,20 @@
                             <div class="categoryBoxLeftName">{{ item.categoryName }}</div>
                             <div class="categoryBoxLeftEdit displayNone">
                                 <input class="categoryBoxLeftEditInput" v-model="categoryValue">
-                                <span class="categoryBoxLeftEditConfirm" @click="categoryBoxLeftEditConfirmClick(item)">确认</span>
-                                <span class="categoryBoxLeftEditCancel" @click="categoryBoxLeftEditCancelClick">取消</span>
+                                <span class="categoryBoxLeftEditConfirm" @click="categoryBoxLeftEditConfirmClick($event,item)">确认</span>
+                                <span class="categoryBoxLeftEditCancel" @click="categoryBoxLeftEditCancelClick($event)">取消</span>
                             </div>
                         </div>
                         
                         <div class="categoryBoxRight">
                            <span class="categoryBoxRightEdit" @click="categoryBoxRightEditClick($event,item.categoryName)"><i class="edit icon"></i><span>更名</span></span>
-                           <span class="categoryBoxRightDelete"><i class="trash alternate icon"></i><span>删除</span></span>
-                           <span class="categoryBoxRightExpand" @click="categoryBoxRightExpandClick($event,item.id)"><i class="angle down icon"></i><span>展开</span></span>
+                           <span class="categoryBoxRightDelete" @click="categoryBoxRightDeleteClick(item)"><i class="trash alternate icon"></i><span>删除</span></span>
+                           <span class="categoryBoxExpand " @click="categoryBoxRightExpandClick($event,item.id)"><i class="angle down icon"></i><span>展开</span></span>
+                           <span class="categoryBoxCollapse displayExpandNone" @click="categoryBoxRightExpandClick($event,item.id)"><i class="angle up icon"></i><span>收起</span></span>
                         </div>
                     </div>
-                    <div class="categoryBottomUnder">
-                        <div class="categoryDishBox" v-for="item in dishList" :key="item">
+                    <div class="categoryBottomUnder displayExpandNone">
+                        <div class="categoryDishBox" v-for="item in dishStore.dishList" :key="item">
                             <DealBox :dish="item" :id="item.id"></DealBox>
                         </div>
                     </div>
@@ -39,63 +40,133 @@
     </div>
 </template>
 <script setup>
-    import {onMounted, ref} from 'vue' 
+    import {onMounted, reactive, ref} from 'vue' 
     import DealBox from '@/views/Manage/Components/dealBox.vue'
-    import {selectCategoryAll, selectCategoryByShopIdAndContent} from'@/apis/category.js'
+    import {selectCategoryAll, selectCategoryByShopIdAndContent, deleteCategoryById } from'@/apis/category.js'
     import {selectDishByCategoryId} from'@/apis/dish.js'
     import {updateCategoryName} from'@/apis/category.js'
     import {useCategoryStore} from'@/stores/categoryStore.js'
+    import {useDishStore} from'@/stores/dishStore.js'
     import { ElMessage } from 'element-plus';
     const categoryStore=useCategoryStore()
+    const dishStore=useDishStore()
 
-    let dishList=ref([])
+    let abc=ref(123)
+    let dishList=reactive([])
     let boxNoneValue=ref(false)
     let categoryBoxInputValue=ref("")//输入查询的内容
     onMounted(async()=>{
         //获取菜品分类下拉框
-        categoryStore.obtainCategoryList(localStorage.getItem("shopId"))
-
+        const apiData={
+            shopId:localStorage.getItem("shopId"),
+            categoryContent:""
+        }
+        console.log(apiData)
+        const res=await selectCategoryByShopIdAndContent(apiData)
+            console.log(res.data.data)
+            if(res.data.code==0){
+                categoryStore.categoryList=res.data.data
+                console.log(categoryStore.categoryList)
+            }
+            else{
+                ElMessage.error(res.data.message)
+            }
+        console.log(document.querySelector('.categoryBottomBox'))
+        console.log(document.querySelector('.categoryBottomBox')==null)
         boxNoneValue.value=(document.querySelector('.categoryBottomBoxes').childNodes.length==2)
+
     })
 
+    //点击展开
     async function categoryBoxRightExpandClick(event,categoryId){
         //如果是选中状态，就收起
-        if(event.target.parentNode.parentNode.parentNode.childNodes[1].classList.contains('displayBlock')){
-            event.target.parentNode.parentNode.parentNode.childNodes[1].classList.remove('displayBlock')
-            return
-        }
-        //先将之前的收起来
-        const categoryBottomUnderBoxes=document.querySelectorAll('.categoryBottomUnder')
-        for(let i=0;i<categoryBottomUnderBoxes.length;i++){
-            categoryBottomUnderBoxes[i].classList.remove('displayBlock')
-        }
-        console.log(event.target.parentNode.parentNode.parentNode.childNodes[1])
-        event.target.parentNode.parentNode.parentNode.childNodes[1].classList.add('displayBlock')
-        //通过categoryId找到所有商品
-        const apiData={
-            categoryId
-        }
-        const res2=await selectDishByCategoryId(apiData)
-            console.log(res2.data)
-            console.log(res2.data.data)
-            if(res2.data.code==0){
-                dishList.value=res2.data.data
+        console.log("点击展开")
+        console.log(event.target.parentNode)
+        console.log(event.target.parentNode.classList.contains('categoryBoxExpand'))
+        if(event.target.parentNode.classList.contains('categoryBoxExpand')){
+            console.log("是展开")
+            const categoryBottomUnderBoxes=document.querySelectorAll('.categoryBottomUnder')
+            for(let i=0;i<categoryBottomUnderBoxes.length;i++){
+                categoryBottomUnderBoxes[i].classList.add('displayExpandNone')
             }
+            console.log(event.target.parentNode.closest('.categoryBoxRight').querySelector('.categoryBoxCollapse'));
+            event.target.parentNode.closest('.categoryBoxRight').querySelector('.categoryBoxCollapse').classList.remove('displayExpandNone');
+            event.target.parentNode.classList.add('displayExpandNone');
+
+            // event.target.parentNode.closest('.categoryBoxRight').querySelector('.categoryBottomBox').classList.remove('displayExpandNone')
+
+            console.log(event.target.parentNode.parentNode.parentNode)
+            console.log(event.target.parentNode.parentNode.parentNode.parentNode)
+            console.log(event.target.parentNode.parentNode.parentNode.parentNode.querySelector('.categoryBottomUnder'))
+            event.target.parentNode.parentNode.parentNode.parentNode.querySelector('.categoryBottomUnder').classList.remove('displayExpandNone')
+            //通过categoryId找到所有商品
+            const apiData={
+                categoryId
+            }
+            console.log(categoryId)
+            const res2=await selectDishByCategoryId(apiData)
+                console.log(res2.data)
+                console.log(res2.data.data)
+                dishStore.dishList =JSON.parse(JSON.stringify(res2.data.data))
+                console.log(dishStore.dishList)
+        }
+        else if(event.target.parentNode.classList.contains('categoryBoxCollapse')){
+            console.log("是收起")
+            console.log(event.target.parentNode.closest('.categoryBoxRight').querySelector('.categoryBoxExpand'));
+            event.target.parentNode.closest('.categoryBoxRight').querySelector('.categoryBoxExpand').classList.remove('displayExpandNone');
+            event.target.parentNode.classList.add('displayExpandNone');
+            event.target.parentNode.parentNode.parentNode.parentNode.querySelector('.categoryBottomUnder').classList.add('displayExpandNone')
+
+        }
+       
     }
     //点击更改分类名称
-    let categoryValue=""
+    let categoryValue=ref("")
     function categoryBoxRightEditClick(event,categoryNameInput){
         console.log(event.target)
         console.log(event.target.parentNode.parentNode)
-        console.log(event.target.parentNode.parentNode.childNodes[0])
-        event.target.parentNode.parentNode.childNodes[0].classList.add('.displayNone')
-        event.target.parentNode.parentNode.childNodes[1].classList.remove('.displayNone')
+        console.log(event.target.parentNode.parentNode.parentNode.childNodes[0])
+        console.log(event.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0])
+        console.log(event.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[1])
+        event.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0].classList.add('displayNone')
+        event.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[1].classList.remove('displayNone')
+        console.log(event.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0])
+        console.log(event.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[1])
         console.log(JSON.stringify(categoryNameInput))
-        categoryValue=JSON.parse(JSON.stringify(categoryNameInput))
-        console.log(categoryValue)
+        categoryValue.value=JSON.parse(JSON.stringify(categoryNameInput))
+        console.log(categoryValue.value)
+    }
+    //点击删除
+    async function categoryBoxRightDeleteClick(category){
+        let result=confirm("确认删除"+category.categoryName+"吗")
+        if(result){
+            const apiData={
+                id: category.id
+            }
+            categoryBoxInputValue.value=""
+            const res=await deleteCategoryById(apiData)
+            console.log(res.data.data)
+            ElMessage.success("删除分类成功")
+            //获取菜品分类下拉框
+            const apiData1={
+                shopId:localStorage.getItem("shopId")
+            }
+            console.log(apiData1)
+            const res1=await selectCategoryAll(apiData1)
+                console.log(res1.data.data)
+                if(res1.data.code==0){
+                    categoryStore.categoryList=res1.data.data
+                    console.log(categoryStore.categoryList)
+                }
+                else{
+                    ElMessage.error(res1.data.message)
+                }
+        }
+        boxNoneValue.value=(document.querySelector('.categoryBottomBoxes').childNodes.length==2)
+
     }
     //更改分类名称确认
-    async function categoryBoxLeftEditConfirmClick(categoryOne){
+    async function categoryBoxLeftEditConfirmClick(event,categoryOne){
         console.log(categoryOne.id)
         console.log(categoryOne.categoryName)
         console.log(categoryValue)
@@ -109,17 +180,21 @@
         const apiData={
             id:categoryOne.id,
             shopId:localStorage.getItem("shopId"),
-            categoryName:categoryOne.categoryName
+            categoryName:categoryValue.value
         }
         const res=await updateCategoryName(apiData)
-        console.log(res.data.data)
-            if(res.data.code==0){
-                classList.value=res.data.data
-            }
+            console.log(res.data.data)
+            categoryOne.categoryName=categoryValue.value
+            console.log(categoryOne.categoryName)
+            ElMessage.success("修改成功")
+            categoryBoxLeftEditCancelClick(event)
     }
     //更改分类名称的取消
-    function categoryBoxLeftEditCancelClick(){
-
+    function categoryBoxLeftEditCancelClick(event){
+        console.log(event.target.parentNode.parentNode.childNodes[0])
+        console.log(event.target.parentNode.parentNode.childNodes[1])
+        event.target.parentNode.parentNode.childNodes[0].classList.remove('displayNone')
+        event.target.parentNode.parentNode.childNodes[1].classList.add('displayNone')
     }
     //点击新建分类
     function categoryBoxAddClick(){
@@ -129,23 +204,30 @@
     async function categoryBoxClick(){
         console.log(document.querySelector('.categoryBottomBoxes').childNodes.length==2)
         const apiData={
-            shopId: localStorage.getItem("shopId"),
-            categoryContent:categoryBoxInputValue.value
+            shopId:localStorage.getItem("shopId"),
+            categoryContent: categoryBoxInputValue.value
         }
         const res=await selectCategoryByShopIdAndContent(apiData)
-        console.log(res.data)
             console.log(res.data.data)
             if(res.data.code==0){
-                classList.value=res.data.data
+                categoryStore.categoryList=res.data.data
+                console.log(categoryStore.categoryList)
+            }
+            else{
+                ElMessage.error(res.data.message)
             }
         boxNoneValue.value=(document.querySelector('.categoryBottomBoxes').childNodes.length==2)
     }
+    
 </script>
 <style scoped>
-    .displayNone{
+    .displayExpandNone{
         display: none !important;
     }
-    .displayBlock{
+    .categoryBoxLeft .displayNone{
+        display: none !important;
+    }
+    .categoryBoxLeft .displayBlock{
         display: block !important;
     }
     .categoryBoxTop{
@@ -257,14 +339,12 @@
     }
     .categoryBoxRightEdit,
     .categoryBoxRightDelete,
-    .categoryBoxRightExpand{
+    .categoryBoxExpand,
+    .categoryBoxCollapse{
         display: inline-block;
         margin-left:5%;
         margin-right: 3%;
         cursor: pointer;
-    }
-    .categoryBottomUnder{
-        display: none;
     }
     .categoryBottomBoxNone{
         background-color: #eeeeee;

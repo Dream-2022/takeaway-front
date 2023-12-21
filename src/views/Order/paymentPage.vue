@@ -66,6 +66,10 @@
         </div>
         <div class="paymentBoxDownward">
             <div class="paymentBoxDownwardNodes">
+                <div class="paymentBoxDownwardCommentsLeft">订单编号</div>
+                <div class="paymentBoxDownwardCommentsRight">{{ cartListValue[0]?.id }}</div>
+            </div>
+            <div class="paymentBoxDownwardNodes">
                 <div class="paymentBoxDownwardNodesLeft">收货信息</div>
                 <div class="paymentBoxDownwardNodesRight">
                     <div>{{ addressValue.addressDetail }}</div>
@@ -77,11 +81,11 @@
             </div>
             <div class="paymentBoxDownwardComments">
                 <div class="paymentBoxDownwardCommentsLeft">备注</div>
-                <div class="paymentBoxDownwardCommentsRight">{{ orderOneStore.orderOne.notes }}</div>
+                <div class="paymentBoxDownwardCommentsRight">{{ cartListValue[0]?.notes }}</div>
             </div>
             <div class="paymentBoxDownwardDetail">
                 <div class="paymentBoxDownwardDetailLeft">餐具数</div>
-                <div class="paymentBoxDownwardDetailRight">{{ orderOneStore.orderOne.tablewareNum }}</div>
+                <div class="paymentBoxDownwardDetailRight">{{ cartListValue[0]?.tablewareNum }}</div>
             </div>
         </div>
     </div>
@@ -98,8 +102,12 @@
                 <span class="paymentDownBoxZi">总价格：￥</span>
                 <span class="paymentDownBoxPrice">{{ priceAll }}</span>
             </div>
+            <div class="passwordDiv">
+                <span>请确认密码：</span>
+                <input type="password"  class="passwordInput" placeholder="请输入密码" v-model="passwordValue">
+            </div> 
         </div>
-        
+
         <div class="buttonBox">
             <button class="TanConfirmButton" @click="addAddressButton">确认支付</button>
             <button class="TanCancelButton" @click="hidder2">取消</button>
@@ -117,28 +125,27 @@
     const router = useRouter();
 
     const cartDishListValue=ref([])
+    const cartListValue=ref([])
     const addressValue=ref([])
     let openPaymentDown=ref(true)
     let deliveryAll=ref(0)//计算配送费
     let packAll=ref(0)//计算打包费
     let priceAll=ref(0)//计算全部
+    let nowTime=ref("15:00")
+    let passwordValue=ref("")
     onMounted(async()=>{
-        //从数据库获取对应的订单信息
-        console.log(localStorage.getItem("orderId"))
-        const apiData={
-            id: localStorage.getItem("orderId")
-        }
-        const res=await selectDishOrderById(apiData)
-            console.log(res.data.data)
-
-        console.log(JSON.parse(res.data.data.dishValue))
-        cartDishListValue.value=JSON.parse(res.data.data.dishValue)
+        //跳转到这个页面需要在localStock中存入orderShopList和addressValue
+        //订单商品信息
+        cartDishListValue.value=JSON.parse(localStorage.getItem("orderShopList"))
+        //插入数据库的订单信息
+        cartListValue.value=JSON.parse(localStorage.getItem("orderOneList"))
+        console.log(cartListValue.value)
+        console.log(cartListValue.value[0])
         console.log(cartDishListValue.value)
         console.log(cartDishListValue.value.dishIdList)
-
         //配送地址信息
-        console.log(JSON.parse(res.data.data.addressValue))
-        addressValue.value=JSON.parse(res.data.data.addressValue)
+        console.log(localStorage.getItem("addressValue"))
+        addressValue.value=JSON.parse(localStorage.getItem("addressValue"))
 
         //计算配送费
         console.log(cartDishListValue.value.length)
@@ -165,24 +172,75 @@
             }
         }
         console.log(packAll.value)
-        priceAll.value=priceAll.value+packAll.value+deliveryAll.value
+        deliveryAll.value=(deliveryAll.value).toFixed(2)
+        packAll.value=(packAll.value).toFixed(2)
+        priceAll.value=(priceAll.value+(Number)(packAll.value)+(Number)(deliveryAll.value)).toFixed(2)
         
+        //更新倒计时
 
+        let k=setInterval(updateCountdown,1000)
+        console.log(localStorage.getItem("orderOneList"))
+        console.log(JSON.parse(localStorage.getItem("orderOneList")))
+        console.log(cartListValue.value)
+        console.log(cartListValue.value[0])
+        console.log(cartListValue.value[0].updateTime)
+        const targetTime=new Date(cartListValue.value[0].updateTime)
+        console.log(targetTime)
+        function updateCountdown(){
+            const currentTime=new Date();
+            const timeDiff=targetTime.getTime()+15*60*1000-currentTime.getTime()
+            const minutes=Math.floor((timeDiff%(1000*60*60))/(1000*60))
+            const seconds=Math.floor((timeDiff%(1000*60))/1000)
+            if(minutes<=0&&seconds<=0){
+                //更新订单状态(这里要发请求到后端，取消订单了)
+                clearInterval(k)
+                return
+            }
+            nowTime.value=`${minutes}分钟 ${seconds}秒`
+        }
     })
     
+    let orderOneList=ref([])
     //确认支付
     async function addAddressButton(){
         console.log("确认支付")
+        if(passwordValue.value==""){
+            ElMessage.warning("请输入密码")
+            return
+        }
+        if(passwordValue.value.length!=6){
+            ElMessage.warning("密码长度不正确")
+            return
+        }
         //修改订单状态
         //修改数据库的状态
-        console.log(localStorage.getItem("order"))
-        const apiData={
-            id: localStorage.getItem("orderId"),
-            state: "已付款"
+        console.log(localStorage.getItem("orderOneList"))
+        orderOneList=JSON.parse(localStorage.getItem("orderOneList"))
+        console.log(orderOneList)
+        let flag=0;
+        for(let i=0;i<orderOneList.length;i++){
+            console.log(orderOneList[i])
+            console.log(localStorage.getItem("order"))
+            const apiData={
+                id: orderOneList[i].id,
+                state: "已付款"
+            }
+            const res=await updateDishOrderCancel(apiData)
+                if(res.data.code==0){
+                    console.log(res.data.data)
+                    flag=1;
+                }else if(res.data.code==400009){
+                    flag=2;
+                }
         }
-        const res=await updateDishOrderCancel(apiData)
-            console.log(res.data.data)
-        ElMessage.success("付款成功")
+        console.log(flag)
+        if(flag==1){
+            ElMessage.success("付款成功")
+        }
+        if(flag==2){
+            ElMessage.warning("订单已超时")
+        }
+           
         //返回主页面
         router.push(`/mainPage`);
     }
@@ -210,23 +268,7 @@
         router.push(`/mainPage`);
     }
 
-    //更新倒计时
-    let nowTime=ref("15:00")
-    let k=setInterval(updateCountdown,1000)
-    const targetTime=new Date(orderOneStore.orderOne.updateTime)
-    function updateCountdown(){
-        const currentTime=new Date();
-        const timeDiff=targetTime.getTime()+15*60*1000-currentTime.getTime()
-        const minutes=Math.floor((timeDiff%(1000*60*60))/(1000*60))
-        const seconds=Math.floor((timeDiff%(1000*60))/1000)
-        if(minutes<=0&&seconds<=0){
-            //更新订单状态
-            // 
-            clearInterval(k)
-            return
-        }
-        nowTime.value=`${minutes}分钟 ${seconds}秒`
-    }
+    
     //返回
     function orderBoxUpperReturnClick(){
         router.push(`/mainPage`);
@@ -496,7 +538,14 @@
         white-space: nowrap;
         overflow-y:scroll;
     }
-
+    .passwordDiv{
+        margin:0 20px 20px 20px;
+    }
+    .passwordInput{
+        font-size: 17px;
+        outline: none;
+        border: none;
+    }
     .buttonBox{
         float: right;
         margin-right: 50px;

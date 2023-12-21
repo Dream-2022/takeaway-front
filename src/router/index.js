@@ -6,6 +6,8 @@ import MainPage from '../views/Main/mainPage.vue'
 import MainView from '../views/Main/mainView.vue'
 import PersonPage from '../views/Main/personPage.vue'
 import MyCartPage from '../views/Main/myCartPage.vue'
+import MyOrderPage from '../views/Main/myOrderPage.vue'
+import MyMessagePage from '../views/Main/myMessagePage.vue'
 
 import SearchPage from '../views/Search/searchPage.vue'
 import ShopDetailPage from '../views/Shop/shopDetailPage.vue'
@@ -21,7 +23,7 @@ import ShopSearchPage from '../views/Shop/shopSearchPage.vue'
 import ManagePage from '../views/Manage/managePage.vue'
 import OrderHandlePage from '../views/Manage/Pages/orderHandlePage.vue'
 import DealPage from '../views/Manage/Pages/dealPage.vue'
-import SetMealPage from '../views/Manage/Pages/setMealPage.vue'
+import InformationPage from '../views/Manage/Pages/informationPage.vue'
 import CategoryManagePage from '../views/Manage/Pages/categoryManagePage.vue'
 
 import BusinessPage from '../views/Business/businessPage.vue'
@@ -51,6 +53,8 @@ const routes = createRouter({
         {path:'mainView',component:MainView},
         {path:'personPage',component:PersonPage},
         {path:'myCartPage',component:MyCartPage},
+        {path:'myOrderPage',component:MyOrderPage},
+        {path:'myMessagePage',component:MyMessagePage},
         {
           path:'searchPage/:shopName',
           name:'searchPage',
@@ -89,7 +93,7 @@ const routes = createRouter({
       children:[
         {path:'orderHandlePage',component:OrderHandlePage},
         {path:'dealPage',component:DealPage},
-        {path:'setMealPage',component:SetMealPage},
+        {path:'informationPage',component:InformationPage},
         {path:'categoryManagePage',component:CategoryManagePage}
       ]
     },

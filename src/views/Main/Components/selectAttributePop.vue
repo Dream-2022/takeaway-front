@@ -162,6 +162,7 @@
     const selectAttributes=toRaw(attributeStore.attributeList)
     console.log(selectAttributes)
     console.log(myFlavorMap.has(1))
+    let flavorListZi=""
     for(let i=0;i<selectAttributes.length;i++){
       const selectFlavorList= selectAttributes[i].flavorList
       for(let j=0;j<selectFlavorList.length;j++){
@@ -171,13 +172,24 @@
           console.log("移除")
           selectFlavorList.splice(j, 1)
           j--;
+        }else{//加入flavorListZi
+          if(flavorListZi==""){
+            flavorListZi=selectFlavorList[j].flavorName
+          }else{
+            flavorListZi=flavorListZi+"/"+selectFlavorList[j].flavorName
+          }
         }
       }
     }
+    //给dish赋值flavorListZi
+    dishOneStore.dish.flavorListZi=flavorListZi
+
     console.log(selectAttributes)
     dishOneStore.dish.attributeList=selectAttributes
     console.log(dishOneStore.dish.attributeList)
     console.log(dishOneStore.dish)
+
+
     console.log(modalDishPriceValue.value)
     console.log(route.params.id)
     cartOneStore.addDishToCart(dishOneStore.dish,modalDishPriceValue.value,route.params.id)

@@ -62,3 +62,19 @@ export const selectDishByValue=(data)=>{
         data
     })
 }
+//通过商品id删除商品
+export const deleteDishById =(data)=>{
+    return http({
+        url: '/api/pre/dish/deleteDishById ',
+        method: 'POST',
+        data
+    })
+}
+//更新商品信息
+export const updateDishByAll =(data)=>{
+    return http({
+        url: '/api/pre/dish/updateDishByAll ',
+        method: 'POST',
+        data
+    })
+}

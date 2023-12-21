@@ -15,6 +15,14 @@ export const selectCategoryByShopIdAndContent=(data)=>{
         data
     })
 }
+//根据分类id删除分类
+export const deleteCategoryById=(data)=>{
+    return http({
+        url: '/api/pre/category/deleteCategoryById',
+        method: 'POST',
+        data
+    })
+}
 //新建分类名，要判断对应的商家有没有存在该分类名
 export const insertCategory=(data)=>{
     return http({

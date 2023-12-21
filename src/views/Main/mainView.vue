@@ -4,11 +4,10 @@
 
 <div class="container">
   <div class="left-section">
-    <span class="title-fruit active">水果</span>
-    <span class="title-flower">鲜花</span>
+    <span class="title-fruit active">全部</span>
+    <span class="title-flower">奶茶</span>
     <span class="title-medicine">买药</span>
     <span class="title-dessert">甜品</span>
-    <span class="title-tea">奶茶</span>
     <span class="title-western">西餐</span>
     <span class="title-collect">收藏</span>
    
@@ -31,7 +30,7 @@
 
 
     <!--  右边的盒子-->
-   <div class="right-section">
+   <!-- <div class="right-section">
     <div class="box newBox">
       <h3>活动</h3>
       <div id="slider-body">
@@ -41,36 +40,15 @@
                 <img src="../../assets/image/image4.jpg" alt="">
             </el-carousel-item>
         </el-carousel>
-        <!-- <div class="slider">
-          <div class="slider-content">
-          <div class="slider-item" id="slider-item1">
-            <img src="../../assets/image/image2.jpg" alt="Image 1">
-          </div>
-          <div class="slider-item">
-            <img src="../../assets/image/image4.jpg" alt="Image 2">
-          </div>
-          <div class="slider-item">
-            <img src="../../assets/image/image3.jpg" alt="Image 3">
-          </div>
-          <div class="slider-item">
-            <img src="../../assets/image/image7.jpg" alt="Image 4">
-          
-          </div>
-          </div>
-        </div> -->
+       
     </div>
-    <!-- <div class="box">
-      <h3><i class="tags icon"></i>标签</h3>
-      <ul class="labelList">
-      </ul>
-    </div> -->
     <div class="box">
       <h3><i class="child icon"></i>推荐</h3>
       <ul class="userList">
       </ul>
     </div>
     </div>
-  </div>
+  </div> -->
 </div>
 </template>
 <script setup>
@@ -84,16 +62,20 @@
    const router = useRouter();
    var shops=ref([])
    onMounted(async() => {
-   const res=await detailAll()
-        console.log('成功发送')
-        console.log(res.data)
-        if(res.data.code==0){
-            console.log("获取商家信息成功")
-            shops.value=res.data.data
-        }
-        else{
-            ElMessage.error(res.data.message)
-        }
+    //要根据用户的默认地址(传用户id过去，在后端找默认地址)找全部的商家
+    const apiData={
+      userId: localStorage.getItem("id")
+    }
+    const res=await detailAll(apiData)
+          console.log('成功发送')
+          console.log(res.data)
+          if(res.data.code==0){
+              console.log("获取商家信息成功")
+              shops.value=res.data.data
+          }
+          else{
+              console.log("不是商家")
+          }
    })
 </script>
 

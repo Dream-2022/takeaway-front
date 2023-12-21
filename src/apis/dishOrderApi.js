@@ -24,3 +24,11 @@ export const updateDishOrderCancel=(data)=>{
         data
     })
 }
+//根据商家id和pageNum查找订单
+export const selectDishOrderByShpIdAndPageNum=(data)=>{
+    return http({
+        url: '/api/pre/dishOrder/selectDishOrderByShpIdAndPageNum',
+        method: 'POST',
+        data
+    })
+}
