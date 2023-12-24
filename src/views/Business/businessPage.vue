@@ -192,7 +192,7 @@
             type:myBusinessCategorySelect.value.value,
             packing:myPacking.value.value,
             delivery:myDelivery.value.value,
-            state:"0"
+            state:"2"
         }
         const res=await insertShop(apiData)
         console.log(res.data)
@@ -223,7 +223,7 @@
             type:myBusinessCategorySelect.value.value,
             packing:myPacking.value.value,
             delivery:myDelivery.value.value,
-            state:"2"
+            state:"4"
         }
     const res=await insertShop(apiData)
         console.log(res.data)
@@ -346,6 +346,7 @@
     function uploadStoreImageClick(){
         console.log("点击选择框")
         const file = uploadStoreImageInput.value.files[0];
+        console.log(file)
         if (file) {
             const creator=localStorage.getItem("username")
             const reader = new FileReader();

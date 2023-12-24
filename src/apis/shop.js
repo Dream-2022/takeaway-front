@@ -7,10 +7,26 @@ export const detailAll=(data)=>{
         data
     })
 }
-//通过shopId获取商家信息
+//通过shopId和type获取商家信息
 export const selectById=(data)=>{
     return http({
         url: '/api/pre/shop/selectById',
+        method: 'POST',
+        data
+    })
+}
+//通过shopId和state和商家名称获取商家信息
+export const selectShopByIdAndNameAndState=(data)=>{
+    return http({
+        url: '/api/pre/shop/selectShopByIdAndNameAndState',
+        method: 'POST',
+        data
+    })
+}
+//通过shopId获取商家信息
+export const selectShopById=(data)=>{
+    return http({
+        url: '/api/pre/shop/selectShopById',
         method: 'POST',
         data
     })
@@ -27,6 +43,14 @@ export const selectShopKeywords=(data)=>{
 export const insertShop=(data)=>{
     return http({
         url: '/api/pre/shop/insertShop',
+        method: 'POST',
+        data
+    })
+}
+//更新商家状态通过商家id
+export const updateShopStateById=(data)=>{
+    return http({
+        url: '/api/pre/shop/updateShopStateById',
         method: 'POST',
         data
     })

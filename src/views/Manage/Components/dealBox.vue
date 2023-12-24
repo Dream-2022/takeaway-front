@@ -16,7 +16,7 @@
 </div>
 </template>
 <script setup>
-    import {useRouter, } from "vue-router"
+    import { useRouter } from "vue-router"
     import { ref, defineProps, onMounted } from 'vue'
     import { ElMessage } from 'element-plus';
     import { deleteDishById } from '@/apis/dish.js'

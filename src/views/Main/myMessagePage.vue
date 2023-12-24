@@ -9,7 +9,12 @@
     </div>
 </template>
 <script setup>
-
+    import {useRouter, } from "vue-router"
+    import { ref, defineProps, onMounted } from 'vue'
+    import { ElMessage } from 'element-plus';
+    onMounted(async()=>{
+        
+    })
 </script>
 <style scoped>
     .messageBigBox{

@@ -517,3 +517,10 @@ li .searchNavigation i.icon{
   width: 16px;
   margin: -7px 0.25rem 0 2px;
 }
+.manageButton{
+  cursor: pointer;
+}
+a{
+  text-decoration: none ;
+  color: #fff ;
+}

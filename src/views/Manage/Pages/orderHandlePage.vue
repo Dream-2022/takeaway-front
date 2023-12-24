@@ -59,8 +59,10 @@
                     <div class="orderHandBoxOrderTopState">{{ order.state }}</div>
                     <div class="orderHandBoxOrderTopOperate">
                         <span class="OrderTopOperateRefund" v-if="order.state=='已付款'">退单</span>
-                        <span class="OrderTopOperateSendGood" v-if="order.state=='已付款'">发货</span>
+                        <span class="OrderTopOperateSendGood" @click="OrderTopOperateSendGoodClick(order)" v-if="order.state=='已付款'">发货</span>
                         <span class="OrderTopOperateView" @click="OrderTopOperateViewClick(order)">查看</span>
+                        <span class="OrderTopOperateAccess" @click="OrderTopOperateAccessClick(order)" v-if="order.state=='申请退款'">同意退款</span>
+                        <span class="OrderTopOperateRefuse" @click="OrderTopOperateRefuseClick(order)" v-if="order.state=='申请退款'">拒绝退款</span>
                     </div>
                 </div>
             </div>
@@ -84,6 +86,7 @@
     import { ElMessage } from 'element-plus';
     import {selectDishOrderByShpIdAndPageNum} from '@/apis/dishOrderApi.js'
     import { useOrderOneStore } from '@/stores/orderOneStore.js'
+    import { updateDishOrderCancel } from '@/apis/dishOrderApi.js'
 
     const orderOneStore=useOrderOneStore()
     let orderList=ref([])
@@ -95,15 +98,46 @@
         //获取第1页的订单数据
         obtainByPageNum(1)
     })
-
+    //选择同意退款
+    async function OrderTopOperateAccessClick(order){
+        console.log(order.id)
+        handleOrderState(order.id,"同意退款")
+        ElMessage.success("已成功通过退款申请")
+        
+    }
+    
+    //选择拒绝退款
+    async function OrderTopOperateRefuseClick(order){
+        handleOrderState(order.id,"拒绝退款")
+        ElMessage.success("已成功拒绝退款申请")
+    }
+    //点击发货
+    async function OrderTopOperateSendGoodClick(order){
+        handleOrderState(order.id,"已完成")
+        ElMessage.success("已成功发货")
+    }
     //查看订单详细，打开弹窗
     function OrderTopOperateViewClick(order){
         console.log(order)
-        orderOneStore.orderOne=order
         console.log(orderOneStore.orderOne)
-        orderOneStore.orderDownValue=true
+        orderOneStore.openDown(order)
     }
-
+    //处理订单的状态变化
+    async function handleOrderState(id,state){
+        const apiData={
+            id,
+            state
+        }
+        const res=await updateDishOrderCancel(apiData)
+            console.log(res.data.data)
+        
+        const rightTopBoxChild=document.querySelector('.rightTopBox').childNodes    
+        for(let i=0;i<rightTopBoxChild.length;i++){
+            if(rightTopBoxChild[i].classList.contains('topBoxActive')){
+                rightTopBoxChild[i].click()
+            }
+        }
+    }
     let TimeStartInput=ref()
     let TimeEndInput=ref()
     //选择了时间输入框
@@ -446,6 +480,17 @@
         text-align: center;
         margin-bottom: 8px;
     }
+    .OrderTopOperateAccess,
+    .OrderTopOperateRefuse{
+        color: 17px;
+        cursor: pointer;
+        border-radius: 6px;
+        width: 60px;
+        margin-left: 5px;
+        margin-right: 5px;
+        text-align: center;
+        margin-bottom: 8px;
+    }
     .OrderTopOperateRefund{
         border: 1.5px solid rgb(188, 66, 66);
         color: rgb(188, 66, 66);
@@ -469,6 +514,22 @@
     .OrderTopOperateView:hover{
         color: #fff;
         background-color: #7f7f7f;
+    }
+    .OrderTopOperateAccess{
+        border: 1.5px solid #5ac37d;
+        color: #5ac37d;
+    }
+    .OrderTopOperateAccess:hover{
+        color: #fff;
+        background-color: #5ac37d;
+    }
+    .OrderTopOperateRefuse{
+        border: 1.5px solid #bacc43;
+        color: #bacc43;
+    }
+    .OrderTopOperateRefuse:hover{
+        color: #fff;
+        background-color: #bacc43;
     }
     /*分页元素*/
     .pagination-link{

@@ -4,6 +4,7 @@
             <div class="personBox-navigation-information active">个人资料</div>
             <div class="personBox-navigation-account">商家收藏</div>
             <div class="personBox-navigation-member">菜品收藏</div>
+            <div class="personBox-navigation-remark">我的评论</div>
         </div>
         <div class="person-detail">
             <div class="person-detail-container">
@@ -402,7 +403,8 @@ function avatarImageClick(){
 }
 .personBox-navigation-information,
 .personBox-navigation-account,
-.personBox-navigation-member{
+.personBox-navigation-member,
+.personBox-navigation-remark{
     padding: 15px 65px;
     cursor: pointer;
 }

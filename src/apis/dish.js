@@ -15,6 +15,15 @@ export const dishDetailAllNoPage=(data)=>{
         data
     })
 }
+
+//管理员通过ID，shopID，name，detail查找商品
+export const selectDishByIdAndShopIdAndNameAndDetail=(data)=>{
+    return http({
+        url: '/api/pre/dish/selectDishByIdAndShopIdAndNameAndDetail',
+        method: 'POST',
+        data
+    })
+}
 //通过分类，状态，关键词获取商品列表
 export const selectDishByKeyword=(data)=>{
     return http({
@@ -34,6 +43,14 @@ export const descriptionDetailAll=()=>{
 export const insertDish=(data)=>{
     return http({
         url: '/api/pre/dish/insertDish',
+        method: 'POST',
+        data
+    })
+}
+//管理员通过id更新菜品state
+export const updateDishStateById=(data)=>{
+    return http({
+        url: '/api/pre/dish/updateDishStateById',
         method: 'POST',
         data
     })

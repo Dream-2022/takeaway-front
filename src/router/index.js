@@ -31,6 +31,13 @@ import BusinessPage from '../views/Business/businessPage.vue'
 import OrderPage from '../views/Order/orderPage.vue'
 import PaymentPage from '../views/Order/paymentPage.vue'
 
+import BackendPage from '../views/Backend/backendPage.vue'
+import UserManagePage from '../views/Backend/Pages/userManagePage.vue'
+import ShopManagePage from '../views/Backend/Pages/shopManagePage.vue'
+import DishManagePage from '../views/Backend/Pages/dishManagePage.vue'
+import OrderManagePage from '../views/Backend/Pages/orderManagePage.vue'
+import ReportManagePage from '../views/Backend/Pages/reportManagePage.vue'
+
 const routes = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -84,7 +91,6 @@ const routes = createRouter({
         },
       ]
     },
-    
     {
       path:'/managePage',
       name:'managePage',
@@ -111,6 +117,19 @@ const routes = createRouter({
       path:'/businessPage',
       name:'businessPage',
       component: BusinessPage
+    },
+    {
+      path:'/backendPage',
+      name:'backendPage',
+      component: BackendPage,
+      redirect: "/backendPage/userManagePage",
+      children:[
+        {path:'userManagePage',component:UserManagePage},
+        {path:'shopManagePage',component:ShopManagePage},
+        {path:'dishManagePage',component:DishManagePage},
+        {path:'orderManagePage',component:OrderManagePage},
+        {path:'reportManagePage',component:ReportManagePage},
+      ]
     }
 
   ]

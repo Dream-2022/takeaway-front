@@ -12,10 +12,10 @@
             <div class="dealSelectBox2">
                 <span>销售状态</span>
                 <select class="dealStateSelect" name="销售状态" @change="handleStateChange" ref="myStateSelect">
-                <option value="0">全部</option>
-                <option value="1">售卖</option>
-                <option value="2">停售</option>
-                <option value="3">缺货</option>
+                    <option value="0">全部</option>
+                    <option value="1">售卖</option>
+                    <option value="2">停售</option>
+                    <option value="3">缺货</option>
                 </select>
             </div>
             <div class="dealSearchInputBox">

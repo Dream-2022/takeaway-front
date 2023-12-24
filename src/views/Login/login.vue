@@ -334,6 +334,7 @@
             console.log(res.data)
             if(res.data.code==0){
                 ElMessage.success("登陆成功")
+                localStorage.removeItem("shopper")
                 // var headers = getRequestHeaders(); // 使用前面的函数获取请求头中的所有键值对
                 // var token = headers["token"];
                 // var longt = headers["longt"];
@@ -347,6 +348,7 @@
                 localStorage.setItem("nickname",user.nickname);
                 localStorage.setItem("gender",user.gender)
                 localStorage.setItem("picture",user.picture)
+                localStorage.setItem("userState",user.userType)
                 localStorage.setItem("profile",user.profile)
                 localStorage.setItem("birthday",user.birthday)
 

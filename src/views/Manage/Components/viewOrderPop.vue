@@ -10,12 +10,12 @@
                 <div>
                     <span class="orderZi">订单号：</span>
                     <span class="orderId">{{ orderOneStore.orderOne.id }}</span>
-                    <span class="orderState">已付款</span>
-                    <span class="orderTime">2023.12.5 12:12</span>
+                    <span class="orderState">{{ orderOneStore.orderOne.state }}</span>
+                    <span class="orderTime">{{ orderOneStore.orderOne.time }}</span>
                 </div>
                 <div class="orderPadding">
                     <span class="orderZi">用户名：</span>
-                    <span>李小慧</span>
+                    <span>{{ orderOneStore.orderOne.addressValue.myName }}</span>
                 </div>
                 <div class="orderPadding">
                     <span class="orderZi">手机号：</span>
@@ -23,24 +23,24 @@
                 </div>
                 <div class="orderBorder">
                     <span class="orderZi">地址：</span>
-                    <span>海棠路12号</span>
+                    <span>{{ orderOneStore.orderOne.addressValue.addressDetail }}</span>
                 </div>
                 <div class="orderPadding">
                     <div class="orderDishBox">菜品</div>
                     <div class="orderDishes">
-                        <div class="orderDish">
-                            <span class="orderDishName">大叔奶茶</span>
-                            <span class="orderDishFlavorListZi">大/五分糖</span>
+                        <div class="orderDish" v-for="item in orderOneStore.orderOne.dishIdList" :key="item">
+                            <span class="orderDishName">{{ item.dishName }}</span>
+                            <span class="orderDishFlavorListZi">{{ item.flavorListZi }}</span>
                             <span class="orderDishPrice">
                                 <span>￥</span>
-                                <span>13</span>
+                                <span>{{ item.price }}</span>
                             </span>
                         </div>
                     </div>
                     <div class="orderBorder" >
                         <span class="orderXi">菜品小计：</span>
                         <span class="orderPriceZi1">￥</span>
-                        <span class="orderPriceZi2">15</span>
+                        <span class="orderPriceZi2">{{ orderOneStore.dishesPrice }}</span>
                     </div>
                 </div>
                 <div>
@@ -48,22 +48,22 @@
                     <div class="orderPadding">
                         <span>菜品小计：</span>
                         <span>￥</span>
-                        <span>15</span>
+                        <span>{{ orderOneStore.dishesPrice }}</span>
                     </div>
                     <div class="orderPadding">
                         <span>打包费：</span>
                         <span>￥</span>
-                        <span>1</span>
+                        <span>{{ orderOneStore.packsPrice }}</span>
                     </div>
                     <div class="orderPadding">
                         <span>配送费：</span>
                         <span>￥</span>
-                        <span>1</span>
+                        <span>{{ orderOneStore.deliveryPrice }}</span>
                     </div>
                     <div class="orderPadding">
                         <span class="orderAllPrice">合计：</span>
                         <span class="orderAllPriceZi1">￥</span>
-                        <span class="orderAllPriceZi2">17</span>
+                        <span class="orderAllPriceZi2">{{ orderOneStore.allPrice }}</span>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,9 @@
     import {onMounted, ref} from 'vue' 
     import {useRouter} from "vue-router"
     import { useOrderOneStore } from '@/stores/orderOneStore.js'
+    import { selectById, selectShopById } from '@/apis/shop.js'
 
+    
     const orderOneStore=useOrderOneStore()
     let addressValue=ref([])//该订单地址信息
     let dishValue=ref([])//该订单菜品信息
@@ -87,7 +89,7 @@
         console.log(orderOneStore.orderOne.dishValue)
         console.log(orderOneStore.orderOne.addressValue)
 
-
+        
     })
     function hidder1(){
         orderOneStore.orderDownValue=false

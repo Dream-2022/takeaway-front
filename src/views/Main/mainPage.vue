@@ -36,8 +36,8 @@
                 <span><RouterLink to="/mainPage/myCartPage" class="dropdown">购物车</RouterLink></span>
                 <span v-show="userMessage"><RouterLink to="/businessPage" class="dropdown">成为商家</RouterLink></span>
                 <span v-show="!userMessage"><RouterLink to="/managePage" class="dropdown">进入商家端</RouterLink></span>
-                <span class="messagePageBox"><a class="messagePage"><RouterLink to="/mainPage/personPage"></RouterLink>我的消息</a></span>
-                <span class="orderPageBox"><a class="orderPage"><RouterLink to="/mainPage/personPage"></RouterLink>我的订单</a></span>
+                <span class="messagePageBox"><RouterLink class="messagePage" to="/mainPage/myMessagePage">我的消息</RouterLink></span>
+                <span class="orderPageBox"><RouterLink to="/mainPage/myOrderPage"  class="orderPage">我的订单</RouterLink></span>
                 <span @click="exitBottom"><a class="dropdown exit">退出登录</a></span>
               </div>
             </div>
@@ -152,6 +152,8 @@
 <footer class="orange">
   <p>
     &copy; 2023 Are You Hungry. All rights reserved.
+    <em  v-if="isManageValue">|</em>
+    <RouterLink :to="'/backendPage/userManagePage'"><span v-if="isManageValue" class="manageButton">&nbsp;管理员入口</span></RouterLink>
   </p>
 </footer>
 
@@ -265,6 +267,7 @@ async function dropdownChu(){
       }
 }
 var userMessage=ref(0)
+let isManageValue=ref(false)//判断是否是管理员
 onMounted(async()=>{
   document.getElementById('zhezhao').style.display="none";
   document.getElementById('zhezhao1').style.display="none";
@@ -295,6 +298,12 @@ onMounted(async()=>{
             localStorage.setItem("shopId",res.data.data.id)
         }
       }
+  //获取是否是管理员
+  console.log(localStorage.getItem("userState"))    
+  if(localStorage.getItem("userState")==1){
+    isManageValue.value=true
+  }
+  console.log(isManageValue.value)
 })
 
 //下拉框的变化
