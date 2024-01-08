@@ -15,6 +15,14 @@ export const selectById=(data)=>{
         data
     })
 }
+//通过shopId找到所有的categoryId及其对应的菜品
+export const selectDishByShopIdAndObtainCategory=(data)=>{
+    return http({
+        url: '/api/pre/shop/selectDishByShopIdAndObtainCategory',
+        method: 'POST',
+        data
+    })
+}
 //通过shopId和state和商家名称获取商家信息
 export const selectShopByIdAndNameAndState=(data)=>{
     return http({

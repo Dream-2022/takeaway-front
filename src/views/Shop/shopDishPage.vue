@@ -7,10 +7,10 @@
                 </span>
                 <span @click="isClickSearchClick"><i class="search icon"></i></span>
 
-                <span>聊天</span>
+                <span @click="messageClick">聊天</span>
                 <span v-show="!isCollect" @click="collectClick">收藏店铺&nbsp;<i class="star outline icon"></i></span>
                 <span v-show="isCollect" @click="collectClick">取消收藏&nbsp;<i class="star icon"></i></span>
-                <span>反馈举报</span>
+                <span @click="feedbackClick">反馈举报</span>
             </div>
             <img :src="shopDetail.background" class="picture">
             
@@ -46,6 +46,7 @@
     import { ElMessage } from 'element-plus';
     import { useRoute, useRouter } from 'vue-router';
     import {useCategoryStore} from'@/stores/categoryStore.js'
+    import {useShopStore} from'@/stores/shopStore.js'
     import ShopDishBox from '@/views/Shop/Components/shopDishBox.vue';
     import {insertCollect, deleteCollect} from '@/apis/collect.js'
     import {dishDetailAll} from '@/apis/dish.js'
@@ -53,6 +54,7 @@
     const router = useRouter();
     const route = useRoute();
     const categoryStore=useCategoryStore()
+    const shopStore=useShopStore()
 
     let dishes=ref([])
     let shopDetail=ref([])
@@ -78,18 +80,18 @@
         }
         const res=await selectById(apiData)
             console.log('成功发送')
-            console.log(res.data)
-            if(res.data.code==0){
-                console.log("获取商家信息成功")
-                shopDetail.value=res.data.data
-            }
-            else{
-                ElMessage.error(res.data.message)
-            }
-        console.log(shopDetail.value.id)
-        categoryStore.obtainCategoryList(shopDetail.value.id)
+            console.log(res.data.data)
+            console.log("获取商家信息成功")
+            shopDetail.value=res.data.data
+            console.log(shopDetail.value.id)
+            categoryStore.obtainCategoryList(shopDetail.value.id)
 	})
 
+    function feedbackClick(){
+        console.log("点击")
+        //举报弹窗
+        shopStore.feedbackPopValue=true
+    }
     let searchInputValue=ref("")
     //点击在店内搜索
     function isClickSearchClick(){
@@ -144,6 +146,12 @@
         console.log(event.target)
         event.target.classList.add('topBoxActive')
         
+    }
+    //点击聊天，跳转页面
+    function messageClick(){
+        const shopId=localStorage.getItem("shopId")
+        router.push(`/mainPage/myMessagePage`);
+
     }
 </script>
 <style scoped>

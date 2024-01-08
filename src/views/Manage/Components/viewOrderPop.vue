@@ -15,7 +15,7 @@
                 </div>
                 <div class="orderPadding">
                     <span class="orderZi">用户名：</span>
-                    <span>{{ orderOneStore.orderOne.addressValue.myName }}</span>
+                    <span>{{ orderOneStore?.orderOne?.addressValue?.myName }}</span>
                 </div>
                 <div class="orderPadding">
                     <span class="orderZi">手机号：</span>

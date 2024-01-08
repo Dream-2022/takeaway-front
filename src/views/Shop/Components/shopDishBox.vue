@@ -1,72 +1,113 @@
 <template>
     <div class="bottomBox">
-        <div class="leftBox">
-            <div v-for="item in categoryStore.categoryList" :key="item" class="leftBoxDiv">
-                {{ item.categoryName }}
+        <div class="leftBox"> 
+           <div class="leftStrick">
+                <div  class="leftBoxDiv" v-for="cate in categoryList" :key="cate" @click="leftBoxDivClick">
+                    <a class="nav-link link1" :href="`#scrollspyHeading${cate.id}`">{{ cate.categoryName }}</a>
+                </div>
             </div>
         </div>
         <div class="rightBox">
-            <span v-for="cate in categoryStore.categoryList" :key="cate">
-                <div>{{ cate.id }}</div>
-                <span v-for="item in dishes" :key="item.id">
-                    <DishBox :dish="item">
-                    </DishBox>
+            <div v-for="cate in categoryList" :key="cate">
+                <div class="scrollBox" :id="`scrollspyHeading${cate.id}`"></div>
+                <span class="cateName">{{ cate.categoryName }}</span>
+                <span v-for="item in cate.dishList" :key="item">
+                    <span>
+                        <DishBox :dish="item">
+                        </DishBox>
+                    </span>
                 </span>
-            </span>
+            </div>
         </div>
     </div>
 
 </template>
 <script setup>
-    import {ref,onMounted,onUpdated}  from 'vue'
+    import { ref, onMounted, onUpdated, onBeforeUnmount }  from 'vue'
     import { useRoute, useRouter } from 'vue-router';
     import {useCategoryStore} from'@/stores/categoryStore.js'
     import DishBox from '@/views/Shop/Components/dishBox.vue';
     import {dishDetailAll,dishDetailAllNoPage} from '@/apis/dish.js'
+    import { selectDishByShopIdAndObtainCategory } from '@/apis/shop.js'
 
     const route = useRoute();
     const categoryStore=useCategoryStore()
-    let dishes=ref([])//通过cate找dishId!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    let categoryList=ref([])//通过cate找dishId!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     let shopDetail=ref([])
     onMounted(async() => {
-        //通过categoryId找dishId
+        window.addEventListener('scroll', handleScroll);
+        //通过shopId找对应category对应的dish（穿过来一个数组）
         const apiData0={
-            shopId: route.params.id,
-            pageNum: 1
+            id: route.params.id
         }
-        const res0=await dishDetailAllNoPage(apiData0)
+        console.log(apiData0)
+        const res0=await selectDishByShopIdAndObtainCategory(apiData0)
             console.log(route.params.id)
             console.log('成功发送')
-            console.log(res0.data)
+            console.log(res0.data.data)
             if(res0.data.code==0){
                 console.log("获取商品信息成功")
-                dishes.value=res0.data.data
+                categoryList.value=res0.data.data
             }
             else{
                 ElMessage.error(res0.data.message)
             }
-        
-        //通过shopId找到所有categoryId，通过categoryId找到所有的dishId
-        // const res1=await dishDetailAll(apiData0)
-        //     console.log(route.params.id)
-        //     console.log('成功发送')
-        //     console.log(res1.data)
-        //     if(res1.data.code==0){
-        //         console.log("获取商品信息成功")
-        //         dishes.value=res1.data.data
-        //     }
+            const leftBoxes=document.querySelectorAll('.leftBoxDiv')
+            console.log(leftBoxes)
+            console.log(leftBoxes.length)
+            for(let i=0;i<leftBoxes.length;i++){
+                console.log(leftBoxes[i])
+            }
     })
+    let flag=ref(0)
     //设置商品分类的默认选择    
     onUpdated(async() => {
-        console.log(document.querySelector(".leftBox").childNodes)
-        console.log(document.querySelector(".leftBox").childNodes.length)
-        console.log(document.querySelector(".leftBox").childNodes.length>3)
-        if(document.querySelector(".leftBox").childNodes.length>3){
-            console.log("进来了")
-            console.log(document.querySelector(".leftBox").childNodes[1])
-            document.querySelector(".leftBox").childNodes[1].classList.add('leftBoxDivActive')
+        if(flag.value==0){
+            const leftBoxDivBoxes=document.querySelectorAll('.leftBoxDiv')
+            console.log(leftBoxDivBoxes[0])
+            console.log(document.querySelector(".leftStrick").childNodes)
+            console.log(document.querySelector(".leftStrick").childNodes.length)
+            console.log(document.querySelector(".leftStrick").childNodes.length>3)
+            if(document.querySelector(".leftStrick").childNodes.length>3){
+                console.log("进来了")
+                console.log(document.querySelector(".leftStrick").childNodes[1])
+                console.log(document.querySelector('leftBoxDivActive'))
+                document.querySelector(".leftStrick").childNodes[1].classList.add('leftBoxDivActive')
+            }
+            flag.value=1
         }
+
 	})
+    onBeforeUnmount(() => {
+      window.removeEventListener('scroll', handleScroll);
+    });
+    //设置检测滑动事件
+    function handleScroll() {
+        const links=document.querySelector('.nav-link')
+    }
+    //点击分类，将样式清空再加上
+    async function leftBoxDivClick(event){
+        const leftBoxDivBoxes=document.querySelectorAll('.leftBoxDiv')
+        console.log(leftBoxDivBoxes)
+        for(let i=0;i<leftBoxDivBoxes.length;i++){
+            console.log(leftBoxDivBoxes[i])
+            console.log(leftBoxDivBoxes[i].classList)
+            console.log(leftBoxDivBoxes[i].classList.contains('leftBoxDivActive'))
+            if(leftBoxDivBoxes[i].classList.contains('leftBoxDivActive')){
+                console.log("删除")
+                leftBoxDivBoxes[i].classList.remove('leftBoxDivActive')
+            }
+        }
+        console.log("第二种情况")
+        console.log(event.target)
+        console.log(event.target.parentNode)
+        console.log(leftBoxDivBoxes[0])
+        leftBoxDivBoxes[0].classList.remove('leftBoxDivBoxes')
+        console.log(leftBoxDivBoxes[0])
+        event.target.parentNode.classList.add('leftBoxDivActive')
+        
+        
+    }
 </script>
 <style scoped>
  .bottomBox{
@@ -81,8 +122,15 @@
         top: 0;
         z-index: 2;
     }
+    .leftStrick{
+        position: sticky;
+        z-index: 1; 
+        top: 160px;
+    }
     .leftBoxDiv{
-        padding: 10px;
+        height: 35px;
+        line-height: 35px;
+        text-align: center;
         cursor: pointer;
     }
     .leftBoxDiv:hover{
@@ -97,5 +145,20 @@
         margin: 0 20px 20px 5px;
         border-radius: 20px;
         flex: 5;
+    }
+    .cateName{
+        font-size: 15px;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 10px;
+    }
+    .nav-link{
+        height: 100%;
+    }
+    .scrollBox{
+        top: -55px;
+        position: relative;
     }
 </style>

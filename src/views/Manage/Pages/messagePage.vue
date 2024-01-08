@@ -14,8 +14,7 @@
                 <div class="messageBoxRight">
                     <div>
                         <div class="messageBoxRightTop" v-if="userOne.id!=null">
-                            <div>正在和{{ shopValue.name }}</div>
-                            <div>聊天（{{userOne.nickname}}）</div>
+                            <div>正在和{{userOne.nickname}}聊天</div>
                         </div>
                         <div class="messageBoxRightBottom">
                             <div  v-for="message in messageOne" :key="message">
@@ -48,33 +47,53 @@
     </div>
 </template>
 <script setup>
-    import { useRouter } from "vue-router"
     import { ref, defineProps, onMounted } from 'vue'
     import { ElMessage } from 'element-plus';
-    import {selectMessageByUserId} from '@/apis/messageApi.js'
-    import {selectShopByUserId,selectShopById} from '@/apis/shop.js'
-    import {selectUserById} from '@/apis/useApi.js'
-
+    import {selectMessageByUserId,selectMessageByTwoUserId} from '@/apis/messageApi.js'  
     let ws=null
     let messageList=ref([])
     let messageOne=ref([])
     let userOne=ref([])
-    let messageInputValue=ref("")//输入框的内容
-    let shopValue=ref([])
+    let messageInputValue=ref("")
     onMounted(async()=>{
         const userId=localStorage.getItem("id")
         ws=new WebSocket("ws://localhost:8080/api/websocket/"+userId)
         console.log("连接已建立")
+        messageOne.value=[]
         ws.onmessage=(event)=>{
             console.log(messageList.value)
             console.log("收到了消息："+event.data)
-            //接着将他展示在页面上面
             console.log(messageOne.value)
             console.log(messageList.value)
                 console.log("收到了消息："+event.data)
                 console.log("收到了消息："+JSON.parse(event.data))
                 const message=JSON.parse(event.data)
                 message.time=obtainTime(message.createTime)
+            //如果发送者不存在于左侧的列表中,我要加上去
+            if(messageList.value.length!=0&&localStorage.getItem("id")!=message.senderId){
+                let flag=0;
+                for(let i=0;i<messageList.value[0].userList.length;i++){
+                    console.log(messageList.value[0].userList[i])
+                    if(messageList.value[0].userList[i].id==message.senderId){
+                        flag=1;
+                    }
+                }
+                if(flag==0){
+                    //需要加上左侧盒子
+                    messageList.value[0].userList.push(message.sender)
+                    console.log(message.value)
+                    messageList.value.push([message])
+                }
+            }
+            if(messageList.value.length==0&&localStorage.getItem("id")!=message.senderId){
+                const x={
+                    userList: [message.sender]
+                }
+                messageList.value.push(x)
+            }
+            
+            //接着将他展示在页面上面
+            
                 //接着将他展示在页面上面
                 messageOne.value.push(message)
                 console.log(messageList.value)
@@ -93,59 +112,9 @@
         const res=await selectMessageByUserId(apiData)
             console.log(res.data.data)
             messageList.value=res.data.data
-        
-        // //获取商家信息
-        // const apiData1={
-        //     userId: localStorage.getItem("id")
-        // }
-        // console.log(apiData1)
-        // const res1=await selectShopByUserId(apiData1)
-        //     console.log(res1.data.data)
-        //     shopValue.value=res1.data.data
-
-        messageOne.value=[]
-        if(localStorage.getItem("shopId")!=null){
-            //通过shopId获取userId，加入userList
-            const apiData={
-                id: localStorage.getItem("shopId")
-            }
-            console.log(apiData)
-            const res=await selectShopById(apiData)
-                console.log(res.data.data)
-                shopValue.value=res.data.data
-                console.log(res.data.data.userId)
-                let flag=0;
-                if(messageList.value.length!=0){
-                    for(let i=0;i<messageList.value[0].userList.length;i++){
-                        console.log(messageList.value[0].userList[i])
-                        console.log(messageList.value[0].userList[i].id)
-                        if(messageList.value[0].userList[i].id==res.data.data.userId){
-                            flag=1;
-                        }
-                    }
-                }
-                
-                if(flag==0){
-                    //通过userId找到user加入列表
-                    const apiData1={
-                        id: res.data.data.userId
-                    }
-                    console.log(apiData1)
-                    const res1=await selectUserById(apiData1)
-                    console.log(res1.data.data)
-                    console.log(messageList.value.length==0)
-                    if(messageList.value.length==0){
-                        const x={
-                            userList: [res1.data.data]
-                        }
-                        messageList.value.push(x)
-                        console.log(messageList.value)
-                    }else{
-                        messageList.value[0].userList.push(res1.data.data)
-                    }
-                }
-                console.log(messageList.value)
-        }
+            console.log(messageList.value[0].receiverId)
+            console.log(messageList.value[0].senderId)
+            
     })
     //点击用户栏
     async function massageBoxMinClick(user){
@@ -153,30 +122,20 @@
         console.log(userOne.value)
         messageOne.value=[]
         //从messageList查询与user对应的聊天
-        for(let i=0;i<messageList.value.length;i++){
-            console.log(messageList.value[0].receiverId)
-            if(messageList.value[0].receiverId!=undefined){
-                console.log(messageList.value[0])
-                if(user.id==messageList.value[0].receiverId){
-                    messageOne.value.push(messageList.value[i])
-                }
-                else if(user.id==messageList.value[0].senderId){
-                    messageOne.value.push(messageList.value[i])
-                }
-                //获取转换的时间
-                const formattedDate=obtainTime(messageOne.value[i].createTime)
-                messageOne.value[i].time=formattedDate
-            }
-            
+        //从数据库获取user和id的聊天
+        const apiData={
+            receiverId: localStorage.getItem("id"),
+            senderId: user.id
         }
-        //获取商家信息
-        const apiData1={
-            userId: localStorage.getItem("id")
+        console.log(apiData)
+        const res=await selectMessageByTwoUserId(apiData)
+            console.log(res.data.data)
+            messageOne.value=res.data.data
+        for(let i=0;i<messageOne.value.length;i++){
+            //获取转换的时间
+            const formattedDate=obtainTime(messageOne.value[i].createTime)
+            messageOne.value[i].time=formattedDate
         }
-        console.log(apiData1)
-        const res1=await selectShopByUserId(apiData1)
-            console.log(res1.data.data)
-            shopValue.value=res1.data.data
         console.log(messageOne.value)
     }
     //点击发送
@@ -194,7 +153,6 @@
             console.log(apiData)
             ws.send(JSON.stringify(apiData))
             messageInputValue.value=""//清空输入框
-            console.log(messageOne.value)
 
             // ws.onmessage=(event)=>{
             //     console.log(messageList.value)
@@ -206,6 +164,8 @@
             //     messageOne.value.push(message)
             //     console.log(messageList.value)
             // }
+            console.log(messageOne.value)
+
         }
         else{
             ElMessage.error("当前连接已经断开，请重试")
@@ -230,11 +190,10 @@
         width: 100%;
         min-height: 700px;
         background-color: rgb(243, 247, 248);
-        padding-top: 110px;
         padding-bottom: 80px;
     }
     .MyMessageBox{
-        width: 60%;
+        width: 100%;
         margin: 0 auto;
         background-color: #fff;
     }
@@ -278,9 +237,9 @@
         font-size: 16px;
     }
     .messageBoxRightBottom{
-        height: 480px;
-        overflow-y:scroll;
+        height: 550px;
         padding-bottom: 10px;
+        overflow-y:scroll;
     }
     .messageBoxRightBottomLeft,
     .messageBoxRightBottomRight{

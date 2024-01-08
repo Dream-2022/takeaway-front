@@ -4,10 +4,14 @@ import Layout from '../views/layOut.vue'
 
 import MainPage from '../views/Main/mainPage.vue'
 import MainView from '../views/Main/mainView.vue'
-import PersonPage from '../views/Main/personPage.vue'
 import MyCartPage from '../views/Main/myCartPage.vue'
 import MyOrderPage from '../views/Main/myOrderPage.vue'
 import MyMessagePage from '../views/Main/myMessagePage.vue'
+import PersonPage from '../views/Main/personPage.vue'
+import PersonView from '../views/Main/Components/personView.vue'
+import ShopCollectView from '../views/Main/Components/shopCollectView.vue'
+import DishCollectView from '../views/Main/Components/dishCollectView.vue'
+import MyRemarkView from '../views/Main/Components/myRemarkView.vue'
 
 import SearchPage from '../views/Search/searchPage.vue'
 import ShopDetailPage from '../views/Shop/shopDetailPage.vue'
@@ -25,6 +29,8 @@ import OrderHandlePage from '../views/Manage/Pages/orderHandlePage.vue'
 import DealPage from '../views/Manage/Pages/dealPage.vue'
 import InformationPage from '../views/Manage/Pages/informationPage.vue'
 import CategoryManagePage from '../views/Manage/Pages/categoryManagePage.vue'
+import RemarkPage from '../views/Manage/Pages/remarkPage.vue'
+import MessagePage from '../views/Manage/Pages/messagePage.vue'
 
 import BusinessPage from '../views/Business/businessPage.vue'
 
@@ -58,7 +64,18 @@ const routes = createRouter({
       redirect: "/mainPage/mainView",
       children:[
         {path:'mainView',component:MainView},
-        {path:'personPage',component:PersonPage},
+        {
+          path:'personPage',
+          name:'personPage',
+          component:PersonPage,
+          redirect: "/mainPage/personPage/personView",
+          children: [  
+            { path: 'personView', component: PersonView },
+            { path: 'shopCollectView', component: ShopCollectView },
+            { path: 'dishCollectView', component: DishCollectView },
+            { path: 'myRemarkView', component: MyRemarkView },
+          ]
+        },
         {path:'myCartPage',component:MyCartPage},
         {path:'myOrderPage',component:MyOrderPage},
         {path:'myMessagePage',component:MyMessagePage},
@@ -100,6 +117,8 @@ const routes = createRouter({
         {path:'orderHandlePage',component:OrderHandlePage},
         {path:'dealPage',component:DealPage},
         {path:'informationPage',component:InformationPage},
+        {path:'remarkPage',component:RemarkPage},
+        {path:'messagePage',component:MessagePage},
         {path:'categoryManagePage',component:CategoryManagePage}
       ]
     },

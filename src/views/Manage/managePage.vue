@@ -12,9 +12,9 @@
             <div class="manageLeft">
                 <div class="zIndex"  ref="navBox">
                     <RouterLink :to="'/managePage/orderHandlePage'"><div class="manageButton link1 manageLeftActive" @click="clearActiveClassAndAdd">订单处理</div></RouterLink>
-                    <RouterLink :to="'/managePage/informationPage'"><div  class="manageButton link2 " @click="clearActiveClassAndAdd">订单评论</div></RouterLink>
+                    <RouterLink :to="'/managePage/messagePage'"><div class="manageButton link1" @click="clearActiveClassAndAdd">私聊</div></RouterLink>
+                    <RouterLink :to="'/managePage/remarkPage'"><div  class="manageButton link2 " @click="clearActiveClassAndAdd">订单评论</div></RouterLink>
                     <RouterLink :to="'/managePage/dealPage'"><div class="manageButton link4" @click="clearActiveClassAndAdd">菜品管理</div></RouterLink>
-                    <RouterLink :to="'/managePage/informationPage'"><div  class="manageButton link5" @click="clearActiveClassAndAdd">用户举报</div></RouterLink>
                     <RouterLink :to="'/managePage/categoryManagePage'"><div  class="manageButton link6" @click="clearActiveClassAndAdd">分类管理</div></RouterLink>
                     <RouterLink :to="'/managePage/informationPage'"><div  class="manageButton link7" @click="clearActiveClassAndAdd">修改信息</div></RouterLink>
                     <RouterLink :to="'/mainPage'"><div>返回<i class="reply icon"></i></div></RouterLink>

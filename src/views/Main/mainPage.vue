@@ -138,6 +138,10 @@
 </div>
 <!-- 选择规格弹窗 -->
 <SelectAttributePop></SelectAttributePop>
+<!-- 举报弹窗 -->
+<FeedbackPop></FeedbackPop>
+<!-- 查看订单弹窗 -->
+<ViewOrderPop></ViewOrderPop>
 </header>
 
 
@@ -165,6 +169,8 @@
   import '../../../node_modules/Semantic-UI-CSS/semantic.min.css'
   import '../../../node_modules/element-plus/es/locale'
   import {useRouter} from "vue-router"
+  import ViewOrderPop from'@/views/Manage/Components/viewOrderPop.vue'
+
 
 
   // 弹窗
@@ -174,6 +180,7 @@
   import {addressById,reDistrictProvinceAll,reDistrictCity,addressInsert,addressUpdate,addressDelete,addressDefault} from '@/apis/address.js'
   import {selectShopMerchant} from'@/apis/shop.js'
   import SelectAttributePop from '@/views/Main/Components/selectAttributePop.vue'
+  import FeedbackPop from '@/views/Main/Components/feedbackPop.vue'
 
   // import '../../utils/modal.js'
   const router = useRouter();

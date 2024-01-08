@@ -251,7 +251,8 @@
             console.log(cartDishListValue.value[i])
             console.log(cartDishListValue.value[i].shopId)
             const apiData={
-                shopId: cartDishListValue.value[i].shopId
+                shopId: cartDishListValue.value[i].shopId,
+                type: "1"
             }
             const res=await selectById(apiData)
                 console.log(res.data.data)
@@ -273,17 +274,6 @@
         deliveryAll.value=(deliveryAll.value).toFixed(2)
         packAll.value=(packAll.value).toFixed(2)
         priceAll.value=(priceAll.value+(Number)(packAll.value)+(Number)(deliveryAll.value)).toFixed(2)
-        
-        // //判断该用户是否评价了该订单，如果评价了这里不需要显示’立即评价‘
-        // const apiData1={
-        //     orderId: cartListValue.value[0].id,
-        //     userId: localStorage.getItem("id")
-        // }
-        // const res1=await selectRemarkByOrderIdAndUserId(apiData1)
-        //     console.log(res1.data.data)
-        //     if(res1.data.data==null){
-        //         console.log("null")
-        //     }
 
         //更新倒计时
         let k=setInterval(updateCountdown,1000)

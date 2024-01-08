@@ -15,6 +15,22 @@ export const insertRemark=(data)=>{
         data
     })
 }
+//根据条件搜索用户的评论
+export const selectRemarkByUserId=(data)=>{
+    return http({
+        url: '/api/pre/remark/selectRemarkByUserId',
+        method: 'POST',
+        data
+    })
+}
+//根据条件查询商家的全部评论
+export const selectRemarkAll=(data)=>{
+    return http({
+        url: '/api/pre/remark/selectRemarkAll',
+        method: 'POST',
+        data
+    })
+}
 //上传图片
 export const uploadRemarkImage=(data)=>{
     return http({

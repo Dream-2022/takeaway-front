@@ -70,6 +70,8 @@
         else{
             isDishValue.value=false
         }
+        localStorage.removeItem('shopper')
+        console.log(localStorage.getItem('shopper'))
         await cartStore.initializationCartAll(localStorage.getItem("id"))
         console.log(cartStore.cartList)
         console.log(route.params.id)

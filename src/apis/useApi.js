@@ -16,3 +16,11 @@ export const deleteUserById=(data)=>{
         data
     })
 }
+//通过条件（ID）查找用户
+export const selectUserById=(data)=>{
+    return http({
+        url: '/api/pre/use/selectUserById',
+        method: 'POST',
+        data
+    })
+}
